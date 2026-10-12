@@ -13,8 +13,3 @@ build/
 
 # local tooling (Claude Code)
 /.claude/
-
-# Gradle wrapper (kept local)
-/gradlew
-/gradlew.bat
-/gradle/wrapper/
