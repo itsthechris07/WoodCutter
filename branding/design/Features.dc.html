@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WoodCutter features</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&amp;family=Barlow:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+code{font-family: Consolas, monospace; font-size: 16px; color: #F5D38A; background: #26302A; padding: 0 4px}
+</style>
+</helmet>
+<div style="width: 1600px; height: 900px; box-sizing: border-box; padding: 52px 64px; background: #0F1410; font-family: 'Barlow', sans-serif; color: #EEF2E8; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 56px">Made for survival servers</h2>
+<p style="margin: 0; font-size: 22px; color: #CDD6CB">Everything is a setting: who cuts trees, how big they are and what it costs.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 20px; flex-grow: 1">
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#6CC24A" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><path d="M12 2l6 7h-3l5 6H4l5-6H6z"></path><line x1="12" y1="15" x2="12" y2="22"></line></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Every tree</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">Oaks, jungle giants, cherry trees and the huge fungi of the Nether – also branches with gaps like those of acacias.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F5B83D" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><rect x="8" y="2" width="8" height="5"></rect><rect x="8" y="9.5" width="8" height="5"></rect><rect x="8" y="17" width="8" height="5"></rect><polyline points="19 9 21 7 23 9" transform="translate(-1 0)"></polyline><line x1="20" y1="7" x2="20" y2="17"></line></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Falling animation</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">The tree falls log by log from the bottom to the top, <code>blocks-per-tick</code> sets the speed. Or all at once.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4B95FF" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><path d="M3 11l9-8 9 8"></path><path d="M5 10v11h14V10"></path><rect x="10" y="14" width="4" height="7"></rect></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Buildings stay</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">Logs that were placed by players are never cut, so the log cabin next to the tree is safe.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#6CC24A" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><path d="M4 20C4 10 10 4 20 4c0 10-6 16-16 16z"></path><line x1="4" y1="20" x2="13" y2="11"></line></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Fast leaf decay</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">The leaves of a cut tree decay within seconds instead of minutes. Placed leaves stay.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#6CC24A" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><path d="M12 22V11"></path><path d="M12 13c0-4-3-6-7-6 0 4 3 6 7 6zM12 11c0-4 3-6 7-6 0 4-3 6-7 6z"></path><line x1="5" y1="22" x2="19" y2="22"></line></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Replanting</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">A new sapling is planted where the tree stood – for free or taken from the inventory of the player.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F5B83D" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><rect x="3" y="8" width="18" height="13"></rect><path d="M3 8l3-5h12l3 5"></path><line x1="9" y1="13" x2="15" y2="13"></line></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Drops</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">Logs go straight into the inventory if you like, with a chance that a log drops a second time.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#E5484D" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><circle cx="12" cy="13" r="8"></circle><polyline points="12 9 12 13 15 15"></polyline><line x1="9" y1="2" x2="15" y2="2"></line></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Delay &amp; costs</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">Seconds between two trees, food points or experience levels per tree. Ranks can skip the delay.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4B95FF" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"></path><polyline points="8.5 12 11 14.5 15.5 9.5"></polyline></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Plays well with others</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">Every log is broken as the player: protection, logging and skill plugins see each one of them.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#9B6BFF" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2c3 3 4 6.5 4 10s-1 7-4 10c-3-3-4-6.5-4-10s1-7 4-10z"></path></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Worlds</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">Switch WoodCutter off in single worlds, by name or with a pattern: <code>sg_*</code> covers every arena.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F5B83D" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><rect x="2" y="4" width="20" height="16"></rect><polyline points="6 9 10 12 6 15"></polyline><line x1="12" y1="15" x2="17" y2="15"></line></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Commands</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB"><code>/woodcutter toggle</code> for players, <code>enchant</code> and <code>give</code> for admins – or as a reward from the console.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4FD6C8" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><rect x="3" y="3" width="18" height="6"></rect><rect x="3" y="15" width="18" height="6"></rect><line x1="7" y1="6" x2="7" y2="6"></line><line x1="7" y1="18" x2="7" y2="18"></line><line x1="12" y1="9" x2="12" y2="15"></line></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Paper &amp; Folia</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">One jar for Paper 1.21 to 26.2 and for Folia. No other plugin is needed, not even for permissions.</p>
+</div>
+
+<div style="background: #171E18; border: 2px solid #2B382D; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 12px; align-items: center">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#9B6BFF" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"><path d="M4 4h16v12H9l-5 4z"></path><line x1="8" y1="8" x2="16" y2="8"></line><line x1="8" y1="12" x2="13" y2="12"></line></svg>
+<h3 style="margin: 0; font-size: 23px; font-weight: 600">Your texts</h3>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.45; color: #CDD6CB">Every message is in <code>messages.yml</code>, with colors and your prefix. Empty texts are not sent.</p>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1600,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

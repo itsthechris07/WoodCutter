@@ -1,0 +1,25 @@
+name: WoodCutter
+version: ${version}
+author: Christian34
+main: com.christian34.woodcutter.WoodCutter
+api-version: "1.21"
+# only the region schedulers of Paper are used, so the same jar runs on Paper and Folia
+folia-supported: true
+commands:
+  woodcutter:
+    description: main command
+    aliases: ["wcutter", "woodc"]
+# the defaults work without a permission plugin: everyone can use WoodCutter, operators manage it
+permissions:
+  woodcutter.use:
+    description: get the enchantment at the enchanting table and cut trees with it
+    default: true
+  woodcutter.goodie:
+    description: cut trees with every axe, without the enchantment (if 'goodie' is set to 'permission' in the config)
+    default: false
+  woodcutter.bypass.delay:
+    description: cut trees without the delay between two trees
+    default: false
+  woodcutter.admin:
+    description: reload the config, enchant tools and give enchanted items with the command
+    default: op

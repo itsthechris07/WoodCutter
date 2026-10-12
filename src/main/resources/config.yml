@@ -1,0 +1,68 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                     - Config -                       | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# the texts of the plugin are in messages.yml
+
+config:
+  # worlds without WoodCutter - * stands for any characters, so sg_* matches sg_1, sg_lobby, ...
+  disabled-worlds:
+    - Lobby
+    - example2
+    - sg_*
+    - ctb_*
+  # level of the enchanting table offer that can give the enchantment
+  level: 30
+  # chance in percent to get the enchantment with such an offer (100 = always)
+  chance: 40
+  # Limit the number of blocks to be destroyed (with level I of the enchantment)
+  # ranks can get a higher limit with the permission woodcutter.maxblocks.<amount> (e.g. woodcutter.maxblocks.300)
+  maxblocks: 120
+  # the enchantment has levels (WoodCutter I, II, III), higher ones cut bigger trees
+  # the enchanting table gives level I (60 %), II (30 %) or III (10 %), two items of the same level are
+  # combined to the next one in an anvil, a grindstone removes the enchantment
+  levels:
+    # 1 disables the levels
+    max: 3
+    # blocks every level adds to 'maxblocks'
+    additional-blocks: 60
+  # false: logs that were placed by players are never cut, so buildings next to trees are safe
+  destroy-fake-trees: false
+  # if true player must sit to use woodcutter
+  require-sneaking: true
+  delay:
+    enabled: true
+    # seconds - players with the permission woodcutter.bypass.delay (e.g. a rank) have no delay
+    time: 30
+    # message over action bar / set to >message: ''< to disable the message
+    message: '&cYou can use WoodCutter again in %time% seconds.'
+  # WoodCutter as a goodie: who cuts trees with every axe, without the enchantment
+  # none: nobody, the enchantment is required
+  # permission: players with the permission woodcutter.goodie (e.g. a rank or a reward)
+  # everyone: all players
+  goodie: none
+  # the tree falls log by log from the bottom to the top instead of at once
+  animation:
+    enabled: true
+    # logs per tick (20 ticks are a second)
+    blocks-per-tick: 2
+  # the leaves of a cut tree decay within seconds
+  fast-leaf-decay: true
+  # plants a new sapling when the lowest log of a tree is broken
+  replant:
+    enabled: false
+    # false: the sapling is taken from the inventory of the player, nothing is planted without one
+    free: true
+  # logs (and their bonus drops) are put into the inventory of the player instead of dropped
+  drops-to-inventory: false
+  bonus-drops:
+    # chance in percent that a log of a cut tree drops a second time (0 disables it)
+    chance: 0
+  # what cutting a tree costs (0 disables it) - players in creative mode pay nothing
+  costs:
+    # food points (10 fill the whole bar), players with less can't cut trees
+    hunger: 0
+    # experience levels, players with less can't cut trees
+    experience: 0

@@ -1,0 +1,32 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                    - Messages -                      | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# colors: &c, &l, ... - %prefix% is replaced with the prefix below
+# an empty text ('') is not sent
+
+messages:
+  prefix: '&8[&9Wood&7Cutter&8] '
+  no_permission: '%prefix%&cSorry, but you do not have the permission for this!'
+  players_only: '%prefix%&cThis command can only be used by players!'
+  reloaded: '%prefix%&aConfig has been reloaded!'
+  enchant_success: '%prefix%&aTool was successfully enchanted!'
+  enchant_failed: '%prefix%&cTool could not be enchanted!'
+  invalid_level: '%prefix%&cThe level has to be a number from 1 to %max%!'
+  player_not_online: "%prefix%&cPlayer '%player%' is not online!"
+  no_axe: "%prefix%&c'%item%' is no axe! Use 'book' or an axe like 'diamond_axe'."
+  give_sent: '%prefix%&a%player% received the item.'
+  give_received_book: '%prefix%&aYou received a book with WoodCutter!'
+  give_received_axe: '%prefix%&aYou received an axe with WoodCutter!'
+  toggle_on: '%prefix%&aWoodCutter is enabled, you cut whole trees again!'
+  toggle_off: '%prefix%&7WoodCutter is disabled, you only break single logs now.'
+  # shown over the action bar
+  not_enough_food: '&cYou are too hungry to cut a whole tree.'
+  not_enough_experience: '&cYou need %levels% experience levels to cut a whole tree.'
+  update_available: '%prefix%&7A new update is available at: &9https://github.com/itsthechris07/WoodCutter/releases/latest'
+  help_toggle: '&7/&9WoodCutter toggle &f| &7switch WoodCutter on or off for yourself'
+  help_reload: '&7/&9WoodCutter reload &f| &7reloads the configuration files'
+  help_enchant: '&7/&9WoodCutter enchant [level] &f| &7enchant the axe in main hand'
+  help_give: '&7/&9WoodCutter give <player> [book|axe] [level] &f| &7give an enchanted book or axe'

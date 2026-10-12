@@ -1,0 +1,20 @@
+# IDE
+/.idea/
+*.iml
+
+# Gradle
+.gradle/
+build/
+# local settings (serverPluginsDir)
+/gradle.properties
+
+# release jars (./gradlew build)
+/release/
+
+# local tooling (Claude Code)
+/.claude/
+
+# Gradle wrapper (kept local)
+/gradlew
+/gradlew.bat
+/gradle/wrapper/
