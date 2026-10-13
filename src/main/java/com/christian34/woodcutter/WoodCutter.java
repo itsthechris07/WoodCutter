@@ -98,12 +98,13 @@ public class WoodCutter extends JavaPlugin {
         }
         long now = System.currentTimeMillis();
         // ranks can have a shorter delay (woodcutter.delay.<seconds>), the woodcutting skill makes it shorter as well
-        int seconds = Math.min(configData.getInt(ConfigData.Keys.DELAY_TIME),
-                Permissions.numbers(player, BlockBreakListener.PERMISSION_DELAY).min().orElse(Integer.MAX_VALUE));
+        int longest = configData.getInt(ConfigData.Keys.DELAY_TIME);
+        int seconds = Math.min(longest, Permissions.numbers(player, BlockBreakListener.PERMISSION_DELAY).min().orElse(Integer.MAX_VALUE));
         long delay = (long) (Math.max(0, seconds - skill.perk(player, Skill.PERK_DELAY)) * 1000);
-        delays.values().removeIf(lastUsage -> lastUsage + delay <= now);
+        // expired for everyone - the shorter delay of this player must not end the delays of the others
+        delays.values().removeIf(lastUsage -> lastUsage + longest * 1000L <= now);
         Long lastUsage = delays.get(player.getUniqueId());
-        return lastUsage == null ? 0 : Math.max(1, (lastUsage + delay - now + 999) / 1000);
+        return lastUsage == null || lastUsage + delay <= now ? 0 : (lastUsage + delay - now + 999) / 1000;
     }
 
     /**

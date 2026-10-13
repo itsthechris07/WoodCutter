@@ -314,6 +314,20 @@ class FeaturesTest extends PluginTestBase {
     }
 
     @Test
+    void shorterDelayOfARankDoesNotEndTheDelayOfOthers() {
+        setConfig(ConfigData.Keys.DELAY, true);
+        setConfig(ConfigData.Keys.DELAY_TIME, 30);
+        PlayerMock player = addCutter("Cutter");
+        PlayerMock vip = addCutter("Vip");
+        vip.addAttachment(plugin, "woodcutter.delay.10", true);
+        long before = System.currentTimeMillis() - 15_000;
+        plugin.getDelays().put(player.getUniqueId(), before);
+        plugin.getDelays().put(vip.getUniqueId(), before);
+        assertEquals(0, plugin.remainingDelay(vip));
+        assertEquals(15, plugin.remainingDelay(player), 1);
+    }
+
+    @Test
     void delayIsShownWhenThePlayerStartsToBreakALog() {
         setConfig(ConfigData.Keys.DELAY, true);
         setConfig(ConfigData.Keys.DELAY_TIME, 30);
