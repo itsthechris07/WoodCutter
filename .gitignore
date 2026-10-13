@@ -11,5 +11,8 @@ build/
 # release jars (./gradlew build)
 /release/
 
+# texts for the release pages, not part of the repository
+/release-notes/
+
 # local tooling (Claude Code)
 /.claude/
