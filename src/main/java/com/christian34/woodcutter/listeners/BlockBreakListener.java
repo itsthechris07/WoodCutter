@@ -4,6 +4,7 @@ import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.enchantments.WoodCutterEnchantment;
 import com.christian34.woodcutter.events.WoodCutterEvent;
 import com.christian34.woodcutter.files.ConfigData;
+import com.christian34.woodcutter.hooks.WorldGuardHook;
 import com.christian34.woodcutter.utils.Message;
 import com.christian34.woodcutter.utils.Statistics;
 import com.christian34.woodcutter.woodcutting.Cutter;
@@ -26,7 +27,6 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -108,21 +108,17 @@ public class BlockBreakListener implements Listener {
             if (matchesWorld(world, disabled)) return;
         }
 
-        Map<UUID, Long> delays = instance.getDelays();
-        long now = System.currentTimeMillis();
+        WorldGuardHook worldGuard = instance.getWorldGuard();
+        if (worldGuard != null && !worldGuard.isAllowed(player, block)) return;
+
         boolean delayed = config.getBoolean(ConfigData.Keys.DELAY) && !player.hasPermission(PERMISSION_BYPASS_DELAY);
-        if (delayed) {
-            long delay = config.getInt(ConfigData.Keys.DELAY_TIME) * 1000L;
-            delays.values().removeIf(lastUsage -> lastUsage + delay <= now);
-            Long lastUsage = delays.get(player.getUniqueId());
-            if (lastUsage != null) {
-                String message = config.getString(ConfigData.Keys.DELAY_MSG);
-                if (!message.isEmpty()) {
-                    long remaining = Math.max(1, (lastUsage + delay - now + 999) / 1000);
-                    player.sendActionBar(LegacyComponentSerializer.legacyAmpersand().deserialize(message.replace("%time%", Long.toString(remaining))));
-                }
-                return;
+        long remaining = instance.remainingDelay(player);
+        if (remaining > 0) {
+            String message = config.getString(ConfigData.Keys.DELAY_MSG);
+            if (!message.isEmpty()) {
+                player.sendActionBar(LegacyComponentSerializer.legacyAmpersand().deserialize(message.replace("%time%", Long.toString(remaining))));
             }
+            return;
         }
 
         boolean pays = player.getGameMode() != GameMode.CREATIVE;
@@ -145,7 +141,7 @@ public class BlockBreakListener implements Listener {
         if (logs == 0) return;
         if (hunger > 0) player.setFoodLevel(player.getFoodLevel() - hunger);
         if (experience > 0) player.setLevel(player.getLevel() - experience);
-        if (delayed) delays.put(player.getUniqueId(), now);
+        if (delayed) instance.getDelays().put(player.getUniqueId(), System.currentTimeMillis());
         Statistics.recordTree(block.getType(), axe.getType(), logs, level);
     }
 

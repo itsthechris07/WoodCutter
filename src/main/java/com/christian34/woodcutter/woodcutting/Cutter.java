@@ -67,6 +67,10 @@ public class Cutter {
     private static final int LEAF_DISTANCE = 7;
     private static final int MAX_LEAVES = 800;
     /**
+     * leaves that decay in a tick of the animation for every log that is broken in a tick
+     */
+    private static final int LEAVES_PER_LOG = 4;
+    /**
      * blocks saplings grow on - by name, as the block tags for this differ between the Minecraft versions (the dirt
      * tag lost grass blocks in 26.1) and some blocks are newer than 1.21
      */
@@ -261,10 +265,17 @@ public class Cutter {
             breakLogs(0, logs.size());
             finish();
         } else {
-            logs.sort(Comparator.comparingInt(Block::getY));
+            // layer by layer, every layer from the trunk to the tips of its branches
+            logs.sort(Comparator.comparingInt(Block::getY).thenComparingInt(this::distanceToTrunk));
             step(0);
         }
         return logs.size();
+    }
+
+    private int distanceToTrunk(Block target) {
+        int x = target.getX() - block.getX();
+        int z = target.getZ() - block.getZ();
+        return x * x + z * z;
     }
 
     private void step(int from) {
@@ -283,7 +294,8 @@ public class Cutter {
         if (!player.isOnline() || !player.getWorld().equals(block.getWorld())) return false;
         CUTTING.add(player.getUniqueId());
         try {
-            for (Block target : logs.subList(from, to)) {
+            for (int i = from; i < to; i++) {
+                Block target = logs.get(i);
                 if (!WoodCutterEnchantment.isAxe(player.getInventory().getItemInMainHand())) return false;
                 BlockData data = target.getBlockData();
                 Material type = data.getMaterial();
@@ -292,7 +304,7 @@ public class Cutter {
                 if (TaskManager.isFolia() && !Bukkit.isOwnedByCurrentRegion(target)) continue;
                 if (!player.breakBlock(target)) continue;
                 // the player does not get the sound and particles of blocks they break themselves
-                if (blocksPerTick > 0) playBreakEffect(target, data);
+                if (blocksPerTick > 0) playBreakEffect(target, data, (float) i / logs.size());
                 if (bonusDropChance > 0 && player.getGameMode() != GameMode.CREATIVE
                         && ThreadLocalRandom.current().nextDouble(100) < bonusDropChance) {
                     drop(target, new ItemStack(type));
@@ -304,10 +316,13 @@ public class Cutter {
         return true;
     }
 
-    private void playBreakEffect(Block broken, BlockData data) {
+    /**
+     * @param progress 0 for the first log of the tree to 1 for the last one: the sound gets higher towards the top
+     */
+    private void playBreakEffect(Block broken, BlockData data, float progress) {
         Location center = broken.getLocation().add(0.5, 0.5, 0.5);
         // by its name, as the sounds became a registry in 1.21.3
-        player.playSound(center, "minecraft:block.wood.break", 1, 0.8f);
+        player.playSound(center, "minecraft:block.wood.break", 1, 0.7f + 0.5f * progress);
         player.spawnParticle(Particle.BLOCK, center, 20, 0.25, 0.25, 0.25, data);
     }
 
@@ -326,9 +341,12 @@ public class Cutter {
      */
     private void finish() {
         if (leaves.isEmpty()) return;
+        // with the animation the leaves follow the logs: from the bottom to the top within two seconds at most
+        int leavesPerTick = blocksPerTick == 0 ? leaves.size() : Math.max(blocksPerTick * LEAVES_PER_LOG, (leaves.size() + 39) / 40);
+        if (blocksPerTick > 0) leaves.sort(Comparator.comparingInt(Block::getY));
         // the server needs some ticks to notice that the leaves lost their logs, slow servers get a second chance
-        TaskManager.regionLater(block.getLocation(), () -> decay(leaves), 40);
-        TaskManager.regionLater(block.getLocation(), () -> decay(leaves), 100);
+        TaskManager.regionLater(block.getLocation(), () -> decay(0, leavesPerTick), 40);
+        TaskManager.regionLater(block.getLocation(), () -> decay(0, leavesPerTick), 100);
     }
 
     @Nullable
@@ -361,16 +379,26 @@ public class Cutter {
     /**
      * breaks the leaves the server would let decay sooner or later: not placed by a player and without a log nearby
      */
-    private static void decay(List<Block> leaves) {
-        for (Block leaf : leaves) {
+    private void decay(int from, int leavesPerTick) {
+        int to = Math.min(leaves.size(), from + leavesPerTick);
+        boolean rustled = false;
+        for (Block leaf : leaves.subList(from, to)) {
             if (TaskManager.isFolia() && !Bukkit.isOwnedByCurrentRegion(leaf)) continue;
             if (!(leaf.getBlockData() instanceof Leaves data) || data.isPersistent() || data.getDistance() < LEAF_DISTANCE) {
                 continue;
             }
             LeavesDecayEvent event = new LeavesDecayEvent(leaf);
             Bukkit.getPluginManager().callEvent(event);
-            if (!event.isCancelled()) leaf.breakNaturally();
+            if (event.isCancelled()) continue;
+            leaf.breakNaturally();
+            if (blocksPerTick == 0) continue;
+            Location center = leaf.getLocation().add(0.5, 0.5, 0.5);
+            leaf.getWorld().spawnParticle(Particle.BLOCK, center, 6, 0.3, 0.3, 0.3, data);
+            // one sound for the leaves of a tick
+            if (!rustled) leaf.getWorld().playSound(center, "minecraft:block.grass.break", 0.6f, 1);
+            rustled = true;
         }
+        if (to < leaves.size()) TaskManager.regionLater(block.getLocation(), () -> decay(to, leavesPerTick), 1);
     }
 
 }

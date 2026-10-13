@@ -4,6 +4,8 @@ import com.christian34.woodcutter.commands.CommandWoodCutter;
 import com.christian34.woodcutter.enchantments.WoodCutterEnchantment;
 import com.christian34.woodcutter.files.ConfigData;
 import com.christian34.woodcutter.files.MessageData;
+import com.christian34.woodcutter.hooks.PlaceholderHook;
+import com.christian34.woodcutter.hooks.WorldGuardHook;
 import com.christian34.woodcutter.listeners.AnvilListener;
 import com.christian34.woodcutter.listeners.BlockBreakListener;
 import com.christian34.woodcutter.listeners.BlockPlaceListener;
@@ -18,8 +20,10 @@ import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class WoodCutter extends JavaPlugin {
     private static final List<String> RELATED_PLUGINS = List.of("WorldGuard", "GriefPrevention", "Towny", "Lands", "Residence",
-            "PlotSquared", "CoreProtect", "mcMMO", "Jobs", "AuraSkills", "ItemsAdder", "Oraxen", "Nexo", "EasyPrefix", "ViaVersion");
+            "PlotSquared", "CoreProtect", "mcMMO", "Jobs", "AuraSkills", "ItemsAdder", "Oraxen", "Nexo", "EasyPrefix", "ViaVersion", "PlaceholderAPI");
     private static WoodCutter instance = null;
     /**
      * the time a player has cut a tree the last time
@@ -46,6 +50,7 @@ public class WoodCutter extends JavaPlugin {
     private ConfigData configData;
     private MessageData messageData;
     private Updater updater;
+    private WorldGuardHook worldGuard;
 
     public static WoodCutter getInstance() {
         return instance;
@@ -75,6 +80,41 @@ public class WoodCutter extends JavaPlugin {
         return delays;
     }
 
+    /**
+     * @return the seconds until the player can cut the next tree, 0 if they can right away
+     */
+    public long remainingDelay(Player player) {
+        if (!configData.getBoolean(ConfigData.Keys.DELAY) || player.hasPermission(BlockBreakListener.PERMISSION_BYPASS_DELAY)) {
+            return 0;
+        }
+        long now = System.currentTimeMillis();
+        long delay = configData.getInt(ConfigData.Keys.DELAY_TIME) * 1000L;
+        delays.values().removeIf(lastUsage -> lastUsage + delay <= now);
+        Long lastUsage = delays.get(player.getUniqueId());
+        return lastUsage == null ? 0 : Math.max(1, (lastUsage + delay - now + 999) / 1000);
+    }
+
+    /**
+     * @return null if WorldGuard is not installed
+     */
+    @Nullable
+    public WorldGuardHook getWorldGuard() {
+        return worldGuard;
+    }
+
+    @Override
+    public void onLoad() {
+        // the classes of the hooks are only loaded if their plugin is installed
+        if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
+            try {
+                this.worldGuard = WorldGuardHook.register();
+            } catch (LinkageError | RuntimeException ex) {
+                getLogger().warning("Couldn't hook into WorldGuard: " + ex);
+            }
+        }
+    }
+
+    @Override
     public void onEnable() {
         WoodCutter.instance = this;
 
@@ -91,6 +131,7 @@ public class WoodCutter extends JavaPlugin {
             command.setTabCompleter(executor);
         }
 
+        hookPlugins();
         hookMetrics();
         Debug.log("If you like the plugin or you have suggestions, please write a review on spigotmc.org!");
     }
@@ -110,6 +151,20 @@ public class WoodCutter extends JavaPlugin {
         pluginManager.registerEvents(new EnchantListener(this), this);
         pluginManager.registerEvents(new AnvilListener(), this);
         pluginManager.registerEvents(updater, this);
+    }
+
+    /**
+     * optional plugins (softdepend in the plugin.yml, so they are enabled first)
+     */
+    private void hookPlugins() {
+        if (worldGuard != null) Debug.log("Hooked into WorldGuard: region flag '" + WorldGuardHook.FLAG + "'");
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            try {
+                if (new PlaceholderHook(this).register()) Debug.log("Hooked into PlaceholderAPI");
+            } catch (LinkageError | RuntimeException ex) {
+                Debug.warn("Couldn't hook into PlaceholderAPI: " + ex);
+            }
+        }
     }
 
     /**

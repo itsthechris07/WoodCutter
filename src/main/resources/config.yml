@@ -43,7 +43,7 @@ config:
   # permission: players with the permission woodcutter.goodie (e.g. a rank or a reward)
   # everyone: all players
   goodie: none
-  # the tree falls log by log from the bottom to the top instead of at once
+  # the tree falls log by log from the bottom to the top instead of at once, its leaves follow (with 'fast-leaf-decay')
   animation:
     enabled: true
     # logs per tick (20 ticks are a second)

@@ -2,7 +2,6 @@ package com.christian34.woodcutter.files;
 
 import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.utils.Debug;
-import com.tchristofferson.configupdater.ConfigUpdater;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +19,7 @@ import java.util.List;
  * @author Christian34
  */
 public class ConfigData {
+    private static final String FILE = "config.yml";
     private static final String DATA_PREFIX = "config.";
     private final WoodCutter instance;
     private volatile FileConfiguration data;
@@ -35,37 +35,33 @@ public class ConfigData {
     public void load() {
         instance.saveDefaultConfig();
         try {
-            migrate();
-            update();
+            // adds the settings (and comments) of the default config that are missing in the file, e.g. after an update
+            File file = new File(instance.getDataFolder(), FILE);
+            YamlUpdater.update(instance, FILE, file, migrate(file));
         } catch (IOException | RuntimeException ex) {
             // missing settings have the value of the default config then
-            Debug.warn("Couldn't update file 'config.yml': " + ex);
+            Debug.warn("Couldn't update file '" + FILE + "': " + ex);
         }
         instance.reloadConfig();
         this.data = instance.getConfig();
     }
 
     /**
-     * adds the settings (and comments) of the default config that are missing in the file, e.g. after an update
-     */
-    public void update() throws IOException {
-        ConfigUpdater.update(instance, "config.yml", new File(instance.getDataFolder(), "config.yml"), List.of());
-    }
-
-    /**
      * converts settings of older versions: 'probability' (4 = 40 %) became 'chance' in percent
+     *
+     * @return true if the file has been changed
      */
-    private void migrate() throws IOException {
-        File file = new File(instance.getDataFolder(), "config.yml");
+    private boolean migrate(File file) throws IOException {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         String probability = DATA_PREFIX + "probability";
-        if (!config.contains(probability)) return;
+        if (!config.contains(probability)) return false;
         if (!config.contains(DATA_PREFIX + Keys.CHANCE)) {
             config.set(DATA_PREFIX + Keys.CHANCE, Math.max(1, Math.min(10, config.getInt(probability))) * 10);
         }
         config.set(probability, null);
         // the comments are restored by the update
         config.save(file);
+        return true;
     }
 
     @NotNull

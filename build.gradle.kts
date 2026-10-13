@@ -13,6 +13,10 @@ java {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    // WorldGuard
+    maven("https://maven.enginehub.org/repo/")
+    // PlaceholderAPI
+    maven("https://repo.extendedclip.com/releases/")
 }
 
 dependencies {
@@ -22,12 +26,16 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:26.1.0")
 
+    // optional plugins (softdepend), their classes are only used if they are installed
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
+    compileOnly("me.clip:placeholderapi:2.11.6")
+
     implementation("org.bstats:bstats-bukkit:3.2.1")
-    implementation("com.tchristofferson:ConfigUpdater:2.2")
 
     // tests run the plugin against a mocked Paper server
     testImplementation("io.papermc.paper:paper-api:26.2.build.129-stable")
     testImplementation("org.mockbukkit.mockbukkit:mockbukkit-v26.2:4.116.1")
+    testImplementation("me.clip:placeholderapi:2.11.6")
     testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains:annotations:26.1.0")
@@ -89,6 +97,5 @@ tasks {
         destinationDirectory = layout.projectDirectory.dir("release")
         // bStats refuses to start unless relocated
         relocate("org.bstats", "com.christian34.woodcutter.libs.bstats")
-        relocate("com.tchristofferson", "com.christian34.woodcutter.libs.configupdater")
     }
 }

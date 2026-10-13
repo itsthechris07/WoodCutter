@@ -2,7 +2,6 @@ package com.christian34.woodcutter.files;
 
 import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.utils.Debug;
-import com.tchristofferson.configupdater.ConfigUpdater;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /**
  * WoodCutter 2026.
@@ -38,7 +36,7 @@ public class MessageData {
         File file = new File(instance.getDataFolder(), FILE);
         if (!file.exists()) instance.saveResource(FILE, false);
         try {
-            ConfigUpdater.update(instance, FILE, file, List.of());
+            YamlUpdater.update(instance, FILE, file, false);
         } catch (IOException | RuntimeException ex) {
             // missing texts have the default text then
             Debug.warn("Couldn't update file '" + FILE + "': " + ex);
@@ -56,7 +54,9 @@ public class MessageData {
 
     @NotNull
     public String getText(@NotNull String key) {
-        return data.getString(DATA_PREFIX + key, "");
+        // without a default value, so texts that are missing in the file have the default text
+        String text = data.getString(DATA_PREFIX + key);
+        return text == null ? "" : text;
     }
 
 }

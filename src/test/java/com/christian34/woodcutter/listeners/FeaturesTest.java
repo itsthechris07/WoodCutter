@@ -7,6 +7,7 @@ import com.christian34.woodcutter.woodcutting.PlacedLogs;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.Leaves;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -83,6 +84,46 @@ class FeaturesTest extends PluginTestBase {
         assertEquals(7 - 4, logs(X, 7));
         server.getScheduler().performTicks(5);
         assertEquals(1, logs(X, 7));
+    }
+
+    @Test
+    void animationCutsBranchesFromTheTrunkOutwards() {
+        setConfig(ConfigData.Keys.ANIMATION, true);
+        setConfig(ConfigData.Keys.ANIMATION_BLOCKS_PER_TICK, 1);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 2);
+        Block tip = world.getBlockAt(X + 2, Y + 1, Z);
+        Block branch = world.getBlockAt(X + 1, Y + 1, Z);
+        tip.setType(Material.OAK_LOG);
+        branch.setType(Material.OAK_LOG);
+        breakBlock(player, root);
+        assertEquals(Material.AIR, world.getBlockAt(X, Y + 1, Z).getType());
+        assertEquals(Material.OAK_LOG, branch.getType());
+        server.getScheduler().performTicks(1);
+        assertEquals(Material.AIR, branch.getType());
+        assertEquals(Material.OAK_LOG, tip.getType());
+        server.getScheduler().performTicks(1);
+        assertEquals(Material.AIR, tip.getType());
+    }
+
+    @Test
+    void animationLetsTheLeavesDecayFromTheBottom() {
+        setConfig(ConfigData.Keys.ANIMATION, true);
+        setConfig(ConfigData.Keys.ANIMATION_BLOCKS_PER_TICK, 1);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 2);
+        Leaves data = (Leaves) Material.OAK_LEAVES.createBlockData();
+        data.setDistance(7);
+        // a column of leaves on top of the tree, four of them decay in a tick
+        for (int y = 2; y < 8; y++) world.getBlockAt(X, Y + y, Z).setBlockData(data);
+        breakBlock(player, root);
+        server.getScheduler().performTicks(39);
+        assertEquals(Material.OAK_LEAVES, world.getBlockAt(X, Y + 2, Z).getType());
+        server.getScheduler().performTicks(1);
+        assertEquals(Material.AIR, world.getBlockAt(X, Y + 5, Z).getType());
+        assertEquals(Material.OAK_LEAVES, world.getBlockAt(X, Y + 6, Z).getType());
+        server.getScheduler().performTicks(1);
+        assertEquals(Material.AIR, world.getBlockAt(X, Y + 7, Z).getType());
     }
 
     @Test

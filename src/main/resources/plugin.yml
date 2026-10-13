@@ -5,6 +5,8 @@ main: com.christian34.woodcutter.WoodCutter
 api-version: "1.21"
 # only the region schedulers of Paper are used, so the same jar runs on Paper and Folia
 folia-supported: true
+# optional: region flag 'woodcutter' (WorldGuard), placeholders like %woodcutter_delay% (PlaceholderAPI)
+softdepend: [WorldGuard, PlaceholderAPI]
 commands:
   woodcutter:
     description: main command
