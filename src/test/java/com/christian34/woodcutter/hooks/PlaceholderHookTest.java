@@ -46,6 +46,27 @@ class PlaceholderHookTest extends PluginTestBase {
     }
 
     @Test
+    void placeholdersOfTheSkill() {
+        setConfig(ConfigData.Keys.SKILL_XP_FIRST_LEVEL, 10);
+        setConfig(ConfigData.Keys.SKILL_XP_INCREASE, 0);
+        PlaceholderHook hook = new PlaceholderHook(plugin);
+        PlayerMock player = addCutter("Cutter");
+        PlayerMock better = addCutter("Better");
+        plugin.getSkill().reward(player, 25);
+        plugin.getSkill().reward(better, 40);
+        assertEquals("2", hook.onRequest(player, "skill_level"));
+        assertEquals("25", hook.onRequest(player, "skill_xp"));
+        assertEquals("5", hook.onRequest(player, "skill_xp_needed"));
+
+        // the ranking needs no player
+        assertEquals("Better", hook.onRequest(null, "top_1_name"));
+        assertEquals("4", hook.onRequest(null, "top_1_level"));
+        assertEquals("25", hook.onRequest(null, "top_2_xp"));
+        assertEquals("", hook.onRequest(null, "top_3_name"));
+        assertEquals("", hook.onRequest(null, "top_0_name"));
+    }
+
+    @Test
     void noPlaceholdersWithoutAPlayer() {
         assertEquals("", new PlaceholderHook(plugin).onRequest(null, "enabled"));
     }

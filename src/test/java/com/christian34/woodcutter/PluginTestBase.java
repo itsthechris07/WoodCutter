@@ -39,6 +39,8 @@ public abstract class PluginTestBase {
         this.plugin = MockBukkit.load(WoodCutter.class);
         // trees are cut at once, so the tests don't have to wait for the animation
         setConfig("animation.enabled", false);
+        // the trees of the tests are just logs
+        setConfig("require-leaves", false);
     }
 
     @AfterEach

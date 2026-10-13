@@ -2,12 +2,14 @@ package com.christian34.woodcutter.files;
 
 import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.utils.Debug;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -64,6 +66,23 @@ public class ConfigData {
         return true;
     }
 
+    /**
+     * changes a setting in the config.yml (its comments stay) and loads the file again
+     */
+    public void set(@NotNull String key, Object value) throws IOException {
+        File file = new File(instance.getDataFolder(), FILE);
+        String text = Files.readString(file.toPath());
+        YamlConfiguration config = new YamlConfiguration();
+        try {
+            config.loadFromString(text);
+        } catch (InvalidConfigurationException ex) {
+            throw new IOException(ex);
+        }
+        config.set(DATA_PREFIX + key, value);
+        YamlUpdater.write(config, YamlUpdater.header(text), file);
+        load();
+    }
+
     @NotNull
     public String getString(@NotNull String key) {
         return data.getString(DATA_PREFIX + key, "");
@@ -108,6 +127,30 @@ public class ConfigData {
         public static final String BONUS_DROPS_CHANCE = "bonus-drops.chance";
         public static final String COSTS_HUNGER = "costs.hunger";
         public static final String COSTS_EXPERIENCE = "costs.experience";
+        public static final String LANGUAGE = "language";
+        public static final String ANIMATION_MODE = "animation.mode";
+        public static final String REQUIRE_LEAVES = "require-leaves";
+        public static final String MUSHROOMS = "mushrooms";
+        public static final String SOURCES_LIBRARIAN = "sources.librarian";
+        public static final String SOURCES_WANDERING_TRADER = "sources.wandering-trader";
+        public static final String SOURCES_LOOT = "sources.loot";
+        public static final String SOURCES_PRICE = "sources.price";
+        public static final String SKILL_LUCKY_DROPS = "skill.lucky-drops";
+        public static final String PROTECT_AXE = "protect-axe";
+        public static final String EXPERIENCE_DROPS_PER_LOG = "experience-drops.per-log";
+        public static final String SKILL = "skill.enabled";
+        public static final String SKILL_MAX_LEVEL = "skill.max-level";
+        public static final String SKILL_XP_PER_LOG = "skill.xp-per-log";
+        public static final String SKILL_XP_FIRST_LEVEL = "skill.xp-first-level";
+        public static final String SKILL_XP_INCREASE = "skill.xp-increase";
+        /**
+         * followed by the name of the perk
+         */
+        public static final String SKILL_PERKS = "skill.perks.";
+        /**
+         * followed by the name of the feature
+         */
+        public static final String SKILL_UNLOCKS = "skill.unlocks.";
     }
 
 }

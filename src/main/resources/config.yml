@@ -4,9 +4,11 @@
 # |               Plugin by Christian34                  | #
 # +------------------------------------------------------+ #
 ############################################################
-# the texts of the plugin are in messages.yml
+# the texts of the plugin are in messages.yml (or messages_<language>.yml)
 
 config:
+  # the language of the texts: en (messages.yml) or de (messages_de.yml)
+  language: en
   # worlds without WoodCutter - * stands for any characters, so sg_* matches sg_1, sg_lobby, ...
   disabled-worlds:
     - Lobby
@@ -30,11 +32,17 @@ config:
     additional-blocks: 60
   # false: logs that were placed by players are never cut, so buildings next to trees are safe
   destroy-fake-trees: false
+  # true: logs without leaves are no tree and not cut - this also keeps buildings that are older than the plugin
+  # (the trees of the Nether need their wart blocks instead)
+  require-leaves: true
+  # huge mushrooms are cut like trees when their stem is broken with an axe
+  mushrooms: true
   # if true player must sit to use woodcutter
   require-sneaking: true
   delay:
     enabled: true
-    # seconds - players with the permission woodcutter.bypass.delay (e.g. a rank) have no delay
+    # seconds - players with the permission woodcutter.bypass.delay (e.g. a rank) have no delay,
+    # woodcutter.delay.<seconds> (e.g. woodcutter.delay.10) gives a rank a shorter one
     time: 30
     # message over action bar / set to >message: ''< to disable the message
     message: '&cYou can use WoodCutter again in %time% seconds.'
@@ -43,14 +51,17 @@ config:
   # permission: players with the permission woodcutter.goodie (e.g. a rank or a reward)
   # everyone: all players
   goodie: none
-  # the tree falls log by log from the bottom to the top instead of at once, its leaves follow (with 'fast-leaf-decay')
+  # the tree does not just disappear, its leaves follow from the bottom to the top (with 'fast-leaf-decay')
   animation:
     enabled: true
-    # logs per tick (20 ticks are a second)
+    # layers: the tree is cut log by log from the bottom to the top
+    # topple: the tree is cut at once and tips over, away from the player
+    mode: layers
+    # logs per tick with the mode 'layers' (20 ticks are a second)
     blocks-per-tick: 2
   # the leaves of a cut tree decay within seconds
   fast-leaf-decay: true
-  # plants a new sapling when the lowest log of a tree is broken
+  # plants a new sapling when the lowest log of a tree is broken - four of them for trees with a trunk of 2x2 logs
   replant:
     enabled: false
     # false: the sapling is taken from the inventory of the player, nothing is planted without one
@@ -66,3 +77,57 @@ config:
     hunger: 0
     # experience levels, players with less can't cut trees
     experience: 0
+  # the tree is only cut as far as the axe lasts: cutting stops before the hit that would break it
+  protect-axe: true
+  experience-drops:
+    # experience points every log of a cut tree drops, e.g. 0.5 for a point every two logs (0 disables it)
+    # with 'drops-to-inventory' the player gets them directly
+    per-log: 0
+  # the woodcutting skill: players gain experience for every log of a tree they cut and reach levels with perks
+  # /woodcutter level shows the level and the perks of a player, /woodcutter top the best players
+  skill:
+    enabled: true
+    max-level: 50
+    # experience for every log of a cut tree
+    xp-per-log: 1
+    # experience for the first level, every further level needs 'xp-increase' more than the one before
+    xp-first-level: 50
+    xp-increase: 25
+    # what players get at the highest level - the perks grow evenly with every level (0 disables a perk)
+    perks:
+      # additional logs per tick of the animation
+      speed: 4
+      # seconds the delay between two trees is shorter
+      delay: 20
+      # additional logs on top of 'maxblocks'
+      max-blocks: 120
+      # chance in percent on top of 'bonus-drops'
+      bonus-drops: 20
+      # chance in percent that a log of a tree does not damage the axe
+      axe-saver: 30
+      # percent the costs of a tree are lower
+      costs: 50
+      # chance in percent that a decaying leaf of a cut tree drops one of the 'lucky-drops'
+      forester-luck: 3
+    # what leaves drop with 'forester-luck' - item:weight, items with a higher weight drop more often
+    # 'sapling' is the sapling of the cut tree
+    lucky-drops:
+      - stick:40
+      - sapling:35
+      - apple:25
+    # levels that unlock features for a player, even if they are disabled above (0: never)
+    unlocks:
+      # a new sapling is planted for free
+      replant: 10
+      # logs are put into the inventory
+      drops-to-inventory: 20
+  # other ways to get a book with WoodCutter than the enchanting table (0 disables one)
+  sources:
+    # chance in percent that a new trade of a librarian is such a book
+    librarian: 3
+    # chance in percent that a trade of a wandering trader is such a book
+    wandering-trader: 3
+    # emeralds a book costs (with a normal book) for every level of the enchantment
+    price: 20
+    # chance in percent that a chest with loot (dungeons, mineshafts, villages, ...) contains such a book
+    loot: 3

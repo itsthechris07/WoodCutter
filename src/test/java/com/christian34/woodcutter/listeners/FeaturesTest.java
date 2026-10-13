@@ -8,10 +8,20 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Leaves;
+import com.christian34.woodcutter.skill.Skill;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.Item;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import com.christian34.woodcutter.woodcutting.Cutter;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
@@ -135,6 +145,224 @@ class FeaturesTest extends PluginTestBase {
         player.getInventory().setItemInMainHand(null);
         server.getScheduler().performTicks(10);
         assertEquals(7 - 1, logs(X, 7));
+    }
+
+    /**
+     * an axe that breaks with the given amount of hits - the mocked server does not damage it, so a listener does
+     */
+    private void almostBrokenAxe(PlayerMock player, int hitsLeft) {
+        ItemStack axe = player.getInventory().getItemInMainHand();
+        axe.editMeta(Damageable.class, meta -> meta.setDamage(axe.getType().getMaxDurability() - hitsLeft));
+        player.getInventory().setItemInMainHand(axe);
+        server.getPluginManager().registerEvents(new Listener() {
+            @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+            public void onBreak(BlockBreakEvent e) {
+                if (!Cutter.isCutting(player)) return;
+                ItemStack used = player.getInventory().getItemInMainHand();
+                used.editMeta(Damageable.class, meta -> meta.setDamage(meta.getDamage() + 1));
+                player.getInventory().setItemInMainHand(used);
+            }
+        }, plugin);
+    }
+
+    private int hitsLeft(PlayerMock player) {
+        ItemStack axe = player.getInventory().getItemInMainHand();
+        return axe.getType().getMaxDurability() - ((Damageable) axe.getItemMeta()).getDamage();
+    }
+
+    @Test
+    void cuttingStopsBeforeTheAxeBreaks() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        PlayerMock player = addCutter("Cutter");
+        // five hits: the log the player breaks, three logs of the tree and one that is left for the axe
+        almostBrokenAxe(player, 5);
+        breakBlock(player, tree(X, 10));
+        assertEquals(10 - 3, logs(X, 10));
+        assertEquals(2, hitsLeft(player));
+
+        // only the hit for the log of the player and the one for the axe are left
+        breakBlock(player, tree(X + 10, 10));
+        assertEquals(10, logs(X + 10, 10));
+    }
+
+    @Test
+    void animationStopsBeforeTheAxeBreaks() {
+        setConfig(ConfigData.Keys.ANIMATION, true);
+        setConfig(ConfigData.Keys.ANIMATION_BLOCKS_PER_TICK, 1);
+        PlayerMock player = addCutter("Cutter");
+        almostBrokenAxe(player, 4);
+        breakBlock(player, tree(X, 10));
+        server.getScheduler().performTicks(10);
+        assertEquals(1, hitsLeft(player));
+        assertEquals(10 - 3, logs(X, 10));
+    }
+
+    @Test
+    void axeProtectionCanBeDisabled() {
+        setConfig(ConfigData.Keys.PROTECT_AXE, false);
+        PlayerMock player = addCutter("Cutter");
+        almostBrokenAxe(player, 3);
+        breakBlock(player, tree(X, 10));
+        assertEquals(1, logs(X, 10));
+    }
+
+    @Test
+    void treesDropExperience() {
+        setConfig(ConfigData.Keys.EXPERIENCE_DROPS_PER_LOG, 0.5);
+        setConfig(ConfigData.Keys.DELAY, false);
+        PlayerMock player = addCutter("Cutter");
+        breakBlock(player, tree(X, 6));
+        server.getScheduler().performTicks(2);
+        List<ExperienceOrb> orbs = List.copyOf(world.getEntitiesByClass(ExperienceOrb.class));
+        assertEquals(1, orbs.size());
+        assertEquals(3, orbs.get(0).getExperience());
+
+        setConfig(ConfigData.Keys.DROPS_TO_INVENTORY, true);
+        breakBlock(player, tree(X + 10, 6));
+        server.getScheduler().performTicks(2);
+        assertEquals(1, world.getEntitiesByClass(ExperienceOrb.class).size());
+        assertEquals(3, player.getTotalExperience());
+    }
+
+    @Test
+    void logsWithoutLeavesAreNoTree() {
+        setConfig(ConfigData.Keys.REQUIRE_LEAVES, true);
+        setConfig(ConfigData.Keys.DELAY, false);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 6);
+        breakBlock(player, root);
+        assertEquals(6, logs(X, 6));
+        // nothing happened, so there is no delay either
+        assertEquals(0, plugin.getDelays().size());
+
+        world.getBlockAt(X, Y + 6, Z).setType(Material.OAK_LEAVES);
+        breakBlock(player, root);
+        assertEquals(1, logs(X, 6));
+
+        // the trees of the Nether have wart blocks
+        for (int y = 0; y < 4; y++) world.getBlockAt(X + 10, Y + y, Z).setType(Material.CRIMSON_STEM);
+        world.getBlockAt(X + 11, Y + 3, Z).setType(Material.NETHER_WART_BLOCK);
+        breakBlock(player, world.getBlockAt(X + 10, Y, Z));
+        assertEquals(Material.AIR, world.getBlockAt(X + 10, Y + 3, Z).getType());
+    }
+
+    @Test
+    void bigTreesGetFourSaplings() {
+        setConfig(ConfigData.Keys.REPLANT, true);
+        setConfig(ConfigData.Keys.DELAY, false);
+        PlayerMock player = addCutter("Cutter");
+        for (int x = 0; x < 2; x++) {
+            for (int z = 0; z < 2; z++) {
+                world.getBlockAt(X + x, Y - 1, Z + z).setType(Material.GRASS_BLOCK);
+                for (int y = 0; y < 4; y++) world.getBlockAt(X + x, Y + y, Z + z).setType(Material.DARK_OAK_LOG);
+            }
+        }
+        Block root = world.getBlockAt(X + 1, Y, Z);
+        breakBlock(player, root);
+        root.setType(Material.AIR);
+        server.getScheduler().performTicks(3);
+        for (int x = 0; x < 2; x++) {
+            for (int z = 0; z < 2; z++) {
+                assertEquals(Material.DARK_OAK_SAPLING, world.getBlockAt(X + x, Y, Z + z).getType());
+            }
+        }
+        // no saplings next to a normal tree
+        world.getBlockAt(X + 10, Y - 1, Z).setType(Material.GRASS_BLOCK);
+        world.getBlockAt(X + 11, Y - 1, Z).setType(Material.GRASS_BLOCK);
+        breakBlock(player, tree(X + 10, 4));
+        world.getBlockAt(X + 10, Y, Z).setType(Material.AIR);
+        server.getScheduler().performTicks(3);
+        assertEquals(Material.OAK_SAPLING, world.getBlockAt(X + 10, Y, Z).getType());
+        assertEquals(Material.AIR, world.getBlockAt(X + 11, Y, Z).getType());
+    }
+
+    @Test
+    void hugeMushroomsAreCut() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        PlayerMock player = addCutter("Cutter");
+        for (int y = 0; y < 4; y++) world.getBlockAt(X, Y + y, Z).setType(Material.MUSHROOM_STEM);
+        Block cap = world.getBlockAt(X + 1, Y + 4, Z);
+        cap.setType(Material.RED_MUSHROOM_BLOCK);
+        // a log next to the mushroom does not belong to it
+        Block log = world.getBlockAt(X + 1, Y + 1, Z);
+        log.setType(Material.OAK_LOG);
+
+        setConfig(ConfigData.Keys.MUSHROOMS, false);
+        breakBlock(player, world.getBlockAt(X, Y, Z));
+        assertEquals(Material.MUSHROOM_STEM, world.getBlockAt(X, Y + 3, Z).getType());
+
+        setConfig(ConfigData.Keys.MUSHROOMS, true);
+        breakBlock(player, world.getBlockAt(X, Y, Z));
+        assertEquals(Material.AIR, world.getBlockAt(X, Y + 3, Z).getType());
+        assertEquals(Material.AIR, cap.getType());
+        assertEquals(Material.OAK_LOG, log.getType());
+    }
+
+    @Test
+    void ranksHaveAShorterDelay() {
+        setConfig(ConfigData.Keys.DELAY, true);
+        setConfig(ConfigData.Keys.DELAY_TIME, 30);
+        PlayerMock player = addCutter("Cutter");
+        PlayerMock vip = addCutter("Vip");
+        vip.addAttachment(plugin, "woodcutter.delay.10", true);
+        vip.addAttachment(plugin, "woodcutter.delay.20", true);
+        long now = System.currentTimeMillis();
+        plugin.getDelays().put(player.getUniqueId(), now);
+        plugin.getDelays().put(vip.getUniqueId(), now);
+        assertEquals(30, plugin.remainingDelay(player));
+        assertEquals(10, plugin.remainingDelay(vip));
+    }
+
+    @Test
+    void delayIsShownWhenThePlayerStartsToBreakALog() {
+        setConfig(ConfigData.Keys.DELAY, true);
+        setConfig(ConfigData.Keys.DELAY_TIME, 30);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 4);
+        ItemStack axe = player.getInventory().getItemInMainHand();
+        server.getPluginManager().callEvent(new BlockDamageEvent(player, root, axe, false));
+        assertNull(player.nextActionBar());
+
+        plugin.getDelays().put(player.getUniqueId(), System.currentTimeMillis());
+        server.getPluginManager().callEvent(new BlockDamageEvent(player, root, axe, false));
+        assertNotNull(player.nextActionBar());
+        // not for blocks that would not cut a tree
+        Block stone = world.getBlockAt(X + 5, Y, Z);
+        stone.setType(Material.STONE);
+        server.getPluginManager().callEvent(new BlockDamageEvent(player, stone, axe, false));
+        player.setSneaking(false);
+        server.getPluginManager().callEvent(new BlockDamageEvent(player, root, axe, false));
+        assertNull(player.nextActionBar());
+    }
+
+    @Test
+    void treeTipsOver() {
+        setConfig(ConfigData.Keys.ANIMATION, true);
+        setConfig(ConfigData.Keys.ANIMATION_MODE, "topple");
+        PlayerMock player = addCutter("Cutter");
+        breakBlock(player, tree(X, 7));
+        // cut at once, a display for every log shows the falling tree
+        assertEquals(1, logs(X, 7));
+        assertEquals(7, world.getEntitiesByClass(BlockDisplay.class).size());
+        server.getScheduler().performTicks(40);
+        assertEquals(0, world.getEntitiesByClass(BlockDisplay.class).size());
+    }
+
+    @Test
+    void leavesDropTheConfiguredItems() {
+        setConfig(ConfigData.Keys.SKILL_MAX_LEVEL, 1);
+        setConfig(ConfigData.Keys.SKILL_XP_FIRST_LEVEL, 1);
+        setConfig(ConfigData.Keys.SKILL_PERKS + Skill.PERK_FORESTER_LUCK, 100);
+        setConfig(ConfigData.Keys.SKILL_LUCKY_DROPS, List.of("diamond:3", "sapling:0", "nothing:5"));
+        PlayerMock player = addCutter("Cutter");
+        plugin.getSkill().reward(player, 1);
+        Leaves data = (Leaves) Material.OAK_LEAVES.createBlockData();
+        data.setDistance(7);
+        Block root = tree(X, 3);
+        world.getBlockAt(X, Y + 3, Z).setBlockData(data);
+        breakBlock(player, root);
+        server.getScheduler().performTicks(41);
+        assertTrue(world.getEntitiesByClass(Item.class).stream().anyMatch(item -> item.getItemStack().getType() == Material.DIAMOND));
     }
 
     @Test

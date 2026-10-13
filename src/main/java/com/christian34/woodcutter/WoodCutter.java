@@ -10,7 +10,11 @@ import com.christian34.woodcutter.listeners.AnvilListener;
 import com.christian34.woodcutter.listeners.BlockBreakListener;
 import com.christian34.woodcutter.listeners.BlockPlaceListener;
 import com.christian34.woodcutter.listeners.EnchantListener;
+import com.christian34.woodcutter.listeners.MenuListener;
+import com.christian34.woodcutter.listeners.SourcesListener;
+import com.christian34.woodcutter.skill.Skill;
 import com.christian34.woodcutter.utils.Debug;
+import com.christian34.woodcutter.utils.Permissions;
 import com.christian34.woodcutter.utils.Statistics;
 import com.christian34.woodcutter.utils.TaskManager;
 import com.christian34.woodcutter.utils.Updater;
@@ -49,6 +53,7 @@ public class WoodCutter extends JavaPlugin {
     private final Map<UUID, Long> delays = new ConcurrentHashMap<>();
     private ConfigData configData;
     private MessageData messageData;
+    private Skill skill;
     private Updater updater;
     private WorldGuardHook worldGuard;
 
@@ -72,6 +77,10 @@ public class WoodCutter extends JavaPlugin {
         return messageData;
     }
 
+    public Skill getSkill() {
+        return skill;
+    }
+
     public Updater getUpdater() {
         return updater;
     }
@@ -88,7 +97,10 @@ public class WoodCutter extends JavaPlugin {
             return 0;
         }
         long now = System.currentTimeMillis();
-        long delay = configData.getInt(ConfigData.Keys.DELAY_TIME) * 1000L;
+        // ranks can have a shorter delay (woodcutter.delay.<seconds>), the woodcutting skill makes it shorter as well
+        int seconds = Math.min(configData.getInt(ConfigData.Keys.DELAY_TIME),
+                Permissions.numbers(player, BlockBreakListener.PERMISSION_DELAY).min().orElse(Integer.MAX_VALUE));
+        long delay = (long) (Math.max(0, seconds - skill.perk(player, Skill.PERK_DELAY)) * 1000);
         delays.values().removeIf(lastUsage -> lastUsage + delay <= now);
         Long lastUsage = delays.get(player.getUniqueId());
         return lastUsage == null ? 0 : Math.max(1, (lastUsage + delay - now + 999) / 1000);
@@ -121,6 +133,8 @@ public class WoodCutter extends JavaPlugin {
         Debug.init(this);
         this.configData = new ConfigData(this);
         this.messageData = new MessageData(this);
+        this.skill = new Skill(this);
+        TaskManager.asyncTimer(skill::save, 5);
         this.updater = new Updater(this);
         registerEvents();
 
@@ -134,6 +148,11 @@ public class WoodCutter extends JavaPlugin {
         hookPlugins();
         hookMetrics();
         Debug.log("If you like the plugin or you have suggestions, please write a review on spigotmc.org!");
+    }
+
+    @Override
+    public void onDisable() {
+        if (skill != null) skill.save();
     }
 
     public void reload() {
@@ -150,6 +169,8 @@ public class WoodCutter extends JavaPlugin {
         pluginManager.registerEvents(new BlockPlaceListener(), this);
         pluginManager.registerEvents(new EnchantListener(this), this);
         pluginManager.registerEvents(new AnvilListener(), this);
+        pluginManager.registerEvents(new SourcesListener(this), this);
+        pluginManager.registerEvents(new MenuListener(this), this);
         pluginManager.registerEvents(updater, this);
     }
 
@@ -201,6 +222,9 @@ public class WoodCutter extends JavaPlugin {
             boolean experience = getConfigData().getInt(ConfigData.Keys.COSTS_EXPERIENCE) > 0;
             return hunger && experience ? "hunger and experience" : hunger ? "hunger" : experience ? "experience" : "none";
         }));
+        metrics.addCustomChart(new SimplePie("protect_axe", () -> enabled(ConfigData.Keys.PROTECT_AXE)));
+        metrics.addCustomChart(new SimplePie("experience_drops", () -> getConfigData().getDouble(ConfigData.Keys.EXPERIENCE_DROPS_PER_LOG) > 0 ? "enabled" : "disabled"));
+        metrics.addCustomChart(new SimplePie("skill", () -> enabled(ConfigData.Keys.SKILL)));
         metrics.addCustomChart(new SimplePie("folia", () -> TaskManager.isFolia() ? "yes" : "no"));
 
         // usage since the last report

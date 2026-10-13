@@ -3,6 +3,8 @@ package com.christian34.woodcutter.commands;
 import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.enchantments.WoodCutterEnchantment;
 import com.christian34.woodcutter.listeners.BlockBreakListener;
+import com.christian34.woodcutter.menu.Menu;
+import com.christian34.woodcutter.skill.Skill;
 import com.christian34.woodcutter.utils.Message;
 import com.christian34.woodcutter.utils.Statistics;
 import com.christian34.woodcutter.utils.TaskManager;
@@ -24,7 +26,7 @@ import java.util.Locale;
 /**
  * WoodCutter 2026.
  * <p>
- * The command /woodcutter: players switch WoodCutter on and off for themselves, admins reload the files, enchant
+ * The command /woodcutter: players switch WoodCutter on and off for themselves and look at their woodcutting level, admins reload the files, enchant
  * the axe in their main hand or give enchanted axes and books to players (also from the console, e.g. as a reward).
  *
  * @author Christian34
@@ -32,6 +34,11 @@ import java.util.Locale;
 public class CommandWoodCutter implements TabExecutor {
     public static final String PERMISSION_ADMIN = "woodcutter.admin";
     private static final List<String> ADMIN_SUBCOMMANDS = List.of("reload", "enchant", "give");
+    private static final List<String> SKILL_SUBCOMMANDS = List.of("level", "top");
+    /**
+     * the amount of players /woodcutter top shows
+     */
+    private static final int TOP_ENTRIES = 10;
     private final WoodCutter instance;
 
     public CommandWoodCutter(WoodCutter instance) {
@@ -68,6 +75,18 @@ public class CommandWoodCutter implements TabExecutor {
             toggle(sender);
             return true;
         }
+        if (subcommand.equals("menu") && args.length == 1) {
+            menu(sender);
+            return true;
+        }
+        if (subcommand.equals("level") && args.length <= 2) {
+            level(sender, args.length == 2 ? args[1] : null);
+            return true;
+        }
+        if (subcommand.equals("top") && args.length == 1) {
+            top(sender);
+            return true;
+        }
         if (!ADMIN_SUBCOMMANDS.contains(subcommand)) {
             sendHelp(sender);
             return true;
@@ -102,6 +121,57 @@ public class CommandWoodCutter implements TabExecutor {
         boolean enabled = !BlockBreakListener.isEnabled(player);
         BlockBreakListener.setEnabled(player, enabled);
         (enabled ? Message.TOGGLE_ON : Message.TOGGLE_OFF).send(player);
+    }
+
+    /**
+     * shows the woodcutting level of the sender with their perks, or the level of another player (also offline)
+     */
+    private void level(CommandSender sender, @Nullable String name) {
+        Skill skill = instance.getSkill();
+        if (!skill.isEnabled()) {
+            Message.SKILL_DISABLED.send(sender);
+            return;
+        }
+        if (name == null && !(sender instanceof Player)) {
+            Message.PLAYERS_ONLY.send(sender);
+            return;
+        }
+        Skill.Entry entry = name == null ? new Skill.Entry(sender.getName(), skill.xp(((Player) sender).getUniqueId())) : skill.find(name);
+        if (entry == null) {
+            Message.SKILL_NO_DATA.send(sender, "%player%", name);
+            return;
+        }
+        int level = skill.levelOf(entry.xp());
+        if (level >= skill.maxLevel()) {
+            Message.SKILL_INFO_MAX.send(sender, "%player%", entry.name(), "%level%", Integer.toString(level), "%xp%", Long.toString(entry.xp()));
+        } else {
+            long reached = skill.xpForLevel(level);
+            Message.SKILL_INFO.send(sender, "%player%", entry.name(), "%level%", Integer.toString(level),
+                    "%current%", Long.toString(entry.xp() - reached), "%needed%", Long.toString(skill.xpForLevel(level + 1) - reached));
+        }
+        if (name == null && sender instanceof Player player) skill.describePerks(player).forEach(player::sendMessage);
+    }
+
+    private void menu(CommandSender sender) {
+        if (sender instanceof Player player) {
+            new Menu(instance, player, Menu.Page.MAIN).open();
+        } else {
+            Message.PLAYERS_ONLY.send(sender);
+        }
+    }
+
+    private void top(CommandSender sender) {
+        Skill skill = instance.getSkill();
+        if (!skill.isEnabled()) {
+            Message.SKILL_DISABLED.send(sender);
+            return;
+        }
+        Message.SKILL_TOP_HEADER.send(sender);
+        int rank = 1;
+        for (Skill.Entry entry : skill.top(TOP_ENTRIES)) {
+            Message.SKILL_TOP_ENTRY.send(sender, "%rank%", Integer.toString(rank++), "%player%", entry.name(),
+                    "%level%", Integer.toString(skill.levelOf(entry.xp())), "%xp%", Long.toString(entry.xp()));
+        }
     }
 
     private void enchant(CommandSender sender, String levelInput) {
@@ -155,11 +225,17 @@ public class CommandWoodCutter implements TabExecutor {
         sender.sendMessage(" ");
         sender.sendMessage("§8----------=== §9Wood§7Cutter §8===----------");
         sender.sendMessage(" ");
-        Message.HELP_TOGGLE.send(sender);
+        // a click runs the command, the ones that change something or need arguments are only written into the chat
+        Message.HELP_TOGGLE.sendCommand(sender, "/woodcutter toggle", true);
+        Message.HELP_MENU.sendCommand(sender, "/woodcutter menu", true);
+        if (instance.getSkill().isEnabled()) {
+            Message.HELP_LEVEL.sendCommand(sender, "/woodcutter level", true);
+            Message.HELP_TOP.sendCommand(sender, "/woodcutter top", true);
+        }
         if (sender.hasPermission(PERMISSION_ADMIN)) {
-            Message.HELP_RELOAD.send(sender);
-            Message.HELP_ENCHANT.send(sender);
-            Message.HELP_GIVE.send(sender);
+            Message.HELP_RELOAD.sendCommand(sender, "/woodcutter reload", true);
+            Message.HELP_ENCHANT.sendCommand(sender, "/woodcutter enchant ", false);
+            Message.HELP_GIVE.sendCommand(sender, "/woodcutter give ", false);
         }
         sender.sendMessage(" ");
         sender.sendMessage("§8-------------------------------------");
@@ -175,7 +251,11 @@ public class CommandWoodCutter implements TabExecutor {
         List<String> options = new ArrayList<>();
         if (args.length == 1) {
             options.add("toggle");
+            options.add("menu");
+            if (instance.getSkill().isEnabled()) options.addAll(SKILL_SUBCOMMANDS);
             if (admin) options.addAll(ADMIN_SUBCOMMANDS);
+        } else if (subcommand.equals("level") && args.length == 2) {
+            for (Player player : Bukkit.getOnlinePlayers()) options.add(player.getName());
         } else if (admin && subcommand.equals("give") && args.length == 2) {
             for (Player player : Bukkit.getOnlinePlayers()) options.add(player.getName());
         } else if (admin && subcommand.equals("give") && args.length == 3) {

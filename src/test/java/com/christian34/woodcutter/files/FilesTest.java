@@ -49,8 +49,8 @@ class FilesTest extends PluginTestBase {
         plugin.reload();
 
         String text = Files.readString(file.toPath());
-        assertTrue(text.startsWith("####") && text.contains("messages.yml\n\nconfig:\n"), "the header is missing: " + text);
-        assertTrue(text.contains("# logs per tick (20 ticks are a second)"));
+        assertTrue(text.startsWith("####") && text.contains("_<language>.yml)\n\nconfig:\n"), "the header is missing: " + text);
+        assertTrue(text.contains("# logs per tick with the mode 'layers' (20 ticks are a second)"));
         YamlConfiguration updated = YamlConfiguration.loadConfiguration(file);
         assertEquals(2, updated.getInt("config.animation.blocks-per-tick"));
         assertEquals(77, updated.getInt("config.maxblocks"));
@@ -96,6 +96,31 @@ class FilesTest extends PluginTestBase {
         // missing texts are added again
         assertFalse(Message.TOGGLE_OFF.getText().isEmpty());
         assertTrue(YamlConfiguration.loadConfiguration(file).isSet("messages.toggle_off"));
+    }
+
+    @Test
+    void textsOfAnotherLanguage() throws Exception {
+        plugin.getConfigData().set(ConfigData.Keys.LANGUAGE, "de");
+        plugin.reload();
+        assertTrue(new File(plugin.getDataFolder(), "messages_de.yml").isFile());
+        assertTrue(Message.RELOADED.getText().contains("neu geladen"));
+        // every text is translated
+        YamlConfiguration english = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "messages.yml"));
+        YamlConfiguration german = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "messages_de.yml"));
+        assertEquals(english.getKeys(true), german.getKeys(true));
+
+        plugin.getConfigData().set(ConfigData.Keys.LANGUAGE, "xx");
+        plugin.reload();
+        assertTrue(Message.RELOADED.getText().contains("Config has been reloaded"));
+    }
+
+    @Test
+    void settingsAreChangedInTheFile() throws Exception {
+        File file = new File(plugin.getDataFolder(), "config.yml");
+        plugin.getConfigData().set(ConfigData.Keys.MAX_BLOCKS, 55);
+        assertEquals(55, plugin.getConfigData().getInt(ConfigData.Keys.MAX_BLOCKS));
+        String text = Files.readString(file.toPath());
+        assertTrue(text.startsWith("####") && text.contains("maxblocks: 55") && text.contains("# logs per tick"), text);
     }
 
     @Test

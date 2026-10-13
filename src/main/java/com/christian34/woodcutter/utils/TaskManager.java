@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * WoodCutter 2026.
  * <p>
@@ -58,6 +60,13 @@ public class TaskManager {
      */
     public static void runLater(@NotNull Entity entity, @NotNull Runnable runnable, @NotNull Runnable retired, long delayTicks) {
         entity.getScheduler().runDelayed(WoodCutter.getInstance(), task -> runnable.run(), retired, delayTicks);
+    }
+
+    /**
+     * runs the task again and again on another thread than the server, e.g. to write files
+     */
+    public static void asyncTimer(@NotNull Runnable runnable, long periodMinutes) {
+        Bukkit.getAsyncScheduler().runAtFixedRate(WoodCutter.getInstance(), task -> runnable.run(), periodMinutes, periodMinutes, TimeUnit.MINUTES);
     }
 
     /**

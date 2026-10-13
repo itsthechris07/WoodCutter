@@ -3,11 +3,14 @@ package com.christian34.woodcutter.commands;
 import com.christian34.woodcutter.PluginTestBase;
 import com.christian34.woodcutter.enchantments.WoodCutterEnchantment;
 import com.christian34.woodcutter.files.ConfigData;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +35,21 @@ class CommandWoodCutterTest extends PluginTestBase {
         PlayerMock admin = addPlayer("Admin", "woodcutter.admin");
         admin.performCommand("woodcutter");
         assertContains(messages(admin), "/WoodCutter give");
+    }
+
+    @Test
+    void helpLinesAreClickable() {
+        PlayerMock admin = addPlayer("Admin", "woodcutter.admin");
+        admin.performCommand("woodcutter");
+        List<ClickEvent> clicks = new ArrayList<>();
+        Component message;
+        while ((message = admin.nextComponentMessage()) != null) {
+            if (message.clickEvent() != null) clicks.add(message.clickEvent());
+        }
+        assertTrue(clicks.contains(ClickEvent.runCommand("/woodcutter toggle")));
+        assertTrue(clicks.contains(ClickEvent.runCommand("/woodcutter top")));
+        // commands with arguments are only written into the chat
+        assertTrue(clicks.contains(ClickEvent.suggestCommand("/woodcutter give ")));
     }
 
     @Test
@@ -119,7 +137,9 @@ class CommandWoodCutterTest extends PluginTestBase {
         PlayerMock admin = addPlayer("Admin", "woodcutter.admin");
         assertEquals(java.util.List.of("reload"), server.getCommandTabComplete(admin, "woodcutter re"));
         assertTrue(server.getCommandTabComplete(admin, "woodcutter give Admin ").contains("diamond_axe"));
-        assertEquals(List.of("toggle"), server.getCommandTabComplete(addPlayer("Guest"), "woodcutter "));
+        assertEquals(List.of("level", "menu", "toggle", "top"), server.getCommandTabComplete(addPlayer("Guest"), "woodcutter "));
+        setConfig(ConfigData.Keys.SKILL, false);
+        assertEquals(List.of("menu", "toggle"), server.getCommandTabComplete(addPlayer("Other"), "woodcutter "));
     }
 
 }

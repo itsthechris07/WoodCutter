@@ -1,0 +1,73 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                   - Nachrichten -                    | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# Farben: &c, &l, ... - %prefix% wird durch den Prefix unten ersetzt
+# ein leerer Text ('') wird nicht gesendet
+
+messages:
+  prefix: '&8[&9Wood&7Cutter&8] '
+  no_permission: '%prefix%&cDafür hast du leider keine Berechtigung!'
+  players_only: '%prefix%&cDiesen Befehl können nur Spieler verwenden!'
+  reloaded: '%prefix%&aDie Konfiguration wurde neu geladen!'
+  enchant_success: '%prefix%&aDas Werkzeug wurde verzaubert!'
+  enchant_failed: '%prefix%&cDas Werkzeug konnte nicht verzaubert werden!'
+  invalid_level: '%prefix%&cDas Level muss eine Zahl von 1 bis %max% sein!'
+  player_not_online: "%prefix%&cDer Spieler '%player%' ist nicht online!"
+  no_axe: "%prefix%&c'%item%' ist keine Axt! Verwende 'book' oder eine Axt wie 'diamond_axe'."
+  give_sent: '%prefix%&a%player% hat den Gegenstand erhalten.'
+  give_received_book: '%prefix%&aDu hast ein Buch mit WoodCutter erhalten!'
+  give_received_axe: '%prefix%&aDu hast eine Axt mit WoodCutter erhalten!'
+  toggle_on: '%prefix%&aWoodCutter ist aktiviert, du fällst wieder ganze Bäume!'
+  toggle_off: '%prefix%&7WoodCutter ist deaktiviert, du baust nur noch einzelne Stämme ab.'
+  # über der Aktionsleiste
+  not_enough_food: '&cDu bist zu hungrig, um einen ganzen Baum zu fällen.'
+  not_enough_experience: '&cDu brauchst %levels% Erfahrungslevel, um einen ganzen Baum zu fällen.'
+  update_available: '%prefix%&7Ein neues Update ist verfügbar: &9https://github.com/itsthechris07/WoodCutter/releases/latest'
+  help_toggle: '&7/&9WoodCutter toggle &f| &7schaltet WoodCutter für dich an oder aus'
+  help_reload: '&7/&9WoodCutter reload &f| &7lädt die Konfigurationsdateien neu'
+  help_enchant: '&7/&9WoodCutter enchant [level] &f| &7verzaubert die Axt in der Haupthand'
+  help_give: '&7/&9WoodCutter give <spieler> [book|axt] [level] &f| &7gibt ein verzaubertes Buch oder eine Axt'
+  axe_almost_broken: '&cDeine Axt ist fast kaputt, der Baum wird nicht weiter gefällt.'
+  # das Holzfäller-Level - die ersten beiden stehen nach einem Baum über der Aktionsleiste
+  skill_xp: '&a+%xp% XP &8| &7Level &9%level% &8| &f%current%&7/&f%needed%'
+  skill_xp_max: '&a+%xp% XP &8| &7Level &9%level% &8(&7max&8)'
+  skill_level_up: '%prefix%&aDu hast Holzfäller-Level &9%level% &aerreicht!'
+  skill_level_up_title: '&9Level %level%'
+  skill_level_up_subtitle: '&7Holzfäller'
+  skill_disabled: '%prefix%&cDas Holzfäller-Level ist deaktiviert!'
+  skill_no_data: "%prefix%&c'%player%' hat noch keinen Baum gefällt!"
+  skill_info: '%prefix%&9%player% &8| &7Level &9%level% &8| &f%current%&7/&f%needed% XP'
+  skill_info_max: '%prefix%&9%player% &8| &7Level &9%level% &8(&7max&8) | &f%xp% XP'
+  skill_perk_speed: ' &8- &7Schneller fällen: &f+%value% Stämme pro Tick'
+  skill_perk_delay: ' &8- &7Kürzere Wartezeit: &f-%value% Sekunden'
+  skill_perk_max_blocks: ' &8- &7Größere Bäume: &f+%value% Stämme'
+  skill_perk_bonus_drops: ' &8- &7Bonus-Drops: &f+%value% %'
+  skill_perk_axe_saver: ' &8- &7Schonende Axt: &f%value% % der Stämme beschädigen sie nicht'
+  skill_perk_costs: ' &8- &7Geringere Kosten: &f-%value% %'
+  skill_perk_forester_luck: ' &8- &7Försterglück: &f%value% % der Blätter lassen etwas fallen'
+  skill_unlock_replant: ' &8- &7Ein neuer Setzling wird kostenlos gepflanzt'
+  skill_unlock_drops_to_inventory: ' &8- &7Stämme landen in deinem Inventar'
+  skill_top_header: '%prefix%&7Die besten Holzfäller:'
+  skill_top_entry: ' &7%rank%. &9%player% &8| &7Level &9%level% &8| &f%xp% XP'
+  help_level: '&7/&9WoodCutter level [spieler] &f| &7zeigt das Holzfäller-Level und seine Vorteile'
+  help_top: '&7/&9WoodCutter top &f| &7zeigt die besten Holzfäller'
+  help_menu: '&7/&9WoodCutter menu &f| &7öffnet das Menü'
+  # das Menü (/woodcutter menu)
+  menu_title: '&8WoodCutter'
+  menu_toggle_on: '&aWoodCutter ist aktiviert'
+  menu_toggle_off: '&cWoodCutter ist deaktiviert'
+  menu_toggle_lore: '&7Klicke, um es an- oder auszuschalten'
+  menu_skill: '&9Holzfäller-Level %level%'
+  menu_skill_progress: '&f%current%&7/&f%needed% XP'
+  menu_skill_max: '&7Höchstes Level &8| &f%xp% XP'
+  menu_top: '&9Die besten Holzfäller'
+  menu_settings: '&9Einstellungen'
+  menu_settings_lore: '&7Klicke, um die Einstellungen des Plugins zu ändern'
+  menu_settings_title: '&8WoodCutter-Einstellungen'
+  menu_setting_on: '&a%setting%'
+  menu_setting_off: '&c%setting%'
+  menu_setting_lore: '&7Klicke, um es an- oder auszuschalten'
+  menu_back: '&7Zurück'

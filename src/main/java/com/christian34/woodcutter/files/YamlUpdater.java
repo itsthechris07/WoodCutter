@@ -60,17 +60,23 @@ final class YamlUpdater {
                 write = true;
             }
         }
-        if (!write) return;
-        updated.options().width(LINE_WIDTH);
-        // the header is written as it is, Bukkit would change the lines of its box
-        updated.options().setHeader(List.of());
-        Files.writeString(file.toPath(), header + updated.saveToString().stripLeading());
+        if (write) write(updated, header, file);
+    }
+
+    /**
+     * @param header the comments at the top of the file - they are written as they are, Bukkit would change the
+     *               lines of the box
+     */
+    static void write(YamlConfiguration config, String header, File file) throws IOException {
+        config.options().width(LINE_WIDTH);
+        config.options().setHeader(List.of());
+        Files.writeString(file.toPath(), header + config.saveToString().stripLeading());
     }
 
     /**
      * @return the comments and empty lines at the top of the file
      */
-    private static String header(String text) {
+    static String header(String text) {
         StringBuilder header = new StringBuilder();
         for (String line : text.lines().toList()) {
             if (!line.isBlank() && !line.startsWith("#")) break;

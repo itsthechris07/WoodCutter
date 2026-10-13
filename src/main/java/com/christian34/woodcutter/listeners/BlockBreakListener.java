@@ -5,6 +5,7 @@ import com.christian34.woodcutter.enchantments.WoodCutterEnchantment;
 import com.christian34.woodcutter.events.WoodCutterEvent;
 import com.christian34.woodcutter.files.ConfigData;
 import com.christian34.woodcutter.hooks.WorldGuardHook;
+import com.christian34.woodcutter.skill.Skill;
 import com.christian34.woodcutter.utils.Message;
 import com.christian34.woodcutter.utils.Statistics;
 import com.christian34.woodcutter.woodcutting.Cutter;
@@ -13,7 +14,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -21,12 +21,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
 /**
@@ -41,6 +44,10 @@ public class BlockBreakListener implements Listener {
     public static final String PERMISSION_USE = "woodcutter.use";
     public static final String PERMISSION_GOODIE = "woodcutter.goodie";
     public static final String PERMISSION_BYPASS_DELAY = "woodcutter.bypass.delay";
+    /**
+     * followed by the seconds of the delay, e.g. for ranks
+     */
+    public static final String PERMISSION_DELAY = "woodcutter.delay.";
     private final WoodCutter instance;
 
     public BlockBreakListener(WoodCutter instance) {
@@ -84,46 +91,75 @@ public class BlockBreakListener implements Listener {
         return Pattern.compile(regex.toString(), Pattern.CASE_INSENSITIVE).matcher(world).matches();
     }
 
+    /**
+     * @return the level of the enchantment the player cuts a tree with by breaking the block (0 with WoodCutter as a
+     * goodie), -1 if they just break the block
+     */
+    private int cuttingLevel(Player player, Block block) {
+        ConfigData config = instance.getConfigData();
+        if (!Cutter.isTrunk(block.getType(), config)) return -1;
+        // the logs of the tree that is being cut
+        if (Cutter.isCutting(player)) return -1;
+        if (!config.getBoolean(ConfigData.Keys.DESTROY_FAKE_TREES) && PlacedLogs.isPlaced(block)) return -1;
+
+        if (config.getBoolean(ConfigData.Keys.REQUIRE_SNEAKING) && !player.isSneaking()) return -1;
+        if (!player.hasPermission(PERMISSION_USE) || !isEnabled(player)) return -1;
+        ItemStack axe = player.getInventory().getItemInMainHand();
+        if (!WoodCutterEnchantment.isAxe(axe)) return -1;
+        int level = WoodCutterEnchantment.level(axe);
+        if (level == 0 && !hasGoodie(player)) return -1;
+
+        String world = block.getWorld().getName();
+        for (String disabled : config.getList(ConfigData.Keys.DISABLED_WORLDS)) {
+            if (matchesWorld(world, disabled)) return -1;
+        }
+
+        WorldGuardHook worldGuard = instance.getWorldGuard();
+        if (worldGuard != null && !worldGuard.isAllowed(player, block)) return -1;
+        return level;
+    }
+
+    /**
+     * tells the player over the action bar how long they have to wait for the next tree
+     *
+     * @return false if they don't have to wait
+     */
+    private boolean showDelay(Player player) {
+        long remaining = instance.remainingDelay(player);
+        if (remaining <= 0) return false;
+        String message = instance.getConfigData().getString(ConfigData.Keys.DELAY_MSG);
+        if (!message.isEmpty()) {
+            player.sendActionBar(LegacyComponentSerializer.legacyAmpersand().deserialize(message.replace("%time%", Long.toString(remaining))));
+        }
+        return true;
+    }
+
+    /**
+     * the delay is shown when the player starts to break the log, so they can still wait for the whole tree
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockDamage(BlockDamageEvent e) {
+        if (cuttingLevel(e.getPlayer(), e.getBlock()) >= 0) showDelay(e.getPlayer());
+    }
+
     // after protection plugins, so trees in protected areas are not cut
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent e) {
         Block block = e.getBlock();
-        if (!Tag.LOGS.isTagged(block.getType())) return;
-        Player player = e.getPlayer();
-        // the logs of the tree that is being cut
-        if (Cutter.isCutting(player)) return;
         ConfigData config = instance.getConfigData();
-        if (!config.getBoolean(ConfigData.Keys.DESTROY_FAKE_TREES) && PlacedLogs.isPlaced(block)) return;
-
-        if (config.getBoolean(ConfigData.Keys.REQUIRE_SNEAKING) && !player.isSneaking()) return;
-        if (!player.hasPermission(PERMISSION_USE) || !isEnabled(player)) return;
+        Player player = e.getPlayer();
+        int level = cuttingLevel(player, block);
+        if (level < 0) return;
         ItemStack axe = player.getInventory().getItemInMainHand();
-        if (!WoodCutterEnchantment.isAxe(axe)) return;
-        int level = WoodCutterEnchantment.level(axe);
-        boolean enchanted = level > 0;
-        if (!enchanted && !hasGoodie(player)) return;
-
-        String world = block.getWorld().getName();
-        for (String disabled : config.getList(ConfigData.Keys.DISABLED_WORLDS)) {
-            if (matchesWorld(world, disabled)) return;
-        }
-
-        WorldGuardHook worldGuard = instance.getWorldGuard();
-        if (worldGuard != null && !worldGuard.isAllowed(player, block)) return;
 
         boolean delayed = config.getBoolean(ConfigData.Keys.DELAY) && !player.hasPermission(PERMISSION_BYPASS_DELAY);
-        long remaining = instance.remainingDelay(player);
-        if (remaining > 0) {
-            String message = config.getString(ConfigData.Keys.DELAY_MSG);
-            if (!message.isEmpty()) {
-                player.sendActionBar(LegacyComponentSerializer.legacyAmpersand().deserialize(message.replace("%time%", Long.toString(remaining))));
-            }
-            return;
-        }
+        if (showDelay(player)) return;
 
         boolean pays = player.getGameMode() != GameMode.CREATIVE;
-        int hunger = pays ? Math.max(0, config.getInt(ConfigData.Keys.COSTS_HUNGER)) : 0;
-        int experience = pays ? Math.max(0, config.getInt(ConfigData.Keys.COSTS_EXPERIENCE)) : 0;
+        // the woodcutting skill makes trees cheaper
+        double costs = pays ? Math.max(0, 1 - instance.getSkill().perk(player, Skill.PERK_COSTS) / 100) : 0;
+        int hunger = (int) Math.round(Math.max(0, config.getInt(ConfigData.Keys.COSTS_HUNGER)) * costs);
+        int experience = (int) Math.round(Math.max(0, config.getInt(ConfigData.Keys.COSTS_EXPERIENCE)) * costs);
         if (player.getFoodLevel() < hunger) {
             Message.NOT_ENOUGH_FOOD.sendActionBar(player);
             return;
@@ -143,6 +179,18 @@ public class BlockBreakListener implements Listener {
         if (experience > 0) player.setLevel(player.getLevel() - experience);
         if (delayed) instance.getDelays().put(player.getUniqueId(), System.currentTimeMillis());
         Statistics.recordTree(block.getType(), axe.getType(), logs, level);
+        instance.getSkill().reward(player, logs + 1);
+    }
+
+    /**
+     * the perk 'axe-saver' of the woodcutting skill: some logs of a tree don't damage the axe
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onAxeDamage(PlayerItemDamageEvent e) {
+        Player player = e.getPlayer();
+        if (!Cutter.isCuttingTree(player) || !WoodCutterEnchantment.isAxe(e.getItem())) return;
+        double chance = instance.getSkill().perk(player, Skill.PERK_AXE_SAVER);
+        if (chance > 0 && ThreadLocalRandom.current().nextDouble(100) < chance) e.setCancelled(true);
     }
 
     /**
@@ -150,7 +198,7 @@ public class BlockBreakListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLogBreak(BlockBreakEvent e) {
-        if (Tag.LOGS.isTagged(e.getBlock().getType())) PlacedLogs.unmark(e.getBlock());
+        if (Cutter.isWood(e.getBlock().getType())) PlacedLogs.unmark(e.getBlock());
     }
 
     /**
@@ -158,9 +206,8 @@ public class BlockBreakListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockDrop(BlockDropItemEvent e) {
-        if (!instance.getConfigData().getBoolean(ConfigData.Keys.DROPS_TO_INVENTORY)) return;
         Player player = e.getPlayer();
-        if (!Cutter.isCutBy(player, e.getBlock())) return;
+        if (!Cutter.isCutBy(player, e.getBlock()) || !Cutter.dropsToInventory(instance, player)) return;
         Iterator<Item> items = e.getItems().iterator();
         while (items.hasNext()) {
             Item item = items.next();
