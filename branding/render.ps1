@@ -20,6 +20,7 @@ $names = @{
     "Icon.dc.html"       = "icon.png"
     "HowItWorks.dc.html" = "how-it-works.png"
     "Features.dc.html"   = "features.png"
+    "Skill.dc.html"      = "skill.png"
 }
 $canvas = Get-Content (Join-Path $design "canvas.json") -Raw -Encoding UTF8 | ConvertFrom-Json
 $tmp = Join-Path ([IO.Path]::GetTempPath()) "wc-branding"
