@@ -5,7 +5,8 @@
 **WoodCutter** adds an enchantment for axes that cuts the whole tree when you break one log – with levels, a falling
 animation, a woodcutting skill and a lot of settings. No commands are needed to play: sneak, break a log, done.
 
-**Requirements:** Paper or Folia 1.21 or newer, Java 21. Spigot is not supported.
+**Requirements:** Paper or Folia 1.21 or newer (tested with 1.21.11, 26.2 and 26.3), Java 21 or newer. Spigot is
+not supported.
 
 **Download:** [GitHub](https://github.com/itsthechris07/WoodCutter/releases/latest) ·
 [Modrinth](https://modrinth.com/plugin/woodcutter-christian34) ·
@@ -72,6 +73,7 @@ Aliases: `/wcutter`, `/woodc`
 
 ## Server
 
+- **Versions:** one jar for Paper 1.21 up to 26.3 – the tests run on 1.21.11, 26.2 and 26.3.
 - **Folia** is supported, with the same jar.
 - **WorldGuard** (optional): the region flag `woodcutter` – `/rg flag <region> woodcutter deny` disables WoodCutter
   in a region.
@@ -90,7 +92,8 @@ Aliases: `/wcutter`, `/woodc`
 ./gradlew build
 ```
 
-A JDK 25 is required to build, the jar runs on Java 21 and is written to `release/`.
+A JDK 25 is required to build, the jar runs on Java 21 and is written to `release/`. `./gradlew check` runs the tests
+on Paper 26.2 and also on 1.21.11 (`test121`) and 26.3 (`test263`).
 
 ## License
 

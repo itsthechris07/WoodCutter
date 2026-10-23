@@ -7,6 +7,7 @@ import com.christian34.woodcutter.listeners.BlockBreakListener;
 import com.christian34.woodcutter.skill.Skill;
 import com.christian34.woodcutter.utils.Debug;
 import com.christian34.woodcutter.utils.Message;
+import com.christian34.woodcutter.utils.Statistics;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -219,7 +220,10 @@ public class Menu implements InventoryHolder {
      */
     public void click(int slot) {
         if (page == Page.MAIN && slot == SLOT_PAGE) {
-            if (isAdmin()) new Menu(instance, player, Page.SETTINGS).open();
+            if (isAdmin()) {
+                new Menu(instance, player, Page.SETTINGS).open();
+                Statistics.recordMenu("settings opened");
+            }
         } else if (page == Page.SETTINGS && slot == SLOT_BACK) {
             new Menu(instance, player, Page.MAIN).open();
         } else if (page == Page.MAIN && slot == SLOT_TOGGLE) {
@@ -228,11 +232,13 @@ public class Menu implements InventoryHolder {
                 return;
             }
             BlockBreakListener.setEnabled(player, !BlockBreakListener.isEnabled(player));
+            Statistics.recordMenu("toggled");
             fill();
         } else if (page == Page.SETTINGS && settingAt(slot) >= 0 && isAdmin()) {
             String setting = SETTINGS.get(settingAt(slot));
             try {
                 instance.getConfigData().set(setting, !instance.getConfigData().getBoolean(setting));
+                Statistics.recordMenu("setting changed");
             } catch (IOException | RuntimeException ex) {
                 Debug.warn("Couldn't save file 'config.yml': " + ex);
             }

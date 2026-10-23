@@ -63,9 +63,9 @@ config:
   fast-leaf-decay: true
   # plants a new sapling when the lowest log of a tree is broken - four of them for trees with a trunk of 2x2 logs
   replant:
-    enabled: false
+    enabled: true
     # false: the sapling is taken from the inventory of the player, nothing is planted without one
-    free: true
+    free: false
   # logs (and their bonus drops) are put into the inventory of the player instead of dropped
   drops-to-inventory: false
   bonus-drops:
@@ -82,7 +82,7 @@ config:
   experience-drops:
     # experience points every log of a cut tree drops, e.g. 0.5 for a point every two logs (0 disables it)
     # with 'drops-to-inventory' the player gets them directly
-    per-log: 0
+    per-log: 0.25
   # the woodcutting skill: players gain experience for every log of a tree they cut and reach levels with perks
   # /woodcutter level shows the level and the perks of a player, /woodcutter top the best players
   skill:

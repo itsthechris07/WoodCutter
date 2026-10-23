@@ -3,6 +3,8 @@ package com.christian34.woodcutter.listeners;
 import com.christian34.woodcutter.PluginTestBase;
 import com.christian34.woodcutter.events.WoodCutterEvent;
 import com.christian34.woodcutter.files.ConfigData;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -55,6 +57,28 @@ class BlockBreakListenerTest extends PluginTestBase {
 
     private void breakBlock(PlayerMock player, Block block) {
         server.getPluginManager().callEvent(new BlockBreakEvent(block, player));
+    }
+
+    @Test
+    void playersAreToldOnceToSneak() {
+        PlayerMock player = addCutter("Cutter");
+        player.setSneaking(false);
+        breakBlock(player, tree(X, 6));
+        // just the log is broken
+        assertEquals(6, logs(X, 6));
+        Component hint = player.nextActionBar();
+        assertNotNull(hint);
+        assertTrue(PlainTextComponentSerializer.plainText().serialize(hint).contains("Sneak"));
+        breakBlock(player, world.getBlockAt(X, Y + 1, Z));
+        assertNull(player.nextActionBar());
+    }
+
+    @Test
+    void noSneakHintWithoutTheEnchantment() {
+        PlayerMock player = addPlayer("Player", "woodcutter.use");
+        player.getInventory().setItemInMainHand(new ItemStack(Material.DIAMOND_AXE));
+        breakBlock(player, tree(X, 6));
+        assertNull(player.nextActionBar());
     }
 
     @Test
@@ -184,6 +208,7 @@ class BlockBreakListenerTest extends PluginTestBase {
     @Test
     void replantsSapling() {
         setConfig(ConfigData.Keys.REPLANT, true);
+        setConfig(ConfigData.Keys.REPLANT_FREE, true);
         world.getBlockAt(X, Y - 1, Z).setType(Material.GRASS_BLOCK);
         Block root = tree(X, 6);
         breakBlock(addCutter("Cutter"), root);

@@ -40,6 +40,7 @@ public enum Message {
     HELP_ENCHANT("help_enchant"),
     HELP_GIVE("help_give"),
     AXE_ALMOST_BROKEN("axe_almost_broken"),
+    SNEAK_HINT("sneak_hint"),
     SKILL_XP("skill_xp"),
     SKILL_XP_MAX("skill_xp_max"),
     SKILL_LEVEL_UP("skill_level_up"),

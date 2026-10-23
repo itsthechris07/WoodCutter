@@ -29,6 +29,9 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
@@ -49,6 +52,10 @@ public class BlockBreakListener implements Listener {
      */
     public static final String PERMISSION_DELAY = "woodcutter.delay.";
     private final WoodCutter instance;
+    /**
+     * players who have been told to sneak
+     */
+    private final Set<UUID> hinted = ConcurrentHashMap.newKeySet();
 
     public BlockBreakListener(WoodCutter instance) {
         this.instance = instance;
@@ -92,17 +99,18 @@ public class BlockBreakListener implements Listener {
     }
 
     /**
+     * @param sneaking if the player sneaks (or would)
      * @return the level of the enchantment the player cuts a tree with by breaking the block (0 with WoodCutter as a
      * goodie), -1 if they just break the block
      */
-    private int cuttingLevel(Player player, Block block) {
+    private int cuttingLevel(Player player, Block block, boolean sneaking) {
         ConfigData config = instance.getConfigData();
         if (!Cutter.isTrunk(block.getType(), config)) return -1;
         // the logs of the tree that is being cut
         if (Cutter.isCutting(player)) return -1;
         if (!config.getBoolean(ConfigData.Keys.DESTROY_FAKE_TREES) && PlacedLogs.isPlaced(block)) return -1;
 
-        if (config.getBoolean(ConfigData.Keys.REQUIRE_SNEAKING) && !player.isSneaking()) return -1;
+        if (config.getBoolean(ConfigData.Keys.REQUIRE_SNEAKING) && !sneaking) return -1;
         if (!player.hasPermission(PERMISSION_USE) || !isEnabled(player)) return -1;
         ItemStack axe = player.getInventory().getItemInMainHand();
         if (!WoodCutterEnchantment.isAxe(axe)) return -1;
@@ -135,11 +143,22 @@ public class BlockBreakListener implements Listener {
     }
 
     /**
+     * tells players once (until the next restart) that they have to sneak, when they break a log of a tree they
+     * could cut - breaking single logs without sneaking is still possible
+     */
+    private void showSneakHint(Player player, Block block) {
+        if (player.isSneaking() || hinted.contains(player.getUniqueId())) return;
+        if (cuttingLevel(player, block, true) < 0) return;
+        hinted.add(player.getUniqueId());
+        Message.SNEAK_HINT.sendActionBar(player);
+    }
+
+    /**
      * the delay is shown when the player starts to break the log, so they can still wait for the whole tree
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockDamage(BlockDamageEvent e) {
-        if (cuttingLevel(e.getPlayer(), e.getBlock()) >= 0) showDelay(e.getPlayer());
+        if (cuttingLevel(e.getPlayer(), e.getBlock(), e.getPlayer().isSneaking()) >= 0) showDelay(e.getPlayer());
     }
 
     // after protection plugins, so trees in protected areas are not cut
@@ -148,8 +167,11 @@ public class BlockBreakListener implements Listener {
         Block block = e.getBlock();
         ConfigData config = instance.getConfigData();
         Player player = e.getPlayer();
-        int level = cuttingLevel(player, block);
-        if (level < 0) return;
+        int level = cuttingLevel(player, block, player.isSneaking());
+        if (level < 0) {
+            showSneakHint(player, block);
+            return;
+        }
         ItemStack axe = player.getInventory().getItemInMainHand();
 
         boolean delayed = config.getBoolean(ConfigData.Keys.DELAY) && !player.hasPermission(PERMISSION_BYPASS_DELAY);

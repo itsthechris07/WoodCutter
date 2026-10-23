@@ -22,7 +22,6 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
-import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -196,8 +195,7 @@ public class WoodCutter extends JavaPlugin {
     private void hookMetrics() {
         if (isOffline()) return;
         Metrics metrics = new Metrics(this, 3789);
-        // existing charts
-        metrics.addCustomChart(new SimplePie("using_easyprefix", () -> Bukkit.getPluginManager().isPluginEnabled("EasyPrefix") ? "installed" : "not installed"));
+        // existing charts - EasyPrefix is part of the related plugins now
         metrics.addCustomChart(new SimplePie("destroy_fake_trees", () -> Boolean.toString(getConfigData().getBoolean(ConfigData.Keys.DESTROY_FAKE_TREES))));
 
         // settings
@@ -228,6 +226,14 @@ public class WoodCutter extends JavaPlugin {
         metrics.addCustomChart(new SimplePie("skill", () -> enabled(ConfigData.Keys.SKILL)));
         metrics.addCustomChart(new SimplePie("folia", () -> TaskManager.isFolia() ? "yes" : "no"));
 
+        // how much admins change: the amount of settings that differ from the defaults and which ones they are
+        metrics.addCustomChart(new SimplePie("changed_settings", () -> Statistics.range(getConfigData().changedSettings().size(), 3, 10)));
+        metrics.addCustomChart(new AdvancedPie("changed_setting_names", () -> {
+            Map<String, Integer> settings = new HashMap<>();
+            for (String key : getConfigData().changedSettings()) settings.put(key, 1);
+            return settings;
+        }));
+
         // usage since the last report
         metrics.addCustomChart(new SingleLineChart("trees_cut", Statistics::takeTrees));
         metrics.addCustomChart(new SingleLineChart("logs_cut", Statistics::takeLogs));
@@ -237,6 +243,7 @@ public class WoodCutter extends JavaPlugin {
         metrics.addCustomChart(new AdvancedPie("enchantment_sources", Statistics::takeEnchantmentSources));
         metrics.addCustomChart(new AdvancedPie("enchantment_levels", Statistics::takeEnchantmentLevels));
         metrics.addCustomChart(new AdvancedPie("usage", Statistics::takeUsage));
+        metrics.addCustomChart(new AdvancedPie("menu", Statistics::takeMenu));
 
         // other plugins that matter for the compatibility
         metrics.addCustomChart(new AdvancedPie("related_plugins", () -> {

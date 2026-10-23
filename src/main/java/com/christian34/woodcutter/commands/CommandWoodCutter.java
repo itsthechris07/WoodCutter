@@ -155,6 +155,7 @@ public class CommandWoodCutter implements TabExecutor {
     private void menu(CommandSender sender) {
         if (sender instanceof Player player) {
             new Menu(instance, player, Menu.Page.MAIN).open();
+            Statistics.recordMenu("opened");
         } else {
             Message.PLAYERS_ONLY.send(sender);
         }

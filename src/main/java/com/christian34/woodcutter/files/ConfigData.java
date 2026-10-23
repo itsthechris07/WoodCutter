@@ -2,6 +2,7 @@ package com.christian34.woodcutter.files;
 
 import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.utils.Debug;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * WoodCutter 2026.
@@ -103,6 +106,30 @@ public class ConfigData {
     @NotNull
     public List<String> getList(@NotNull String key) {
         return data.getStringList(DATA_PREFIX + key);
+    }
+
+    /**
+     * @return the settings (e.g. replant.enabled) that differ from the default config of the jar
+     */
+    @NotNull
+    public List<String> changedSettings() {
+        FileConfiguration config = data;
+        Configuration defaults = config.getDefaults();
+        if (defaults == null) return List.of();
+        List<String> changed = new ArrayList<>();
+        for (String key : defaults.getKeys(true)) {
+            if (!key.startsWith(DATA_PREFIX) || defaults.isConfigurationSection(key)) continue;
+            if (!same(defaults.get(key), config.get(key))) changed.add(key.substring(DATA_PREFIX.length()));
+        }
+        return changed;
+    }
+
+    /**
+     * 40 and 40.0 are the same chance
+     */
+    private static boolean same(Object a, Object b) {
+        if (a instanceof Number x && b instanceof Number y) return x.doubleValue() == y.doubleValue();
+        return Objects.equals(a, b);
     }
 
     public static final class Keys {

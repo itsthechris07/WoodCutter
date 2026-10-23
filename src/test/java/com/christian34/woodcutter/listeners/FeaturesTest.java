@@ -249,6 +249,7 @@ class FeaturesTest extends PluginTestBase {
     @Test
     void bigTreesGetFourSaplings() {
         setConfig(ConfigData.Keys.REPLANT, true);
+        setConfig(ConfigData.Keys.REPLANT_FREE, true);
         setConfig(ConfigData.Keys.DELAY, false);
         PlayerMock player = addCutter("Cutter");
         for (int x = 0; x < 2; x++) {

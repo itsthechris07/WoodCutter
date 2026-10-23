@@ -27,6 +27,7 @@ public final class Statistics {
     private static final Map<String, Integer> ENCHANTMENT_SOURCES = new ConcurrentHashMap<>();
     private static final Map<String, Integer> ENCHANTMENT_LEVELS = new ConcurrentHashMap<>();
     private static final Map<String, Integer> USAGE = new ConcurrentHashMap<>();
+    private static final Map<String, Integer> MENU = new ConcurrentHashMap<>();
 
     private Statistics() {
     }
@@ -52,6 +53,13 @@ public final class Statistics {
         ENCHANTMENTS.incrementAndGet();
         ENCHANTMENT_SOURCES.merge(source, 1, Integer::sum);
         ENCHANTMENT_LEVELS.merge("level " + level, 1, Integer::sum);
+    }
+
+    /**
+     * @param action what the player did in the menu: opened, settings opened, toggled or setting changed
+     */
+    public static void recordMenu(@NotNull String action) {
+        MENU.merge(action, 1, Integer::sum);
     }
 
     public static int takeTrees() {
@@ -84,6 +92,10 @@ public final class Statistics {
 
     public static Map<String, Integer> takeUsage() {
         return take(USAGE);
+    }
+
+    public static Map<String, Integer> takeMenu() {
+        return take(MENU);
     }
 
     private static Map<String, Integer> take(Map<String, Integer> counters) {

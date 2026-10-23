@@ -31,6 +31,8 @@ messages:
   help_enchant: '&7/&9WoodCutter enchant [level] &f| &7enchant the axe in main hand'
   help_give: '&7/&9WoodCutter give <player> [book|axe] [level] &f| &7give an enchanted book or axe'
   axe_almost_broken: '&cYour axe is almost broken, the tree is not cut any further.'
+  # shown over the action bar once, when a player breaks a log of a tree without sneaking
+  sneak_hint: '&7Sneak while you break a log to cut the whole tree.'
   # the woodcutting skill - the first two are shown over the action bar after a tree
   skill_xp: '&a+%xp% XP &8| &7Level &9%level% &8| &f%current%&7/&f%needed%'
   skill_xp_max: '&a+%xp% XP &8| &7Level &9%level% &8(&7max&8)'

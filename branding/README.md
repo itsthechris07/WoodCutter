@@ -1,6 +1,7 @@
 # Branding
 
-Images for the plugin pages on SpigotMC, Modrinth and Hangar.
+Images for the plugin pages on SpigotMC, Modrinth and Hangar. The texts for these pages (summary, tags, changelog) are in
+[listing.md](listing.md).
 
 | File | Size | Use |
 |---|---|---|

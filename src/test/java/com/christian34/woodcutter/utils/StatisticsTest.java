@@ -28,6 +28,16 @@ class StatisticsTest {
         Statistics.takeEnchantmentSources();
         Statistics.takeUsage();
         Statistics.takeEnchantmentLevels();
+        Statistics.takeMenu();
+    }
+
+    @Test
+    void menuActionsAreCounted() {
+        Statistics.recordMenu("opened");
+        Statistics.recordMenu("opened");
+        Statistics.recordMenu("setting changed");
+        assertEquals(Map.of("opened", 2, "setting changed", 1), Statistics.takeMenu());
+        assertTrue(Statistics.takeMenu().isEmpty());
     }
 
     @Test

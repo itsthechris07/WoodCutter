@@ -31,6 +31,8 @@ messages:
   help_enchant: '&7/&9WoodCutter enchant [level] &f| &7verzaubert die Axt in der Haupthand'
   help_give: '&7/&9WoodCutter give <spieler> [book|axt] [level] &f| &7gibt ein verzaubertes Buch oder eine Axt'
   axe_almost_broken: '&cDeine Axt ist fast kaputt, der Baum wird nicht weiter gefällt.'
+  # wird einmal über der Aktionsleiste gezeigt, wenn ein Spieler einen Stamm ohne zu schleichen abbaut
+  sneak_hint: '&7Schleiche beim Abbauen eines Stamms, um den ganzen Baum zu fällen.'
   # das Holzfäller-Level - die ersten beiden stehen nach einem Baum über der Aktionsleiste
   skill_xp: '&a+%xp% XP &8| &7Level &9%level% &8| &f%current%&7/&f%needed%'
   skill_xp_max: '&a+%xp% XP &8| &7Level &9%level% &8(&7max&8)'

@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,6 +51,17 @@ class PluginLoadTest extends PluginTestBase {
         YamlConfiguration updated = YamlConfiguration.loadConfiguration(file);
         assertTrue(updated.isSet("config.delay.time"));
         assertEquals(5, updated.getInt("config.maxblocks"));
+    }
+
+    @Test
+    void changedSettingsAreFound() throws Exception {
+        // without the changes of the tests
+        plugin.reload();
+        assertEquals(List.of(), plugin.getConfigData().changedSettings());
+        plugin.getConfigData().set(ConfigData.Keys.MAX_BLOCKS, 200);
+        // the same chance as the default (40)
+        plugin.getConfigData().set(ConfigData.Keys.CHANCE, 40.0);
+        assertEquals(List.of(ConfigData.Keys.MAX_BLOCKS), plugin.getConfigData().changedSettings());
     }
 
     @Test
