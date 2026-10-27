@@ -6,7 +6,13 @@ import com.christian34.woodcutter.files.ConfigData;
 import com.christian34.woodcutter.woodcutting.PlacedLogs;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.block.data.type.Leaves;
 import com.christian34.woodcutter.skill.Skill;
 import org.bukkit.entity.BlockDisplay;
@@ -491,6 +497,57 @@ class FeaturesTest extends PluginTestBase {
     }
 
     @Test
+    void pistonsMovePlacedLogs() {
+        PlayerMock player = addCutter("Cutter");
+        Block first = world.getBlockAt(X, Y, Z);
+        Block second = world.getBlockAt(X + 1, Y, Z);
+        place(player, first);
+        place(player, second);
+        Block piston = world.getBlockAt(X - 1, Y, Z);
+        server.getPluginManager().callEvent(new BlockPistonExtendEvent(piston, List.of(first, second), BlockFace.EAST));
+        assertFalse(PlacedLogs.isPlaced(first));
+        assertTrue(PlacedLogs.isPlaced(second));
+        assertTrue(PlacedLogs.isPlaced(world.getBlockAt(X + 2, Y, Z)));
+
+        server.getPluginManager().callEvent(new BlockPistonRetractEvent(piston, List.of(second), BlockFace.WEST));
+        assertTrue(PlacedLogs.isPlaced(first));
+        assertFalse(PlacedLogs.isPlaced(second));
+        assertTrue(PlacedLogs.isPlaced(world.getBlockAt(X + 2, Y, Z)));
+    }
+
+    @Test
+    void burnedAndExplodedLogsAreForgotten() {
+        PlayerMock player = addCutter("Cutter");
+        Block burned = world.getBlockAt(X, Y, Z);
+        Block exploded = world.getBlockAt(X + 1, Y, Z);
+        place(player, burned);
+        place(player, exploded);
+        server.getPluginManager().callEvent(new BlockBurnEvent(burned, null));
+        assertFalse(PlacedLogs.isPlaced(burned));
+        // the explosion events have other constructors in each Minecraft version
+        BlockPlaceListener.forget(List.of(exploded));
+        assertFalse(PlacedLogs.isPlaced(exploded));
+    }
+
+    @Test
+    void placedLogsOfOlderVersionsAreKept() {
+        Block a = world.getBlockAt(X, Y + 5, Z);
+        Block b = world.getBlockAt(X + 1, Y, Z + 2);
+        // unsorted, like up to 3.1.1
+        int[] legacy = {(Y + 5 + 2048) << 8, ((Y + 2048) << 8) | (1 << 4) | 2};
+        a.getChunk().getPersistentDataContainer().set(new NamespacedKey(plugin, "placed_logs"), PersistentDataType.INTEGER_ARRAY, legacy);
+        assertTrue(PlacedLogs.isPlaced(a));
+        assertTrue(PlacedLogs.isPlaced(b));
+        assertFalse(a.getChunk().getPersistentDataContainer().has(new NamespacedKey(plugin, "placed_logs")));
+
+        PlacedLogs.mark(world.getBlockAt(X + 3, Y + 1, Z));
+        PlacedLogs.unmark(a);
+        assertFalse(PlacedLogs.isPlaced(a));
+        assertTrue(PlacedLogs.isPlaced(b));
+        assertTrue(PlacedLogs.isPlaced(world.getBlockAt(X + 3, Y + 1, Z)));
+    }
+
+    @Test
     void disabledWorldsSupportWildcards() {
         assertTrue(BlockBreakListener.matchesWorld("sg_1", "sg_*"));
         assertTrue(BlockBreakListener.matchesWorld("SG_lobby", "sg_*"));
@@ -503,9 +560,15 @@ class FeaturesTest extends PluginTestBase {
         // other characters have no special meaning
         assertFalse(BlockBreakListener.matchesWorld("worldX", "world."));
 
+        PlayerMock player = addCutter("Cutter");
+        setConfig(ConfigData.Keys.DELAY, false);
         setConfig(ConfigData.Keys.DISABLED_WORLDS, List.of("wor*"));
-        breakBlock(addCutter("Cutter"), tree(X, 6));
+        breakBlock(player, tree(X, 6));
         assertEquals(6, logs(X, 6));
+        // a changed setting applies at once
+        setConfig(ConfigData.Keys.DISABLED_WORLDS, List.of("other"));
+        breakBlock(player, tree(X + 5, 6));
+        assertEquals(1, logs(X + 5, 6));
     }
 
 }

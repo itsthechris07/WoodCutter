@@ -27,13 +27,23 @@ public class Updater implements Listener {
     private static final URI VERSION_URI = URI.create("https://api.github.com/repos/itsthechris07/WoodCutter/releases/latest");
     private static final Pattern TAG_NAME = Pattern.compile("\"tag_name\"\\s*:\\s*\"([^\"]+)\"");
     private static final Pattern NUMBERS = Pattern.compile("\\d+");
+    /**
+     * servers often run for weeks, so the releases are checked again and again
+     */
+    private static final long PERIOD_MINUTES = 12 * 60;
     private final WoodCutter instance;
     private volatile boolean available;
+    /**
+     * the latest release the console has been told about
+     */
+    @Nullable
+    private volatile String announced;
 
     public Updater(WoodCutter instance) {
         this.instance = instance;
         this.available = false;
         check();
+        if (!WoodCutter.isOffline()) TaskManager.asyncTimer(this::check, PERIOD_MINUTES);
     }
 
     /**
@@ -80,8 +90,10 @@ public class Updater implements Listener {
                 Debug.warn("Update checker failed!");
                 return;
             }
-            if (isNewer(latest, instance.getPluginMeta().getVersion())) {
+            // the check is repeated, the console hears of every release once
+            if (isNewer(latest, instance.getPluginMeta().getVersion()) && !latest.equals(announced)) {
                 this.available = true;
+                this.announced = latest;
                 Message.UPDATE_AVAILABLE.send(instance.getServer().getConsoleSender());
             }
         });

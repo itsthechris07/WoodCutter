@@ -119,7 +119,10 @@ public class Cutter {
      * a huge mushroom is cut: its stem and its cap
      */
     private final boolean mushroom;
-    private final List<String> luckyDrops;
+    /**
+     * the items of the luck of a forester and their weights
+     */
+    private final Map<Material, Integer> luckyDrops;
     /**
      * the tree does not just disappear
      */
@@ -164,7 +167,7 @@ public class Cutter {
         this.protectAxe = config.getBoolean(ConfigData.Keys.PROTECT_AXE);
         this.requireLeaves = config.getBoolean(ConfigData.Keys.REQUIRE_LEAVES);
         this.mushroom = logType == Material.MUSHROOM_STEM;
-        this.luckyDrops = config.getList(ConfigData.Keys.SKILL_LUCKY_DROPS);
+        this.luckyDrops = foresterLuck > 0 ? luckyDrops(config.getList(ConfigData.Keys.SKILL_LUCKY_DROPS), logType) : Map.of();
         this.animated = config.getBoolean(ConfigData.Keys.ANIMATION);
         this.topple = animated && config.getString(ConfigData.Keys.ANIMATION_MODE).equalsIgnoreCase("topple");
         this.blocksPerTick = !animated || topple ? 0
@@ -557,14 +560,12 @@ public class Cutter {
     }
 
     /**
-     * @return what a leaf drops with the luck of a forester: one of the items of the config (item:weight, 'sapling'
-     * is the sapling of the tree), null for nothing
+     * @return the items a leaf can drop with the luck of a forester and their weights, read from the config
+     * (item:weight, 'sapling' is the sapling of the tree)
      */
-    @Nullable
-    private Material luckyDrop() {
+    private static Map<Material, Integer> luckyDrops(List<String> entries, Material logType) {
         Map<Material, Integer> weights = new HashMap<>();
-        int total = 0;
-        for (String entry : luckyDrops) {
+        for (String entry : entries) {
             String[] parts = entry.split(":");
             String name = parts[0].trim();
             Material item = name.equalsIgnoreCase("sapling") ? sapling(logType) : Material.matchMaterial(name);
@@ -577,11 +578,19 @@ public class Cutter {
             // trees without a sapling and unknown items are skipped
             if (item == null || !item.isItem() || weight <= 0) continue;
             weights.merge(item, weight, Integer::sum);
-            total += weight;
         }
+        return weights;
+    }
+
+    /**
+     * @return what a leaf drops with the luck of a forester: one of the items of the config, null for nothing
+     */
+    @Nullable
+    private Material luckyDrop() {
+        int total = luckyDrops.values().stream().mapToInt(Integer::intValue).sum();
         if (total == 0) return null;
         int random = ThreadLocalRandom.current().nextInt(total);
-        for (Map.Entry<Material, Integer> entry : weights.entrySet()) {
+        for (Map.Entry<Material, Integer> entry : luckyDrops.entrySet()) {
             random -= entry.getValue();
             if (random < 0) return entry.getKey();
         }

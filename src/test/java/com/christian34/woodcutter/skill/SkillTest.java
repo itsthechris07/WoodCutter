@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
+import java.io.File;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -225,6 +226,12 @@ class SkillTest extends PluginTestBase {
         assertNotNull(entry);
         assertEquals(40, entry.xp());
         assertNull(loaded.find("Nobody"));
+
+        // saved again over the old file, no temporary file is left behind
+        skill.reward(player, 5);
+        skill.save();
+        assertEquals(20, new Skill(plugin).xp(player.getUniqueId()));
+        assertFalse(new File(plugin.getDataFolder(), "levels.yml.tmp").exists());
     }
 
     @Test

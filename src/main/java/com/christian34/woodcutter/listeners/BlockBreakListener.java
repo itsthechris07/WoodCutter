@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -56,6 +57,7 @@ public class BlockBreakListener implements Listener {
      * players who have been told to sneak
      */
     private final Set<UUID> hinted = ConcurrentHashMap.newKeySet();
+    private volatile DisabledWorlds disabledWorlds = new DisabledWorlds(List.of(), List.of());
 
     public BlockBreakListener(WoodCutter instance) {
         this.instance = instance;
@@ -90,12 +92,36 @@ public class BlockBreakListener implements Listener {
      * @param pattern the name of a world, * stands for any characters (e.g. sg_*), upper and lower case don't matter
      */
     static boolean matchesWorld(String world, String pattern) {
+        return worldPattern(pattern).matcher(world).matches();
+    }
+
+    private static Pattern worldPattern(String pattern) {
         StringBuilder regex = new StringBuilder();
         for (String part : pattern.split("\\*", -1)) {
             if (!regex.isEmpty()) regex.append(".*");
             regex.append(Pattern.quote(part));
         }
-        return Pattern.compile(regex.toString(), Pattern.CASE_INSENSITIVE).matcher(world).matches();
+        return Pattern.compile(regex.toString(), Pattern.CASE_INSENSITIVE);
+    }
+
+    /**
+     * @return true if WoodCutter is disabled in the world by the setting 'disabled-worlds'
+     */
+    private boolean isDisabled(String world) {
+        List<String> names = instance.getConfigData().getList(ConfigData.Keys.DISABLED_WORLDS);
+        DisabledWorlds disabled = disabledWorlds;
+        // compiled again only when the setting has changed
+        if (!disabled.names().equals(names)) {
+            disabled = new DisabledWorlds(names, names.stream().map(BlockBreakListener::worldPattern).toList());
+            this.disabledWorlds = disabled;
+        }
+        for (Pattern pattern : disabled.patterns()) {
+            if (pattern.matcher(world).matches()) return true;
+        }
+        return false;
+    }
+
+    private record DisabledWorlds(List<String> names, List<Pattern> patterns) {
     }
 
     /**
@@ -117,10 +143,7 @@ public class BlockBreakListener implements Listener {
         int level = WoodCutterEnchantment.level(axe);
         if (level == 0 && !hasGoodie(player)) return -1;
 
-        String world = block.getWorld().getName();
-        for (String disabled : config.getList(ConfigData.Keys.DISABLED_WORLDS)) {
-            if (matchesWorld(world, disabled)) return -1;
-        }
+        if (isDisabled(block.getWorld().getName())) return -1;
 
         WorldGuardHook worldGuard = instance.getWorldGuard();
         if (worldGuard != null && !worldGuard.isAllowed(player, block)) return -1;

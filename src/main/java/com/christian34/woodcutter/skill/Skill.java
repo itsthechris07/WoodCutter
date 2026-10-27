@@ -14,6 +14,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -81,7 +86,16 @@ public class Skill {
             data.set(PLAYERS + "." + uuid + ".xp", entry.xp());
         });
         try {
-            data.save(new File(instance.getDataFolder(), FILE));
+            // into another file first, so a crash while writing does not destroy the levels of all players
+            Path file = instance.getDataFolder().toPath().resolve(FILE);
+            Path temporary = file.resolveSibling(FILE + ".tmp");
+            Files.createDirectories(file.getParent());
+            Files.writeString(temporary, data.saveToString(), StandardCharsets.UTF_8);
+            try {
+                Files.move(temporary, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException ex) {
+                Files.move(temporary, file, StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException ex) {
             this.changed = true;
             Debug.warn("Couldn't save file '" + FILE + "': " + ex);
