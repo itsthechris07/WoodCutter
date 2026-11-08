@@ -11,6 +11,15 @@ Images for the plugin pages on SpigotMC, Modrinth and Hangar. The texts for thes
 | `features.png` | 1600×900 | Gallery / description: feature overview |
 | `skill.png` | 1600×900 | Gallery / description: the woodcutting skill (experience, ranking, perks) |
 
+`media/` holds real in-game recordings (no AI, only cut, cropped and scaled with ffmpeg) – the only images allowed on
+Modrinth:
+
+| File | Size | Use |
+|---|---|---|
+| `media/tree-falling.gif` | 720×355 | A big spruce cut layer by layer, the skill reaches the next level |
+| `media/leaves-and-saplings.gif` | 600×338 | The crown decays, four saplings are planted |
+| `media/enchanting-table.png` | 1200×1080 | WoodCutter I on a netherite axe at the enchanting table |
+
 ## Editing
 
 The sources are in `design/` (one `.dc.html` per image, `canvas.json` holds the sizes). They are plain HTML with

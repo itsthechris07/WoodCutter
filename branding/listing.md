@@ -42,3 +42,23 @@ For the top of the description, right below the banner:
 ## Images
 
 `banner.png` at the top, then `how-it-works.png`, `features.png` and `skill.png` – see [README.md](README.md).
+
+**Not on Modrinth:** these images were made with AI (Claude Design), which Modrinth's content rules (6.2a) forbid for
+the icon, the description and the gallery. The Modrinth description (`release-notes/description.md`, local only)
+embeds the recordings of `media/` from its own gallery (cdn.modrinth.com).
+
+**GIFs on SpigotMC and Hangar**, right below the banner and below the list "Cutting trees":
+
+SpigotMC (BBCode):
+
+```
+[IMG]https://raw.githubusercontent.com/itsthechris07/WoodCutter/main/branding/media/tree-falling.gif[/IMG]
+[IMG]https://raw.githubusercontent.com/itsthechris07/WoodCutter/main/branding/media/leaves-and-saplings.gif[/IMG]
+```
+
+Hangar (Markdown):
+
+```
+![A whole tree with one log](https://raw.githubusercontent.com/itsthechris07/WoodCutter/main/branding/media/tree-falling.gif)
+![Leaves decay, saplings grow](https://raw.githubusercontent.com/itsthechris07/WoodCutter/main/branding/media/leaves-and-saplings.gif)
+```

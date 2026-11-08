@@ -12,6 +12,8 @@ not supported.
 [Modrinth](https://modrinth.com/plugin/woodcutter-christian34) ·
 [SpigotMC](https://www.spigotmc.org/resources/58193/)
 
+![A whole tree with one log](branding/media/tree-falling.gif)
+
 ![How it works](branding/how-it-works.png)
 
 ## The enchantment
@@ -36,6 +38,8 @@ not supported.
 - **Axe protection:** cutting stops before the hit that would break the axe.
 - **Costs and delay:** a tree can cost food points or experience levels, and a delay between two trees keeps it fair.
 - **Other plugins:** every log is broken as the player, so protection, logging and skill plugins handle each log.
+
+![Leaves decay, saplings grow](branding/media/leaves-and-saplings.gif)
 
 ![Woodcutting skill](branding/skill.png)
 
