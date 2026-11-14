@@ -1,0 +1,7 @@
+title: WoodCutter
+description: An enchantment for axes that cuts the whole tree - for Paper and Folia
+theme: jekyll-theme-cayman
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true

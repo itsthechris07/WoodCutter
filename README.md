@@ -10,7 +10,8 @@ not supported.
 
 **Download:** [GitHub](https://github.com/itsthechris07/WoodCutter/releases/latest) ·
 [Modrinth](https://modrinth.com/plugin/woodcutter-christian34) ·
-[SpigotMC](https://www.spigotmc.org/resources/58193/)
+[SpigotMC](https://www.spigotmc.org/resources/58193/) ·
+[Hangar](https://hangar.papermc.io/Christian34/WoodCutterPlus)
 
 ![A whole tree with one log](branding/media/tree-falling.gif)
 
@@ -31,12 +32,14 @@ not supported.
 
 - **Every tree:** all logs of the game, including cherry, mangrove and the huge fungi of the Nether. Huge mushrooms
   are cut as well.
-- **Animations:** the tree falls log by log from the bottom to the top, or tips over away from the player.
+- **Animations:** the tree falls log by log from the bottom to the top, or tips over away from the player with its
+  leaves – the items drop where it hits the ground, and mobs in the way are pushed away.
 - **Buildings are safe:** logs placed by players are never cut, and logs without leaves are no tree.
 - **Fast leaf decay**, **replanting** (four saplings for big trees), **drops into the inventory**, **bonus drops**
   and **experience drops**.
 - **Axe protection:** cutting stops before the hit that would break the axe.
-- **Costs and delay:** a tree can cost food points or experience levels, and a delay between two trees keeps it fair.
+- **Costs and delay:** a tree can cost food points, experience levels or money (Vault), and a delay between two
+  trees keeps it fair. Trees can also earn money.
 - **Other plugins:** every log is broken as the player, so protection, logging and skill plugins handle each log.
 
 ![Leaves decay, saplings grow](branding/media/leaves-and-saplings.gif)
@@ -48,7 +51,8 @@ not supported.
 Players gain experience for every log of a tree they cut and reach levels (50 by default). The perks grow with every
 level: faster cutting, a shorter delay, bigger trees, bonus drops, less damage for the axe, lower costs and
 forester's luck (leaves drop sticks, saplings or apples). Free replanting and drops into the inventory are unlocked
-at levels 10 and 20. All values can be changed, and the skill can be switched off.
+at levels 10 and 20. Commands can reward levels, e.g. items or a rank. All values can be changed, and the skill can
+be switched off.
 
 ## Commands
 
@@ -83,12 +87,18 @@ Aliases: `/wcutter`, `/woodc`
   in a region.
 - **PlaceholderAPI** (optional): `%woodcutter_enabled%`, `%woodcutter_level%`, `%woodcutter_max_blocks%`,
   `%woodcutter_delay%`, `%woodcutter_skill_level%`, `%woodcutter_skill_xp%`, `%woodcutter_skill_xp_needed%` and
-  `%woodcutter_top_<rank>_name%`, `..._level%`, `..._xp%` for the ranking.
-- **Languages:** English and German (`language: de`), all texts can be changed in the `messages.yml`.
+  `%woodcutter_trees%` and `%woodcutter_top_<rank>_name%`, `..._level%`, `..._xp%`, `..._trees%` for the ranking.
+- **Vault** (optional): money for cut trees and trees that cost money, with EssentialsX, CMI or another economy.
+- **Languages:** English, German, French, Spanish, Polish and Chinese (`language: de`, …). All texts can be changed,
+  with color codes, hex colors (`&#ff8800`) or MiniMessage.
 - **Disabled worlds** with patterns: `sg_*` matches `sg_1`, `sg_lobby`, …
 - The config is updated automatically: new settings are added with their comments, your values stay.
 - Anonymous statistics are sent to [bStats](https://bstats.org/plugin/bukkit/WoodCutter/3789), which can be disabled
   in `plugins/bStats/config.yml`.
+
+## Documentation
+
+Every setting, command, permission and placeholder: [the WoodCutter docs](docs/index.md).
 
 ## Building
 

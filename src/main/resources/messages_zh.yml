@@ -1,0 +1,83 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                    - 消息 -                          | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# 颜色：&c、&l、十六进制颜色如 &#ff8800 - 或 MiniMessage：<gold>、<gradient:#5e9c3a:#c9a46b>...</gradient>
+# （带有 MiniMessage 标签的文本不能包含 & 代码）- %prefix% 会被替换为下面的前缀
+# 空文本（''）不会被发送
+
+messages:
+  prefix: '&8[&9Wood&7Cutter&8] '
+  no_permission: '%prefix%&c抱歉，你没有权限这样做！'
+  players_only: '%prefix%&c只有玩家可以使用此命令！'
+  reloaded: '%prefix%&a配置已重新加载！'
+  enchant_success: '%prefix%&a工具附魔成功！'
+  enchant_failed: '%prefix%&c工具无法附魔！'
+  invalid_level: '%prefix%&c等级必须是 1 到 %max% 之间的数字！'
+  player_not_online: "%prefix%&c玩家 '%player%' 不在线！"
+  no_axe: "%prefix%&c'%item%' 不是斧头！请使用 'book' 或斧头，例如 'diamond_axe'。"
+  give_sent: '%prefix%&a%player% 已收到物品。'
+  give_received_book: '%prefix%&a你获得了一本带有 WoodCutter 的附魔书！'
+  give_received_axe: '%prefix%&a你获得了一把带有 WoodCutter 的斧头！'
+  toggle_on: '%prefix%&aWoodCutter 已开启，你又可以砍倒整棵树了！'
+  toggle_off: '%prefix%&7WoodCutter 已关闭，现在你只会破坏单个原木。'
+  # 显示在动作栏
+  not_enough_food: '&c你太饿了，无法砍倒整棵树。'
+  not_enough_experience: '&c你需要 %levels% 级经验才能砍倒整棵树。'
+  update_available: '%prefix%&7有新版本可用：&9https://github.com/itsthechris07/WoodCutter/releases/latest'
+  help_toggle: '&7/&9WoodCutter toggle &f| &7为自己开启或关闭 WoodCutter'
+  help_reload: '&7/&9WoodCutter reload &f| &7重新加载配置文件'
+  help_enchant: '&7/&9WoodCutter enchant [level] &f| &7附魔主手中的斧头'
+  help_give: '&7/&9WoodCutter give <player> [book|axe] [level] &f| &7给予附魔书或附魔斧头'
+  axe_almost_broken: '&c你的斧头快坏了，树不会再继续被砍。'
+  # 当玩家没有潜行就破坏原木时，在动作栏显示一次
+  sneak_hint: '&7破坏原木时潜行即可砍倒整棵树。'
+  # 伐木技能 - 前两条在砍完一棵树后显示在动作栏
+  skill_xp: '&a+%xp% XP &8| &7等级 &9%level% &8| &f%current%&7/&f%needed%'
+  skill_xp_max: '&a+%xp% XP &8| &7等级 &9%level% &8(&7最高&8)'
+  skill_level_up: '%prefix%&a你的伐木等级达到了 &9%level%&a！'
+  skill_level_up_title: '&9等级 %level%'
+  skill_level_up_subtitle: '&7伐木'
+  skill_disabled: '%prefix%&c伐木技能已关闭！'
+  skill_no_data: "%prefix%&c'%player%' 还没有砍过树！"
+  skill_info: '%prefix%&9%player% &8| &7等级 &9%level% &8| &f%current%&7/&f%needed% XP'
+  skill_info_max: '%prefix%&9%player% &8| &7等级 &9%level% &8(&7最高&8) | &f%xp% XP'
+  skill_perk_speed: ' &8- &7砍得更快：&f每 tick +%value% 个原木'
+  skill_perk_delay: ' &8- &7等待更短：&f-%value% 秒'
+  skill_perk_max_blocks: ' &8- &7更大的树：&f+%value% 个原木'
+  skill_perk_bonus_drops: ' &8- &7额外掉落：&f+%value% %'
+  skill_perk_axe_saver: ' &8- &7爱护斧头：&f%value% % 的原木不消耗耐久'
+  skill_perk_costs: ' &8- &7更低花费：&f-%value% %'
+  skill_perk_forester_luck: ' &8- &7护林员的好运：&f%value% % 的树叶会掉落物品'
+  skill_unlock_replant: ' &8- &7免费种下新的树苗'
+  skill_unlock_drops_to_inventory: ' &8- &7原木直接进入你的背包'
+  skill_top_header: '%prefix%&7最佳伐木工：'
+  skill_top_entry: ' &7%rank%. &9%player% &8| &7等级 &9%level% &8| &f%xp% XP'
+  help_level: '&7/&9WoodCutter level [player] &f| &7显示伐木等级及其加成'
+  help_top: '&7/&9WoodCutter top &f| &7显示最佳伐木工'
+  help_menu: '&7/&9WoodCutter menu &f| &7打开菜单'
+  # 菜单 (/woodcutter menu)
+  menu_title: '&8WoodCutter'
+  menu_toggle_on: '&aWoodCutter 已开启'
+  menu_toggle_off: '&cWoodCutter 已关闭'
+  menu_toggle_lore: '&7点击开启或关闭'
+  menu_skill: '&9伐木等级 %level%'
+  menu_skill_progress: '&f%current%&7/&f%needed% XP'
+  menu_skill_max: '&7最高等级 &8| &f%xp% XP'
+  menu_top: '&9最佳伐木工'
+  menu_settings: '&9设置'
+  menu_settings_lore: '&7点击修改插件设置'
+  menu_settings_title: '&8WoodCutter 设置'
+  menu_setting_on: '&a%setting%'
+  menu_setting_off: '&c%setting%'
+  menu_setting_lore: '&7点击开启或关闭'
+  menu_back: '&7返回'
+  # 树倒下时显示为副标题（动画 'topple'）
+  timber: '&6&l树倒了！'
+  # 砍倒一棵树获得的金钱 (economy.reward-per-log) - 例如 '%prefix%&a+%money% &7(%logs% 个原木)'
+  economy_reward: ''
+  # 显示在动作栏
+  not_enough_money: '&c你需要 %money% 才能砍倒整棵树。'
+  skill_trees: ' &8- &7已砍倒的树：&f%trees%'

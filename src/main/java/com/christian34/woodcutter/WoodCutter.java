@@ -18,6 +18,7 @@ import com.christian34.woodcutter.utils.Permissions;
 import com.christian34.woodcutter.utils.Statistics;
 import com.christian34.woodcutter.utils.TaskManager;
 import com.christian34.woodcutter.utils.Updater;
+import com.christian34.woodcutter.woodcutting.Cutter;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.SimplePie;
@@ -147,11 +148,17 @@ public class WoodCutter extends JavaPlugin {
 
         hookPlugins();
         hookMetrics();
-        Debug.log("If you like the plugin or you have suggestions, please write a review on spigotmc.org!");
+        // the same jar is on all of these sites
+        Debug.log("If you like WoodCutter, please leave a review where you downloaded it:");
+        Debug.log("  Modrinth: https://modrinth.com/plugin/woodcutter-christian34");
+        Debug.log("  Hangar:   https://hangar.papermc.io/Christian34/WoodCutterPlus");
+        Debug.log("  SpigotMC: https://www.spigotmc.org/resources/58193/");
+        Debug.log("Ideas and bugs: https://github.com/itsthechris07/WoodCutter/issues");
     }
 
     @Override
     public void onDisable() {
+        Cutter.landAll();
         if (skill != null) skill.save();
     }
 

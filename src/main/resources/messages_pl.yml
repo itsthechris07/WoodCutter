@@ -1,0 +1,83 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                   - Wiadomości -                     | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# kolory: &c, &l, kolory hex jak &#ff8800 - albo MiniMessage: <gold>, <gradient:#5e9c3a:#c9a46b>...</gradient>
+# (tekst z tagami MiniMessage nie może zawierać kodów &) - %prefix% jest zastępowany prefiksem poniżej
+# pusty tekst ('') nie jest wysyłany
+
+messages:
+  prefix: '&8[&9Wood&7Cutter&8] '
+  no_permission: '%prefix%&cNiestety nie masz do tego uprawnień!'
+  players_only: '%prefix%&cTej komendy mogą używać tylko gracze!'
+  reloaded: '%prefix%&aKonfiguracja została przeładowana!'
+  enchant_success: '%prefix%&aNarzędzie zostało zaklęte!'
+  enchant_failed: '%prefix%&cNie udało się zakląć narzędzia!'
+  invalid_level: '%prefix%&cPoziom musi być liczbą od 1 do %max%!'
+  player_not_online: "%prefix%&cGracz '%player%' nie jest online!"
+  no_axe: "%prefix%&c'%item%' to nie siekiera! Użyj 'book' albo siekiery, np. 'diamond_axe'."
+  give_sent: '%prefix%&a%player% otrzymał przedmiot.'
+  give_received_book: '%prefix%&aOtrzymałeś księgę z WoodCutter!'
+  give_received_axe: '%prefix%&aOtrzymałeś siekierę z WoodCutter!'
+  toggle_on: '%prefix%&aWoodCutter jest włączony, znowu ścinasz całe drzewa!'
+  toggle_off: '%prefix%&7WoodCutter jest wyłączony, teraz niszczysz tylko pojedyncze pnie.'
+  # pokazywane na pasku akcji
+  not_enough_food: '&cJesteś zbyt głodny, żeby ściąć całe drzewo.'
+  not_enough_experience: '&cPotrzebujesz %levels% poziomów doświadczenia, żeby ściąć całe drzewo.'
+  update_available: '%prefix%&7Dostępna jest nowa wersja: &9https://github.com/itsthechris07/WoodCutter/releases/latest'
+  help_toggle: '&7/&9WoodCutter toggle &f| &7włącza lub wyłącza WoodCutter dla ciebie'
+  help_reload: '&7/&9WoodCutter reload &f| &7przeładowuje pliki konfiguracji'
+  help_enchant: '&7/&9WoodCutter enchant [level] &f| &7zaklina siekierę w twojej ręce'
+  help_give: '&7/&9WoodCutter give <player> [book|axe] [level] &f| &7daje zaklętą księgę lub siekierę'
+  axe_almost_broken: '&cTwoja siekiera jest prawie zniszczona, drzewo nie jest ścinane dalej.'
+  # pokazywane raz na pasku akcji, gdy gracz niszczy pień bez kucania
+  sneak_hint: '&7Kucnij, niszcząc pień, żeby ściąć całe drzewo.'
+  # umiejętność drwala - dwa pierwsze są pokazywane na pasku akcji po drzewie
+  skill_xp: '&a+%xp% XP &8| &7Poziom &9%level% &8| &f%current%&7/&f%needed%'
+  skill_xp_max: '&a+%xp% XP &8| &7Poziom &9%level% &8(&7maks.&8)'
+  skill_level_up: '%prefix%&aOsiągnąłeś poziom drwala &9%level%&a!'
+  skill_level_up_title: '&9Poziom %level%'
+  skill_level_up_subtitle: '&7Drwal'
+  skill_disabled: '%prefix%&cUmiejętność drwala jest wyłączona!'
+  skill_no_data: "%prefix%&c'%player%' nie ściął jeszcze żadnego drzewa!"
+  skill_info: '%prefix%&9%player% &8| &7Poziom &9%level% &8| &f%current%&7/&f%needed% XP'
+  skill_info_max: '%prefix%&9%player% &8| &7Poziom &9%level% &8(&7maks.&8) | &f%xp% XP'
+  skill_perk_speed: ' &8- &7Szybsze ścinanie: &f+%value% pni na tick'
+  skill_perk_delay: ' &8- &7Krótsze oczekiwanie: &f-%value% sekund'
+  skill_perk_max_blocks: ' &8- &7Większe drzewa: &f+%value% pni'
+  skill_perk_bonus_drops: ' &8- &7Dodatkowy łup: &f+%value% %'
+  skill_perk_axe_saver: ' &8- &7Ostrożnie z siekierą: &f%value% % pni jej nie niszczy'
+  skill_perk_costs: ' &8- &7Niższe koszty: &f-%value% %'
+  skill_perk_forester_luck: ' &8- &7Szczęście leśnika: &f%value% % liści coś upuszcza'
+  skill_unlock_replant: ' &8- &7Nowa sadzonka jest sadzona za darmo'
+  skill_unlock_drops_to_inventory: ' &8- &7Pnie trafiają do twojego ekwipunku'
+  skill_top_header: '%prefix%&7Najlepsi drwale:'
+  skill_top_entry: ' &7%rank%. &9%player% &8| &7Poziom &9%level% &8| &f%xp% XP'
+  help_level: '&7/&9WoodCutter level [player] &f| &7pokazuje poziom drwala i jego bonusy'
+  help_top: '&7/&9WoodCutter top &f| &7pokazuje najlepszych drwali'
+  help_menu: '&7/&9WoodCutter menu &f| &7otwiera menu'
+  # menu (/woodcutter menu)
+  menu_title: '&8WoodCutter'
+  menu_toggle_on: '&aWoodCutter jest włączony'
+  menu_toggle_off: '&cWoodCutter jest wyłączony'
+  menu_toggle_lore: '&7Kliknij, żeby go włączyć lub wyłączyć'
+  menu_skill: '&9Poziom drwala %level%'
+  menu_skill_progress: '&f%current%&7/&f%needed% XP'
+  menu_skill_max: '&7Najwyższy poziom &8| &f%xp% XP'
+  menu_top: '&9Najlepsi drwale'
+  menu_settings: '&9Ustawienia'
+  menu_settings_lore: '&7Kliknij, żeby zmienić ustawienia pluginu'
+  menu_settings_title: '&8Ustawienia WoodCutter'
+  menu_setting_on: '&a%setting%'
+  menu_setting_off: '&c%setting%'
+  menu_setting_lore: '&7Kliknij, żeby włączyć lub wyłączyć'
+  menu_back: '&7Wstecz'
+  # pokazywane jako podtytuł, gdy drzewo się przewraca (animacja 'topple')
+  timber: '&6&lDrzewo leci!'
+  # pieniądze za ścięte drzewo (economy.reward-per-log) - np. '%prefix%&a+%money% &7za %logs% pni'
+  economy_reward: ''
+  # pokazywane na pasku akcji
+  not_enough_money: '&cPotrzebujesz %money%, żeby ściąć całe drzewo.'
+  skill_trees: ' &8- &7Ścięte drzewa: &f%trees%'

@@ -4,13 +4,13 @@ import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.enchantments.WoodCutterEnchantment;
 import com.christian34.woodcutter.events.WoodCutterEvent;
 import com.christian34.woodcutter.files.ConfigData;
+import com.christian34.woodcutter.hooks.EconomyHook;
 import com.christian34.woodcutter.hooks.WorldGuardHook;
 import com.christian34.woodcutter.skill.Skill;
 import com.christian34.woodcutter.utils.Message;
 import com.christian34.woodcutter.utils.Statistics;
 import com.christian34.woodcutter.woodcutting.Cutter;
 import com.christian34.woodcutter.woodcutting.PlacedLogs;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.NamespacedKey;
@@ -160,7 +160,7 @@ public class BlockBreakListener implements Listener {
         if (remaining <= 0) return false;
         String message = instance.getConfigData().getString(ConfigData.Keys.DELAY_MSG);
         if (!message.isEmpty()) {
-            player.sendActionBar(LegacyComponentSerializer.legacyAmpersand().deserialize(message.replace("%time%", Long.toString(remaining))));
+            player.sendActionBar(Message.component(Message.format(message.replace("%time%", Long.toString(remaining)))));
         }
         return true;
     }
@@ -213,6 +213,13 @@ public class BlockBreakListener implements Listener {
             Message.NOT_ENOUGH_EXPERIENCE.sendActionBar(player, "%levels%", Integer.toString(experience));
             return;
         }
+        // money of an economy plugin (Vault), nothing is paid without one
+        boolean economy = EconomyHook.isAvailable();
+        double money = economy ? Math.max(0, config.getDouble(ConfigData.Keys.ECONOMY_COSTS)) * costs : 0;
+        if (money > 0 && !EconomyHook.has(player, money)) {
+            Message.NOT_ENOUGH_MONEY.sendActionBar(player, "%money%", EconomyHook.format(money));
+            return;
+        }
 
         WoodCutterEvent woodCutterEvent = new WoodCutterEvent(e);
         Bukkit.getPluginManager().callEvent(woodCutterEvent);
@@ -222,6 +229,11 @@ public class BlockBreakListener implements Listener {
         if (logs == 0) return;
         if (hunger > 0) player.setFoodLevel(player.getFoodLevel() - hunger);
         if (experience > 0) player.setLevel(player.getLevel() - experience);
+        if (money > 0) EconomyHook.withdraw(player, money);
+        double reward = economy && pays ? (logs + 1) * Math.max(0, config.getDouble(ConfigData.Keys.ECONOMY_REWARD_PER_LOG)) : 0;
+        if (reward > 0 && EconomyHook.deposit(player, reward)) {
+            Message.ECONOMY_REWARD.send(player, "%money%", EconomyHook.format(reward), "%logs%", Integer.toString(logs + 1));
+        }
         if (delayed) instance.getDelays().put(player.getUniqueId(), System.currentTimeMillis());
         Statistics.recordTree(block.getType(), axe.getType(), logs, level);
         instance.getSkill().reward(player, logs + 1);
@@ -252,7 +264,10 @@ public class BlockBreakListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockDrop(BlockDropItemEvent e) {
         Player player = e.getPlayer();
-        if (!Cutter.isCutBy(player, e.getBlock()) || !Cutter.dropsToInventory(instance, player)) return;
+        if (!Cutter.isCutBy(player, e.getBlock())) return;
+        // the animation 'topple': the items drop where the tree hits the ground
+        e.getItems().removeIf(item -> Cutter.dropWhereItLands(player, e.getBlock(), item.getItemStack()));
+        if (!Cutter.dropsToInventory(instance, player)) return;
         Iterator<Item> items = e.getItems().iterator();
         while (items.hasNext()) {
             Item item = items.next();

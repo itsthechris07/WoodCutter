@@ -4,7 +4,8 @@
 # |               Plugin by Christian34                  | #
 # +------------------------------------------------------+ #
 ############################################################
-# colors: &c, &l, ... - %prefix% is replaced with the prefix below
+# colors: &c, &l, hex colors like &#ff8800 - or MiniMessage: <gold>, <gradient:#5e9c3a:#c9a46b>...</gradient>
+# (a text with MiniMessage tags must not contain &-codes) - %prefix% is replaced with the prefix below
 # an empty text ('') is not sent
 
 messages:
@@ -73,3 +74,10 @@ messages:
   menu_setting_off: '&c%setting%'
   menu_setting_lore: '&7Click to switch it on or off'
   menu_back: '&7Back'
+  # shown as a subtitle when a tree tips over (animation 'topple')
+  timber: '&6&lTimber!'
+  # money for a cut tree (economy.reward-per-log) - e.g. '%prefix%&a+%money% &7for %logs% logs'
+  economy_reward: ''
+  # shown over the action bar
+  not_enough_money: '&cYou need %money% to cut a whole tree.'
+  skill_trees: ' &8- &7Trees cut: &f%trees%'

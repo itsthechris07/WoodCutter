@@ -365,8 +365,42 @@ class FeaturesTest extends PluginTestBase {
         // cut at once, a display for every log shows the falling tree
         assertEquals(1, logs(X, 7));
         assertEquals(7, world.getEntitiesByClass(BlockDisplay.class).size());
+        // the displays turn while the tree falls
+        server.getScheduler().performTicks(12);
+        for (BlockDisplay display : world.getEntitiesByClass(BlockDisplay.class)) {
+            assertNotEquals(new org.joml.Quaternionf(), display.getTransformation().getLeftRotation());
+            assertTrue(display.getInterpolationDuration() > 0);
+        }
         server.getScheduler().performTicks(40);
         assertEquals(0, world.getEntitiesByClass(BlockDisplay.class).size());
+    }
+
+    @Test
+    void crownFallsWithTheTree() {
+        setConfig(ConfigData.Keys.ANIMATION, true);
+        setConfig(ConfigData.Keys.ANIMATION_MODE, "topple");
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 7);
+        for (int y = 4; y < 7; y++) {
+            for (int[] side : new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}) {
+                world.getBlockAt(X + side[0], Y + y, Z + side[1]).setType(Material.OAK_LEAVES);
+            }
+        }
+        world.getBlockAt(X, Y + 7, Z).setType(Material.OAK_LEAVES);
+        // the leaves between the tree and another tree, they are kept by its logs
+        tree(X + 4, 7);
+        world.getBlockAt(X + 2, Y + 5, Z).setType(Material.OAK_LEAVES);
+        world.getBlockAt(X + 3, Y + 5, Z).setType(Material.OAK_LEAVES);
+
+        breakBlock(player, root);
+        assertEquals(Material.AIR, world.getBlockAt(X - 1, Y + 5, Z).getType());
+        assertEquals(Material.AIR, world.getBlockAt(X, Y + 4, Z + 1).getType());
+        assertEquals(Material.AIR, world.getBlockAt(X, Y + 7, Z).getType());
+        assertEquals(Material.OAK_LEAVES, world.getBlockAt(X + 1, Y + 5, Z).getType());
+        assertEquals(Material.OAK_LEAVES, world.getBlockAt(X + 2, Y + 5, Z).getType());
+        assertEquals(7, logs(X + 4, 7));
+        // 7 logs, 3 leaves on one side, 6 on the others and one on the top
+        assertEquals(17, world.getEntitiesByClass(BlockDisplay.class).size());
     }
 
     @Test

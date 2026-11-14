@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.christian34.woodcutter"
-version = "3.1.2"
+version = "3.2.0"
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
@@ -28,14 +28,14 @@ dependencies {
 
     // optional plugins (softdepend), their classes are only used if they are installed
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
-    compileOnly("me.clip:placeholderapi:2.11.6")
+    compileOnly("me.clip:placeholderapi:2.12.3")
 
     implementation("org.bstats:bstats-bukkit:3.2.1")
 
     // tests run the plugin against a mocked Paper server
-    testImplementation("io.papermc.paper:paper-api:26.2.build.129-stable")
-    testImplementation("org.mockbukkit.mockbukkit:mockbukkit-v26.2:4.116.1")
-    testImplementation("me.clip:placeholderapi:2.11.6")
+    testImplementation("io.papermc.paper:paper-api:26.2.build.135-stable")
+    testImplementation("org.mockbukkit.mockbukkit:mockbukkit-v26.2:4.117.0")
+    testImplementation("me.clip:placeholderapi:2.12.3")
     testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains:annotations:26.1.0")
@@ -46,7 +46,7 @@ dependencies {
 // the oldest supported one (1.21.x) and the newest one, so the plugin keeps working on all of them
 val versionTests = mapOf(
     "test121" to listOf("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT", "org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.116.3"),
-    "test263" to listOf("io.papermc.paper:paper-api:26.3.build.177-stable", "org.mockbukkit.mockbukkit:mockbukkit-v26.3:4.118.0"),
+    "test263" to listOf("io.papermc.paper:paper-api:26.3.build.251-stable", "org.mockbukkit.mockbukkit:mockbukkit-v26.3:4.120.0"),
 )
 versionTests.forEach { (name, libraries) ->
     sourceSets.create(name) {
@@ -58,7 +58,7 @@ versionTests.forEach { (name, libraries) ->
     }
     dependencies {
         libraries.forEach { "${name}Implementation"(it) }
-        "${name}Implementation"("me.clip:placeholderapi:2.11.6")
+        "${name}Implementation"("me.clip:placeholderapi:2.12.3")
         "${name}Implementation"(platform("org.junit:junit-bom:6.1.3"))
         "${name}Implementation"("org.junit.jupiter:junit-jupiter")
         "${name}Implementation"("org.jetbrains:annotations:26.1.0")

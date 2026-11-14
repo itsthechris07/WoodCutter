@@ -31,12 +31,18 @@ For the top of the description, right below the banner:
 > Works with WorldGuard (region flag), PlaceholderAPI, CoreProtect and every protection plugin – each log is broken
 > as the player.
 
-## Changelog 3.1.2
+## Changelog 3.2.0
 
-> - Placed logs that a piston moves stay placed logs, so buildings can no longer be pushed into trees and cut.
-> - The levels.yml is saved safely, a crash while saving no longer destroys the levels of all players.
-> - The update check is repeated every 12 hours.
-> - Faster with big buildings; burned and exploded logs are forgotten.
+> - Animation 'topple': the tree falls with its leaves, the items drop where it hits the ground, and mobs and players
+>   in the way are pushed away (optional damage). "Timber!" is shown as a subtitle.
+> - Vault: trees can earn money per log and cost money.
+> - Commands as rewards for levels of the woodcutting skill, e.g. items or a rank.
+> - Trees cut per player: `/woodcutter level`, `%woodcutter_trees%`, `%woodcutter_top_<rank>_trees%`.
+> - `excluded-logs`: logs that are never cut, e.g. `stripped_*`.
+> - Fixed: trees standing diagonally next to the cut tree were cut as well.
+> - Levels need more experience by default (new installations; existing configs keep their values).
+> - MiniMessage and hex colors in all texts; French, Spanish, Polish and Chinese.
+> - Documentation of every setting: https://github.com/itsthechris07/WoodCutter/tree/main/docs
 > - Tested on Paper 1.21.11, 26.2 and 26.3.
 
 ## Images

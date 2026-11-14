@@ -7,7 +7,7 @@
 # the texts of the plugin are in messages.yml (or messages_<language>.yml)
 
 config:
-  # the language of the texts: en (messages.yml) or de (messages_de.yml)
+  # the language of the texts: en (messages.yml), de, fr, es, pl or zh (messages_<language>.yml)
   language: en
   # worlds without WoodCutter - * stands for any characters, so sg_* matches sg_1, sg_lobby, ...
   disabled-worlds:
@@ -37,6 +37,9 @@ config:
   require-leaves: true
   # huge mushrooms are cut like trees when their stem is broken with an axe
   mushrooms: true
+  # logs that are never cut, by name or a pattern - * stands for any characters, e.g. stripped_* for all stripped
+  # logs (which are mostly built by players) or cherry_log
+  excluded-logs: []
   # if true player must sit to use woodcutter
   require-sneaking: true
   delay:
@@ -59,6 +62,14 @@ config:
     mode: layers
     # logs per tick with the mode 'layers' (20 ticks are a second)
     blocks-per-tick: 2
+    # with the mode 'topple':
+    topple:
+      # the items drop where the tree hits the ground instead of where it stood (not with 'drops-to-inventory')
+      drops-where-it-lands: true
+      # mobs and players the tree falls on are pushed away
+      knockback: true
+      # damage the tree does to the mobs and players it falls on, as the player who cut it (2 = a heart, 0 disables it)
+      damage: 0
   # the leaves of a cut tree decay within seconds
   fast-leaf-decay: true
   # plants a new sapling when the lowest log of a tree is broken - four of them for trees with a trunk of 2x2 logs
@@ -77,6 +88,12 @@ config:
     hunger: 0
     # experience levels, players with less can't cut trees
     experience: 0
+    # money of an economy plugin (Vault and e.g. EssentialsX), players with less can't cut trees
+    money: 0
+  # needs Vault and an economy plugin (e.g. EssentialsX)
+  economy:
+    # money players get for every log of a cut tree, e.g. 0.5 (0 disables it) - not in creative mode
+    reward-per-log: 0
   # the tree is only cut as far as the axe lasts: cutting stops before the hit that would break it
   protect-axe: true
   experience-drops:
@@ -91,8 +108,9 @@ config:
     # experience for every log of a cut tree
     xp-per-log: 1
     # experience for the first level, every further level needs 'xp-increase' more than the one before
-    xp-first-level: 50
-    xp-increase: 25
+    # (with 1 xp per log: level 1 after about 20 oaks, level 10 after 3000 logs, level 50 after 55000 logs)
+    xp-first-level: 120
+    xp-increase: 40
     # what players get at the highest level - the perks grow evenly with every level (0 disables a perk)
     perks:
       # additional logs per tick of the animation
@@ -121,6 +139,13 @@ config:
       replant: 10
       # logs are put into the inventory
       drops-to-inventory: 20
+    # commands the server runs when a player reaches a level, as 'level: command' - %player% is the name of the
+    # player, %uuid% their id and %level% the level, e.g.
+    # rewards:
+    #   - '10: give %player% golden_apple 3'
+    #   - '25: eco give %player% 500'
+    #   - '50: lp user %player% parent add forester'
+    rewards: []
   # other ways to get a book with WoodCutter than the enchanting table (0 disables one)
   sources:
     # chance in percent that a new trade of a librarian is such a book

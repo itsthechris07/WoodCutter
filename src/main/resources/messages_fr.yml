@@ -1,0 +1,83 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                    - Messages -                      | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# couleurs : &c, &l, couleurs hex comme &#ff8800 - ou MiniMessage : <gold>, <gradient:#5e9c3a:#c9a46b>...</gradient>
+# (un texte avec des balises MiniMessage ne doit pas contenir de codes &) - %prefix% est remplacé par le préfixe
+# un texte vide ('') n'est pas envoyé
+
+messages:
+  prefix: '&8[&9Wood&7Cutter&8] '
+  no_permission: "%prefix%&cDésolé, tu n'as pas la permission pour cela !"
+  players_only: '%prefix%&cCette commande ne peut être utilisée que par des joueurs !'
+  reloaded: '%prefix%&aLa configuration a été rechargée !'
+  enchant_success: "%prefix%&aL'outil a été enchanté !"
+  enchant_failed: "%prefix%&cL'outil n'a pas pu être enchanté !"
+  invalid_level: '%prefix%&cLe niveau doit être un nombre de 1 à %max% !'
+  player_not_online: "%prefix%&cLe joueur '%player%' n'est pas en ligne !"
+  no_axe: "%prefix%&c'%item%' n'est pas une hache ! Utilise 'book' ou une hache comme 'diamond_axe'."
+  give_sent: "%prefix%&a%player% a reçu l'objet."
+  give_received_book: '%prefix%&aTu as reçu un livre avec WoodCutter !'
+  give_received_axe: '%prefix%&aTu as reçu une hache avec WoodCutter !'
+  toggle_on: '%prefix%&aWoodCutter est activé, tu coupes à nouveau des arbres entiers !'
+  toggle_off: '%prefix%&7WoodCutter est désactivé, tu ne casses plus que des bûches seules.'
+  # affiché dans la barre d'action
+  not_enough_food: '&cTu as trop faim pour couper un arbre entier.'
+  not_enough_experience: "&cTu as besoin de %levels% niveaux d'expérience pour couper un arbre entier."
+  update_available: '%prefix%&7Une nouvelle version est disponible : &9https://github.com/itsthechris07/WoodCutter/releases/latest'
+  help_toggle: '&7/&9WoodCutter toggle &f| &7active ou désactive WoodCutter pour toi'
+  help_reload: '&7/&9WoodCutter reload &f| &7recharge les fichiers de configuration'
+  help_enchant: '&7/&9WoodCutter enchant [level] &f| &7enchante la hache dans ta main'
+  help_give: '&7/&9WoodCutter give <player> [book|axe] [level] &f| &7donne un livre ou une hache enchantés'
+  axe_almost_broken: "&cTa hache est presque cassée, l'arbre n'est pas coupé plus loin."
+  # affiché une fois dans la barre d'action, quand un joueur casse une bûche sans s'accroupir
+  sneak_hint: "&7Accroupis-toi en cassant une bûche pour couper l'arbre entier."
+  # la compétence de bûcheron - les deux premiers sont affichés dans la barre d'action après un arbre
+  skill_xp: '&a+%xp% XP &8| &7Niveau &9%level% &8| &f%current%&7/&f%needed%'
+  skill_xp_max: '&a+%xp% XP &8| &7Niveau &9%level% &8(&7max&8)'
+  skill_level_up: '%prefix%&aTu as atteint le niveau de bûcheron &9%level%&a !'
+  skill_level_up_title: '&9Niveau %level%'
+  skill_level_up_subtitle: '&7Bûcheron'
+  skill_disabled: '%prefix%&cLa compétence de bûcheron est désactivée !'
+  skill_no_data: "%prefix%&c'%player%' n'a pas encore coupé d'arbre !"
+  skill_info: '%prefix%&9%player% &8| &7Niveau &9%level% &8| &f%current%&7/&f%needed% XP'
+  skill_info_max: '%prefix%&9%player% &8| &7Niveau &9%level% &8(&7max&8) | &f%xp% XP'
+  skill_perk_speed: ' &8- &7Coupe plus rapide : &f+%value% bûches par tick'
+  skill_perk_delay: ' &8- &7Délai plus court : &f-%value% secondes'
+  skill_perk_max_blocks: ' &8- &7Arbres plus grands : &f+%value% bûches'
+  skill_perk_bonus_drops: ' &8- &7Butin bonus : &f+%value% %'
+  skill_perk_axe_saver: " &8- &7Soin de la hache : &f%value% % des bûches ne l'abîment pas"
+  skill_perk_costs: ' &8- &7Coûts réduits : &f-%value% %'
+  skill_perk_forester_luck: ' &8- &7Chance du forestier : &f%value% % des feuilles laissent tomber quelque chose'
+  skill_unlock_replant: ' &8- &7Une nouvelle pousse est plantée gratuitement'
+  skill_unlock_drops_to_inventory: ' &8- &7Les bûches vont dans ton inventaire'
+  skill_top_header: '%prefix%&7Les meilleurs bûcherons :'
+  skill_top_entry: ' &7%rank%. &9%player% &8| &7Niveau &9%level% &8| &f%xp% XP'
+  help_level: '&7/&9WoodCutter level [player] &f| &7affiche le niveau de bûcheron et ses avantages'
+  help_top: '&7/&9WoodCutter top &f| &7affiche les meilleurs bûcherons'
+  help_menu: '&7/&9WoodCutter menu &f| &7ouvre le menu'
+  # le menu (/woodcutter menu)
+  menu_title: '&8WoodCutter'
+  menu_toggle_on: '&aWoodCutter est activé'
+  menu_toggle_off: '&cWoodCutter est désactivé'
+  menu_toggle_lore: "&7Clique pour l'activer ou le désactiver"
+  menu_skill: '&9Niveau de bûcheron %level%'
+  menu_skill_progress: '&f%current%&7/&f%needed% XP'
+  menu_skill_max: '&7Niveau maximal &8| &f%xp% XP'
+  menu_top: '&9Les meilleurs bûcherons'
+  menu_settings: '&9Paramètres'
+  menu_settings_lore: '&7Clique pour modifier les paramètres du plugin'
+  menu_settings_title: '&8Paramètres de WoodCutter'
+  menu_setting_on: '&a%setting%'
+  menu_setting_off: '&c%setting%'
+  menu_setting_lore: "&7Clique pour l'activer ou le désactiver"
+  menu_back: '&7Retour'
+  # affiché en sous-titre quand un arbre tombe (animation 'topple')
+  timber: '&6&lÇa tombe !'
+  # argent pour un arbre coupé (economy.reward-per-log) - p. ex. '%prefix%&a+%money% &7pour %logs% bûches'
+  economy_reward: ''
+  # affiché dans la barre d'action
+  not_enough_money: '&cTu as besoin de %money% pour couper un arbre entier.'
+  skill_trees: ' &8- &7Arbres coupés : &f%trees%'

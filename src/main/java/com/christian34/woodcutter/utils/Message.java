@@ -5,10 +5,15 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.title.Title;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.time.Duration;
+import java.util.regex.Pattern;
 
 /**
  * WoodCutter 2026.
@@ -78,8 +83,21 @@ public enum Message {
     MENU_SETTING_ON("menu_setting_on"),
     MENU_SETTING_OFF("menu_setting_off"),
     MENU_SETTING_LORE("menu_setting_lore"),
-    MENU_BACK("menu_back");
+    MENU_BACK("menu_back"),
+    TIMBER("timber"),
+    ECONOMY_REWARD("economy_reward"),
+    NOT_ENOUGH_MONEY("not_enough_money"),
+    SKILL_TREES("skill_trees");
 
+    /**
+     * the colors of the server, with hex colors in the format Spigot uses (§x§r§r§g§g§b§b)
+     */
+    private static final LegacyComponentSerializer SECTION = LegacyComponentSerializer.builder().character('§')
+            .hexColors().useUnusualXRepeatedCharacterHexFormat().build();
+    private static final LegacyComponentSerializer AMPERSAND = LegacyComponentSerializer.builder().character('&')
+            .hexColors().build();
+    private static final Pattern MINI_MESSAGE_TAG = Pattern.compile("</?[a-z#!][a-z0-9_:#.\\-' ]*>", Pattern.CASE_INSENSITIVE);
+    private static final Pattern LEGACY_CODE = Pattern.compile("&([0-9a-fk-or]|#[0-9a-f]{6})", Pattern.CASE_INSENSITIVE);
     private final String key;
 
     Message(String key) {
@@ -97,7 +115,47 @@ public enum Message {
         for (int i = 0; i + 1 < replacements.length; i += 2) {
             text = text.replace(replacements[i], replacements[i + 1]);
         }
-        return LegacyComponentSerializer.legacySection().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(text));
+        return format(text);
+    }
+
+    /**
+     * @param text with color codes (&amp;c, &amp;#ff8800) or MiniMessage tags (&lt;gold&gt;, &lt;gradient:...&gt;)
+     * @return the text with the colors of the server (§), hex colors included
+     */
+    @NotNull
+    public static String format(@NotNull String text) {
+        if (text.isEmpty()) return text;
+        return SECTION.serialize(parse(text));
+    }
+
+    /**
+     * MiniMessage is used for texts with its tags and without color codes, so texts like "&lt;player&gt;" in a help
+     * line with color codes stay as they are
+     */
+    @NotNull
+    static Component parse(@NotNull String text) {
+        if (MINI_MESSAGE_TAG.matcher(text).find() && !LEGACY_CODE.matcher(text).find()) {
+            return MiniMessage.miniMessage().deserialize(text);
+        }
+        return AMPERSAND.deserialize(text);
+    }
+
+    /**
+     * @param text a text of {@link #getText(String...)}
+     */
+    @NotNull
+    public static Component component(@NotNull String text) {
+        return SECTION.deserialize(text);
+    }
+
+    /**
+     * shows the text as a subtitle, without a title - e.g. 'Timber!' when a tree tips over
+     */
+    public void sendSubtitle(@NotNull Player receiver, String... replacements) {
+        String text = getText(replacements);
+        if (text.isEmpty()) return;
+        receiver.showTitle(Title.title(Component.empty(), component(text),
+                Title.Times.times(Duration.ofMillis(100), Duration.ofMillis(1200), Duration.ofMillis(500))));
     }
 
     public void send(@NotNull CommandSender receiver, String... replacements) {
@@ -115,14 +173,14 @@ public enum Message {
     public void sendCommand(@NotNull CommandSender receiver, @NotNull String command, boolean run) {
         String text = getText();
         if (text.isEmpty()) return;
-        receiver.sendMessage(LegacyComponentSerializer.legacySection().deserialize(text)
+        receiver.sendMessage(component(text)
                 .clickEvent(run ? ClickEvent.runCommand(command) : ClickEvent.suggestCommand(command))
                 .hoverEvent(HoverEvent.showText(Component.text(command, NamedTextColor.GRAY))));
     }
 
     public void sendActionBar(@NotNull Player receiver, String... replacements) {
         String text = getText(replacements);
-        if (!text.isEmpty()) receiver.sendActionBar(LegacyComponentSerializer.legacySection().deserialize(text));
+        if (!text.isEmpty()) receiver.sendActionBar(component(text));
     }
 
 }

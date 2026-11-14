@@ -10,7 +10,6 @@ import com.christian34.woodcutter.utils.Message;
 import com.christian34.woodcutter.utils.Statistics;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -118,7 +117,7 @@ public class Menu implements InventoryHolder {
     }
 
     private static Component component(String text) {
-        return LegacyComponentSerializer.legacySection().deserialize(text).decoration(TextDecoration.ITALIC, false);
+        return Message.component(text).decoration(TextDecoration.ITALIC, false);
     }
 
     private static ItemStack item(Material material, String name, List<String> lore) {
@@ -194,7 +193,7 @@ public class Menu implements InventoryHolder {
         int rank = 1;
         for (Skill.Entry entry : skill.top(TOP_ENTRIES)) {
             lore.add(Message.SKILL_TOP_ENTRY.getText("%rank%", Integer.toString(rank++), "%player%", entry.name(),
-                    "%level%", Integer.toString(skill.levelOf(entry.xp())), "%xp%", Long.toString(entry.xp())));
+                    "%level%", Integer.toString(skill.levelOf(entry.xp())), "%xp%", Long.toString(entry.xp()), "%trees%", Long.toString(entry.trees())));
         }
         // a crown for the best
         return item(Material.GOLDEN_HELMET, Message.MENU_TOP.getText(), lore);

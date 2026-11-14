@@ -5,8 +5,8 @@ import com.christian34.woodcutter.files.ConfigData;
 import com.christian34.woodcutter.utils.Debug;
 import com.christian34.woodcutter.utils.Message;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -67,7 +67,8 @@ public class Skill {
         if (players == null) return;
         for (String key : players.getKeys(false)) {
             try {
-                entries.put(UUID.fromString(key), new Entry(players.getString(key + ".name", "?"), players.getLong(key + ".xp")));
+                entries.put(UUID.fromString(key), new Entry(players.getString(key + ".name", "?"), players.getLong(key + ".xp"),
+                        players.getLong(key + ".trees")));
             } catch (IllegalArgumentException ex) {
                 Debug.warn("Skipped invalid player '" + key + "' in file '" + FILE + "'");
             }
@@ -84,6 +85,7 @@ public class Skill {
         entries.forEach((uuid, entry) -> {
             data.set(PLAYERS + "." + uuid + ".name", entry.name());
             data.set(PLAYERS + "." + uuid + ".xp", entry.xp());
+            data.set(PLAYERS + "." + uuid + ".trees", entry.trees());
         });
         try {
             // into another file first, so a crash while writing does not destroy the levels of all players
@@ -134,6 +136,22 @@ public class Skill {
     public long xp(UUID player) {
         Entry entry = entries.get(player);
         return entry == null ? 0 : entry.xp();
+    }
+
+    /**
+     * @return the trees the player has cut
+     */
+    public long trees(UUID player) {
+        Entry entry = entries.get(player);
+        return entry == null ? 0 : entry.trees();
+    }
+
+    /**
+     * @return the entry of the player, an empty one if they have not cut a tree yet
+     */
+    public Entry entry(Player player) {
+        Entry entry = entries.get(player.getUniqueId());
+        return entry == null ? new Entry(player.getName(), 0, 0) : entry;
     }
 
     public int level(UUID player) {
@@ -202,13 +220,14 @@ public class Skill {
      * @param logs the amount of logs of the tree
      */
     public void reward(Player player, int logs) {
-        if (!isEnabled()) return;
-        long gained = (long) logs * Math.max(0, instance.getConfigData().getInt(ConfigData.Keys.SKILL_XP_PER_LOG));
-        if (gained <= 0) return;
-        long before = xp(player.getUniqueId());
+        Entry entry = entry(player);
+        long gained = !isEnabled() ? 0 : (long) logs * Math.max(0, instance.getConfigData().getInt(ConfigData.Keys.SKILL_XP_PER_LOG));
+        long before = entry.xp();
         long xp = before + gained;
-        entries.put(player.getUniqueId(), new Entry(player.getName(), xp));
+        // the trees are counted for the statistics of the player, also without the skill
+        entries.put(player.getUniqueId(), new Entry(player.getName(), xp, entry.trees() + 1));
         this.changed = true;
+        if (gained <= 0) return;
 
         int level = levelOf(xp);
         String levelText = Integer.toString(level);
@@ -232,6 +251,7 @@ public class Skill {
         List<String> perks = describePerks(reached);
         perks.removeAll(describePerks(before));
         perks.forEach(player::sendMessage);
+        for (int reachedLevel = before + 1; reachedLevel <= reached; reachedLevel++) runRewards(player, reachedLevel);
         String title = Message.SKILL_LEVEL_UP_TITLE.getText("%level%", level);
         String subtitle = Message.SKILL_LEVEL_UP_SUBTITLE.getText("%level%", level);
         if (title.isEmpty() && subtitle.isEmpty()) return;
@@ -240,8 +260,35 @@ public class Skill {
         player.playSound(player.getLocation(), "minecraft:entity.player.levelup", 1, 1);
     }
 
+    /**
+     * the commands of 'skill.rewards' for the level ('level: command'), run by the server
+     */
+    private void runRewards(Player player, int level) {
+        List<String> commands = new ArrayList<>();
+        for (String reward : instance.getConfigData().getList(ConfigData.Keys.SKILL_REWARDS)) {
+            int colon = reward.indexOf(':');
+            if (colon <= 0) continue;
+            try {
+                if (Integer.parseInt(reward.substring(0, colon).trim()) != level) continue;
+            } catch (NumberFormatException ex) {
+                Debug.warn("Skipped the invalid reward '" + reward + "', it has to start with a level like '10: '");
+                continue;
+            }
+            String command = reward.substring(colon + 1).trim();
+            if (command.startsWith("/")) command = command.substring(1);
+            if (command.isEmpty()) continue;
+            commands.add(command.replace("%player%", player.getName()).replace("%uuid%", player.getUniqueId().toString())
+                    .replace("%level%", Integer.toString(level)));
+        }
+        if (commands.isEmpty()) return;
+        // commands of the console run on the global region on Folia
+        Bukkit.getGlobalRegionScheduler().execute(instance, () -> {
+            for (String command : commands) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        });
+    }
+
     private static Component component(String text) {
-        return LegacyComponentSerializer.legacySection().deserialize(text);
+        return Message.component(text);
     }
 
     /**
@@ -263,9 +310,10 @@ public class Skill {
     }
 
     /**
-     * @param name the name the player had when they cut their last tree
+     * @param name  the name the player had when they cut their last tree
+     * @param trees the trees the player has cut (since 3.2.0)
      */
-    public record Entry(String name, long xp) {
+    public record Entry(String name, long xp, long trees) {
     }
 
 }

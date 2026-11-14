@@ -1,0 +1,83 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                    - Mensajes -                      | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# colores: &c, &l, colores hex como &#ff8800 - o MiniMessage: <gold>, <gradient:#5e9c3a:#c9a46b>...</gradient>
+# (un texto con etiquetas MiniMessage no debe contener códigos &) - %prefix% se sustituye por el prefijo de abajo
+# un texto vacío ('') no se envía
+
+messages:
+  prefix: '&8[&9Wood&7Cutter&8] '
+  no_permission: '%prefix%&c¡Lo siento, no tienes permiso para esto!'
+  players_only: '%prefix%&c¡Este comando solo lo pueden usar jugadores!'
+  reloaded: '%prefix%&a¡La configuración se ha recargado!'
+  enchant_success: '%prefix%&a¡La herramienta ha sido encantada!'
+  enchant_failed: '%prefix%&c¡La herramienta no se pudo encantar!'
+  invalid_level: '%prefix%&c¡El nivel tiene que ser un número del 1 al %max%!'
+  player_not_online: "%prefix%&c¡El jugador '%player%' no está conectado!"
+  no_axe: "%prefix%&c¡'%item%' no es un hacha! Usa 'book' o un hacha como 'diamond_axe'."
+  give_sent: '%prefix%&a%player% ha recibido el objeto.'
+  give_received_book: '%prefix%&a¡Has recibido un libro con WoodCutter!'
+  give_received_axe: '%prefix%&a¡Has recibido un hacha con WoodCutter!'
+  toggle_on: '%prefix%&a¡WoodCutter está activado, vuelves a talar árboles enteros!'
+  toggle_off: '%prefix%&7WoodCutter está desactivado, ahora solo rompes troncos sueltos.'
+  # se muestra en la barra de acción
+  not_enough_food: '&cTienes demasiada hambre para talar un árbol entero.'
+  not_enough_experience: '&cNecesitas %levels% niveles de experiencia para talar un árbol entero.'
+  update_available: '%prefix%&7Hay una nueva versión disponible en: &9https://github.com/itsthechris07/WoodCutter/releases/latest'
+  help_toggle: '&7/&9WoodCutter toggle &f| &7activa o desactiva WoodCutter para ti'
+  help_reload: '&7/&9WoodCutter reload &f| &7recarga los archivos de configuración'
+  help_enchant: '&7/&9WoodCutter enchant [level] &f| &7encanta el hacha de tu mano'
+  help_give: '&7/&9WoodCutter give <player> [book|axe] [level] &f| &7da un libro o un hacha encantados'
+  axe_almost_broken: '&cTu hacha está casi rota, el árbol no se tala más.'
+  # se muestra una vez en la barra de acción, cuando un jugador rompe un tronco sin agacharse
+  sneak_hint: '&7Agáchate mientras rompes un tronco para talar el árbol entero.'
+  # la habilidad de leñador - los dos primeros se muestran en la barra de acción después de un árbol
+  skill_xp: '&a+%xp% XP &8| &7Nivel &9%level% &8| &f%current%&7/&f%needed%'
+  skill_xp_max: '&a+%xp% XP &8| &7Nivel &9%level% &8(&7máx.&8)'
+  skill_level_up: '%prefix%&a¡Has alcanzado el nivel de leñador &9%level%&a!'
+  skill_level_up_title: '&9Nivel %level%'
+  skill_level_up_subtitle: '&7Leñador'
+  skill_disabled: '%prefix%&c¡La habilidad de leñador está desactivada!'
+  skill_no_data: "%prefix%&c¡'%player%' todavía no ha talado ningún árbol!"
+  skill_info: '%prefix%&9%player% &8| &7Nivel &9%level% &8| &f%current%&7/&f%needed% XP'
+  skill_info_max: '%prefix%&9%player% &8| &7Nivel &9%level% &8(&7máx.&8) | &f%xp% XP'
+  skill_perk_speed: ' &8- &7Tala más rápida: &f+%value% troncos por tick'
+  skill_perk_delay: ' &8- &7Espera más corta: &f-%value% segundos'
+  skill_perk_max_blocks: ' &8- &7Árboles más grandes: &f+%value% troncos'
+  skill_perk_bonus_drops: ' &8- &7Botín extra: &f+%value% %'
+  skill_perk_axe_saver: ' &8- &7Cuidado con el hacha: &f%value% % de los troncos no la desgastan'
+  skill_perk_costs: ' &8- &7Costes menores: &f-%value% %'
+  skill_perk_forester_luck: ' &8- &7Suerte del guardabosques: &f%value% % de las hojas sueltan algo'
+  skill_unlock_replant: ' &8- &7Se planta un brote nuevo gratis'
+  skill_unlock_drops_to_inventory: ' &8- &7Los troncos van a tu inventario'
+  skill_top_header: '%prefix%&7Los mejores leñadores:'
+  skill_top_entry: ' &7%rank%. &9%player% &8| &7Nivel &9%level% &8| &f%xp% XP'
+  help_level: '&7/&9WoodCutter level [player] &f| &7muestra el nivel de leñador y sus ventajas'
+  help_top: '&7/&9WoodCutter top &f| &7muestra los mejores leñadores'
+  help_menu: '&7/&9WoodCutter menu &f| &7abre el menú'
+  # el menú (/woodcutter menu)
+  menu_title: '&8WoodCutter'
+  menu_toggle_on: '&aWoodCutter está activado'
+  menu_toggle_off: '&cWoodCutter está desactivado'
+  menu_toggle_lore: '&7Haz clic para activarlo o desactivarlo'
+  menu_skill: '&9Nivel de leñador %level%'
+  menu_skill_progress: '&f%current%&7/&f%needed% XP'
+  menu_skill_max: '&7Nivel máximo &8| &f%xp% XP'
+  menu_top: '&9Los mejores leñadores'
+  menu_settings: '&9Ajustes'
+  menu_settings_lore: '&7Haz clic para cambiar los ajustes del plugin'
+  menu_settings_title: '&8Ajustes de WoodCutter'
+  menu_setting_on: '&a%setting%'
+  menu_setting_off: '&c%setting%'
+  menu_setting_lore: '&7Haz clic para activarlo o desactivarlo'
+  menu_back: '&7Atrás'
+  # se muestra como subtítulo cuando un árbol cae (animación 'topple')
+  timber: '&6&l¡Árbol va!'
+  # dinero por un árbol talado (economy.reward-per-log) - p. ej. '%prefix%&a+%money% &7por %logs% troncos'
+  economy_reward: ''
+  # se muestra en la barra de acción
+  not_enough_money: '&cNecesitas %money% para talar un árbol entero.'
+  skill_trees: ' &8- &7Árboles talados: &f%trees%'

@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  * @author Christian34
  */
 public class PlaceholderHook extends PlaceholderExpansion {
-    private static final Pattern TOP = Pattern.compile("top_(\\d{1,3})_(name|level|xp)");
+    private static final Pattern TOP = Pattern.compile("top_(\\d{1,3})_(name|level|xp|trees)");
     private final WoodCutter instance;
 
     public PlaceholderHook(WoodCutter instance) {
@@ -60,7 +60,8 @@ public class PlaceholderHook extends PlaceholderExpansion {
     public @NotNull List<String> getPlaceholders() {
         return List.of("%woodcutter_enabled%", "%woodcutter_level%", "%woodcutter_max_blocks%", "%woodcutter_delay%",
                 "%woodcutter_skill_level%", "%woodcutter_skill_xp%", "%woodcutter_skill_xp_needed%",
-                "%woodcutter_top_<rank>_name%", "%woodcutter_top_<rank>_level%", "%woodcutter_top_<rank>_xp%");
+                "%woodcutter_trees%", "%woodcutter_top_<rank>_name%", "%woodcutter_top_<rank>_level%",
+                "%woodcutter_top_<rank>_xp%", "%woodcutter_top_<rank>_trees%");
     }
 
     /**
@@ -74,6 +75,7 @@ public class PlaceholderHook extends PlaceholderExpansion {
         return switch (value) {
             case "name" -> entry.name();
             case "level" -> Integer.toString(skill.levelOf(entry.xp()));
+            case "trees" -> Long.toString(entry.trees());
             default -> Long.toString(entry.xp());
         };
     }
@@ -98,6 +100,8 @@ public class PlaceholderHook extends PlaceholderExpansion {
             // the level of the woodcutting skill and the experience of the player in it
             case "skill_level" -> Integer.toString(skill.level(player.getUniqueId()));
             case "skill_xp" -> Long.toString(skill.xp(player.getUniqueId()));
+            // the trees the player has cut
+            case "trees" -> Long.toString(skill.trees(player.getUniqueId()));
             // the experience that is missing for the next level, 0 at the highest level
             case "skill_xp_needed" -> {
                 int skillLevel = skill.level(player.getUniqueId());

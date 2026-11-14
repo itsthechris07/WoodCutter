@@ -136,7 +136,7 @@ public class CommandWoodCutter implements TabExecutor {
             Message.PLAYERS_ONLY.send(sender);
             return;
         }
-        Skill.Entry entry = name == null ? new Skill.Entry(sender.getName(), skill.xp(((Player) sender).getUniqueId())) : skill.find(name);
+        Skill.Entry entry = name == null ? skill.entry((Player) sender) : skill.find(name);
         if (entry == null) {
             Message.SKILL_NO_DATA.send(sender, "%player%", name);
             return;
@@ -149,6 +149,7 @@ public class CommandWoodCutter implements TabExecutor {
             Message.SKILL_INFO.send(sender, "%player%", entry.name(), "%level%", Integer.toString(level),
                     "%current%", Long.toString(entry.xp() - reached), "%needed%", Long.toString(skill.xpForLevel(level + 1) - reached));
         }
+        Message.SKILL_TREES.send(sender, "%trees%", Long.toString(entry.trees()));
         if (name == null && sender instanceof Player player) skill.describePerks(player).forEach(player::sendMessage);
     }
 
@@ -171,7 +172,7 @@ public class CommandWoodCutter implements TabExecutor {
         int rank = 1;
         for (Skill.Entry entry : skill.top(TOP_ENTRIES)) {
             Message.SKILL_TOP_ENTRY.send(sender, "%rank%", Integer.toString(rank++), "%player%", entry.name(),
-                    "%level%", Integer.toString(skill.levelOf(entry.xp())), "%xp%", Long.toString(entry.xp()));
+                    "%level%", Integer.toString(skill.levelOf(entry.xp())), "%xp%", Long.toString(entry.xp()), "%trees%", Long.toString(entry.trees()));
         }
     }
 
