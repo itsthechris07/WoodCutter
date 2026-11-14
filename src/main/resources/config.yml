@@ -70,6 +70,8 @@ config:
       knockback: true
       # damage the tree does to the mobs and players it falls on, as the player who cut it (2 = a heart, 0 disables it)
       damage: 0
+      # shows "Timber!" (message 'timber') as a subtitle to the player who cut the tree
+      timber: false
   # the leaves of a cut tree decay within seconds
   fast-leaf-decay: true
   # plants a new sapling when the lowest log of a tree is broken - four of them for trees with a trunk of 2x2 logs

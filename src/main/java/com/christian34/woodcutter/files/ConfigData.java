@@ -161,6 +161,7 @@ public class ConfigData {
         public static final String TOPPLE_DROPS_WHERE_IT_LANDS = "animation.topple.drops-where-it-lands";
         public static final String TOPPLE_KNOCKBACK = "animation.topple.knockback";
         public static final String TOPPLE_DAMAGE = "animation.topple.damage";
+        public static final String TOPPLE_TIMBER = "animation.topple.timber";
         public static final String REQUIRE_LEAVES = "require-leaves";
         public static final String MUSHROOMS = "mushrooms";
         public static final String EXCLUDED_LOGS = "excluded-logs";

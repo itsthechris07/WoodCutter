@@ -194,12 +194,17 @@ public class Skill {
 
     private List<String> describePerks(int level) {
         List<String> lines = new ArrayList<>();
-        addPerk(lines, Message.SKILL_PERK_SPEED, Math.round(perk(level, PERK_SPEED)));
-        addPerk(lines, Message.SKILL_PERK_DELAY, perk(level, PERK_DELAY));
+        // perks that change nothing with the settings of the server are left out
+        ConfigData config = instance.getConfigData();
+        boolean layers = config.getBoolean(ConfigData.Keys.ANIMATION) && !config.getString(ConfigData.Keys.ANIMATION_MODE).equalsIgnoreCase("topple");
+        boolean costs = config.getInt(ConfigData.Keys.COSTS_HUNGER) > 0 || config.getInt(ConfigData.Keys.COSTS_EXPERIENCE) > 0
+                || config.getDouble(ConfigData.Keys.ECONOMY_COSTS) > 0;
+        if (layers) addPerk(lines, Message.SKILL_PERK_SPEED, Math.round(perk(level, PERK_SPEED)));
+        if (config.getBoolean(ConfigData.Keys.DELAY)) addPerk(lines, Message.SKILL_PERK_DELAY, perk(level, PERK_DELAY));
         addPerk(lines, Message.SKILL_PERK_MAX_BLOCKS, Math.floor(perk(level, PERK_MAX_BLOCKS)));
         addPerk(lines, Message.SKILL_PERK_BONUS_DROPS, perk(level, PERK_BONUS_DROPS));
         addPerk(lines, Message.SKILL_PERK_AXE_SAVER, perk(level, PERK_AXE_SAVER));
-        addPerk(lines, Message.SKILL_PERK_COSTS, perk(level, PERK_COSTS));
+        if (costs) addPerk(lines, Message.SKILL_PERK_COSTS, perk(level, PERK_COSTS));
         addPerk(lines, Message.SKILL_PERK_FORESTER_LUCK, perk(level, PERK_FORESTER_LUCK));
         if (isUnlocked(level, UNLOCK_REPLANT)) lines.add(Message.SKILL_UNLOCK_REPLANT.getText());
         if (isUnlocked(level, UNLOCK_DROPS_TO_INVENTORY)) lines.add(Message.SKILL_UNLOCK_DROPS_TO_INVENTORY.getText());

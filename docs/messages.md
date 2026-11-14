@@ -25,7 +25,7 @@ New texts are added after an update, your texts stay. An empty text (`''`) is no
 
 | Text | Shown |
 |---|---|
-| `timber` | As a subtitle when a tree tips over (animation `topple`) |
+| `timber` | As a subtitle when a tree tips over (animation `topple`, with `animation.topple.timber: true`) |
 | `economy_reward` | In the chat when a player gets money for a tree, empty by default, e.g. `'%prefix%&a+%money% &7for %logs% logs'` |
 | `skill_xp` | Over the action bar after every tree |
 | `skill_level_up_title` | As a title when a player reaches a level |

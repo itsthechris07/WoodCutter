@@ -31,10 +31,16 @@ For the top of the description, right below the banner:
 > Works with WorldGuard (region flag), PlaceholderAPI, CoreProtect and every protection plugin – each log is broken
 > as the player.
 
+## Changelog 3.2.1
+
+> - "Timber!" is off by default (`animation.topple.timber: true` turns it on).
+> - Perks that change nothing on the server (shorter delay without a delay, lower costs without costs, faster cutting
+>   without the animation 'layers') are no longer shown.
+
 ## Changelog 3.2.0
 
 > - Animation 'topple': the tree falls with its leaves, the items drop where it hits the ground, and mobs and players
->   in the way are pushed away (optional damage). "Timber!" is shown as a subtitle.
+>   in the way are pushed away (optional damage). "Timber!" as a subtitle if you like.
 > - Vault: trees can earn money per log and cost money.
 > - Commands as rewards for levels of the woodcutting skill, e.g. items or a rank.
 > - Trees cut per player: `/woodcutter level`, `%woodcutter_trees%`, `%woodcutter_top_<rank>_trees%`.

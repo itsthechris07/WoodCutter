@@ -17,7 +17,9 @@ names of all players are kept in `plugins/WoodCutter/levels.yml`, so the ranking
 
 ## Perks
 
-The perks grow evenly with every level, up to their value at the highest level. `0` disables a perk.
+The perks grow evenly with every level, up to their value at the highest level. `0` disables a perk. Perks that
+change nothing with the settings of the server are not shown to the players, e.g. `delay` while `delay.enabled` is
+`false`, `speed` without the animation `layers` and `costs` while all costs are `0`.
 
 | Perk | Default at the highest level | Description |
 |---|---|---|

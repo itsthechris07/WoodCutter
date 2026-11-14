@@ -3,6 +3,8 @@ package com.christian34.woodcutter.listeners;
 import com.christian34.woodcutter.PluginTestBase;
 import com.christian34.woodcutter.files.ConfigData;
 import com.christian34.woodcutter.utils.Message;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.title.Title;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +20,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.ServicePriority;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
@@ -146,6 +149,36 @@ class PremiumFeaturesTest extends PluginTestBase {
         assertTrue(zombie.getVelocity().getX() > 0);
         // not the player who cut it
         assertEquals(20, player.getHealth(), 0.001);
+    }
+
+    @Test
+    void timberOnlyIfEnabled() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        setConfig(ConfigData.Keys.ANIMATION, true);
+        setConfig(ConfigData.Keys.ANIMATION_MODE, "topple");
+        List<String> subtitles = new ArrayList<>();
+        PlayerMock player = new PlayerMock(server, "Cutter") {
+            @Override
+            public void showTitle(@NotNull Title title) {
+                subtitles.add(PlainTextComponentSerializer.plainText().serialize(title.subtitle()));
+            }
+        };
+        server.addPlayer(player);
+        player.addAttachment(plugin, "woodcutter.use", true);
+        player.setSneaking(true);
+        player.getInventory().setItemInMainHand(enchantedAxe());
+        player.teleport(new Location(world, X - 3.5, Y, Z + 0.5));
+
+        // the mocked server leaves the log the player breaks
+        breakBlock(player, tree(X, 8));
+        assertEquals(1, logs(X, 8));
+        assertFalse(subtitles.contains("Timber!"), subtitles::toString);
+
+        setConfig(ConfigData.Keys.TOPPLE_TIMBER, true);
+        server.getScheduler().performTicks(30);
+        breakBlock(player, tree(X, 8));
+        assertEquals(1, logs(X, 8));
+        assertTrue(subtitles.contains("Timber!"), subtitles::toString);
     }
 
     @Test

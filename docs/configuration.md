@@ -54,6 +54,7 @@ in `/woodcutter menu`.
 | `animation.topple.drops-where-it-lands` | `true` | The items drop where the tree hits the ground (not with `drops-to-inventory`) |
 | `animation.topple.knockback` | `true` | Mobs and players the tree falls on are pushed away |
 | `animation.topple.damage` | `0` | Damage the tree does to them (2 = a heart), as the player who cut it, so PvP and protection plugins can deny it |
+| `animation.topple.timber` | `false` | Shows "Timber!" (message `timber`) as a subtitle to the player who cut the tree |
 
 ## Drops
 

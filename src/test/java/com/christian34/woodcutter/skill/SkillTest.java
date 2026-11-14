@@ -3,6 +3,7 @@ package com.christian34.woodcutter.skill;
 import com.christian34.woodcutter.PluginTestBase;
 import com.christian34.woodcutter.files.ConfigData;
 import com.christian34.woodcutter.woodcutting.Cutter;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -123,7 +124,8 @@ class SkillTest extends PluginTestBase {
         setConfig(ConfigData.Keys.SKILL_XP_FIRST_LEVEL, 10);
         setConfig(ConfigData.Keys.SKILL_XP_INCREASE, 0);
         setConfig(ConfigData.Keys.SKILL_PERKS + Skill.PERK_MAX_BLOCKS, 100);
-        // only grows every second level
+        // only grows every second level, and only with the animation 'layers'
+        setConfig(ConfigData.Keys.ANIMATION, true);
         setConfig(ConfigData.Keys.SKILL_PERKS + Skill.PERK_SPEED, 5);
         setConfig(ConfigData.Keys.SKILL_UNLOCKS + Skill.UNLOCK_REPLANT, 2);
         PlayerMock player = addCutter("Cutter");
@@ -140,6 +142,28 @@ class SkillTest extends PluginTestBase {
         assertContains(messages, "A new sapling is planted for free");
         // perks that stay the same are left out
         assertTrue(messages.stream().noneMatch(message -> message.contains("Faster cutting")));
+    }
+
+    @Test
+    void perksThatChangeNothingAreLeftOut() {
+        setConfig(ConfigData.Keys.SKILL_PERKS + Skill.PERK_DELAY, 20);
+        setConfig(ConfigData.Keys.SKILL_PERKS + Skill.PERK_COSTS, 50);
+        setConfig(ConfigData.Keys.SKILL_PERKS + Skill.PERK_SPEED, 10);
+        setConfig(ConfigData.Keys.ANIMATION, true);
+        setConfig(ConfigData.Keys.ANIMATION_MODE, "topple");
+        PlayerMock player = addCutter("Cutter");
+        skill.reward(player, 50);
+        // no delay, no costs and the animation 'topple'
+        List<String> perks = skill.describePerks(player);
+        assertTrue(perks.stream().noneMatch(perk -> perk.contains("delay") || perk.contains("costs") || perk.contains("Faster")), perks::toString);
+
+        setConfig(ConfigData.Keys.DELAY, true);
+        setConfig(ConfigData.Keys.COSTS_EXPERIENCE, 1);
+        setConfig(ConfigData.Keys.ANIMATION_MODE, "layers");
+        perks = skill.describePerks(player).stream().map(ChatColor::stripColor).toList();
+        assertContains(perks, "Shorter delay: -10 seconds");
+        assertContains(perks, "Lower costs: -25 %");
+        assertContains(perks, "Faster cutting: +5 logs per tick");
     }
 
     @Test

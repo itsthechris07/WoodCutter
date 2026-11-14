@@ -149,6 +149,10 @@ public class Cutter {
     private final boolean dropsWhereItLands;
     private final boolean knockback;
     private final double damage;
+    /**
+     * with the animation 'topple': "Timber!" is shown to the player
+     */
+    private final boolean timber;
     @Nullable
     private Material sapling;
     /**
@@ -189,6 +193,7 @@ public class Cutter {
         this.dropsWhereItLands = topple && !dropsToInventory && config.getBoolean(ConfigData.Keys.TOPPLE_DROPS_WHERE_IT_LANDS);
         this.knockback = config.getBoolean(ConfigData.Keys.TOPPLE_KNOCKBACK);
         this.damage = config.getDouble(ConfigData.Keys.TOPPLE_DAMAGE);
+        this.timber = config.getBoolean(ConfigData.Keys.TOPPLE_TIMBER);
     }
 
     /**
@@ -449,7 +454,7 @@ public class Cutter {
                 BlockData data = leaf.getBlockData();
                 if (decayLeaf(leaf, dropsWhereItLands ? tree : null, false)) tree.addLeaf(leaf, data);
             }
-            if (tree.start()) Message.TIMBER.sendSubtitle(player);
+            if (tree.start() && timber) Message.TIMBER.sendSubtitle(player);
             finish();
         } else if (blocksPerTick == 0) {
             breakLogs(0, logs.size());

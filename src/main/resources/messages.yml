@@ -74,7 +74,7 @@ messages:
   menu_setting_off: '&c%setting%'
   menu_setting_lore: '&7Click to switch it on or off'
   menu_back: '&7Back'
-  # shown as a subtitle when a tree tips over (animation 'topple')
+  # shown as a subtitle when a tree tips over (animation 'topple', with animation.topple.timber: true in the config)
   timber: '&6&lTimber!'
   # money for a cut tree (economy.reward-per-log) - e.g. '%prefix%&a+%money% &7for %logs% logs'
   economy_reward: ''
