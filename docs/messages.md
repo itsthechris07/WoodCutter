@@ -9,8 +9,9 @@ New texts are added after an update, your texts stay. An empty text (`''`) is no
 
 ## Languages
 
-`language` in the `config.yml`: `en` (English), `de` (German), `fr` (French), `es` (Spanish), `pl` (Polish) or
-`zh` (Chinese). Improvements to the translations are welcome as an
+`language` in the `config.yml`: `en` (English), `de` (German), `fr` (French), `es` (Spanish), `pl` (Polish), `zh`
+(Chinese), `ru` (Russian), `uk` (Ukrainian), `cs` (Czech) or `pt` (Portuguese). Improvements to the
+translations are welcome as an
 [issue](https://github.com/itsthechris07/WoodCutter/issues) or a pull request.
 
 ## Colors

@@ -4,8 +4,8 @@ import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.files.ConfigData;
 import com.christian34.woodcutter.utils.Debug;
 import com.christian34.woodcutter.utils.Message;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
+import com.christian34.woodcutter.platform.Platform;
+import com.christian34.woodcutter.utils.TaskManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -260,7 +260,7 @@ public class Skill {
         String title = Message.SKILL_LEVEL_UP_TITLE.getText("%level%", level);
         String subtitle = Message.SKILL_LEVEL_UP_SUBTITLE.getText("%level%", level);
         if (title.isEmpty() && subtitle.isEmpty()) return;
-        player.showTitle(Title.title(component(title), component(subtitle)));
+        Platform.get().showTitle(player, title, subtitle, 10, 70, 20);
         // by its name, as the sounds became a registry in 1.21.3
         player.playSound(player.getLocation(), "minecraft:entity.player.levelup", 1, 1);
     }
@@ -287,13 +287,9 @@ public class Skill {
         }
         if (commands.isEmpty()) return;
         // commands of the console run on the global region on Folia
-        Bukkit.getGlobalRegionScheduler().execute(instance, () -> {
+        TaskManager.global(() -> {
             for (String command : commands) Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         });
-    }
-
-    private static Component component(String text) {
-        return Message.component(text);
     }
 
     /**

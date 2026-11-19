@@ -81,3 +81,7 @@ messages:
   # pokazywane na pasku akcji
   not_enough_money: '&cPotrzebujesz %money%, żeby ściąć całe drzewo.'
   skill_trees: ' &8- &7Ścięte drzewa: &f%trees%'
+  # pasek podczas ścinania większego drzewa (ustawienie 'chopping')
+  chopping: '&6Ścinanie drzewa &8(&f%logs% kłód&8)'
+  # pokazywane na pasku akcji
+  sapling_protected: '&cTa sadzonka została posadzona przez WoodCutter i nie można jej zniszczyć, dopóki nie urośnie.'

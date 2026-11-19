@@ -2,6 +2,7 @@ package com.christian34.woodcutter.listeners;
 
 import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.menu.Menu;
+import com.christian34.woodcutter.utils.TaskManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -29,7 +30,7 @@ public class MenuListener implements Listener {
         if (e.getRawSlot() >= e.getInventory().getSize() || !menu.getPlayer().equals(e.getWhoClicked())) return;
         // the menu opens another one or changes the config, which is not allowed while the click is handled
         int slot = e.getRawSlot();
-        menu.getPlayer().getScheduler().run(instance, task -> menu.click(slot), null);
+        TaskManager.run(menu.getPlayer(), () -> menu.click(slot));
     }
 
     @EventHandler

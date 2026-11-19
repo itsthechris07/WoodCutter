@@ -81,3 +81,7 @@ messages:
   # über der Aktionsleiste
   not_enough_money: '&cDu brauchst %money%, um einen ganzen Baum zu fällen.'
   skill_trees: ' &8- &7Gefällte Bäume: &f%trees%'
+  # die Leiste, während ein größerer Baum gefällt wird (Einstellung 'chopping')
+  chopping: '&6Der Baum wird gefällt &8(&f%logs% Stämme&8)'
+  # über der Aktionsleiste
+  sapling_protected: '&cDieser Setzling wurde von WoodCutter gepflanzt und kann erst abgebaut werden, wenn er gewachsen ist.'

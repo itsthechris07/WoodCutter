@@ -81,3 +81,7 @@ messages:
   # affiché dans la barre d'action
   not_enough_money: '&cTu as besoin de %money% pour couper un arbre entier.'
   skill_trees: ' &8- &7Arbres coupés : &f%trees%'
+  # la barre pendant qu'un grand arbre est abattu (réglage 'chopping')
+  chopping: "&6Abattage de l'arbre &8(&f%logs% bûches&8)"
+  # affiché dans la barre d'action
+  sapling_protected: "&cCette pousse a été plantée par WoodCutter et ne peut pas être cassée avant d'avoir poussé."

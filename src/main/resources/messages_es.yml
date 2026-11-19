@@ -81,3 +81,7 @@ messages:
   # se muestra en la barra de acción
   not_enough_money: '&cNecesitas %money% para talar un árbol entero.'
   skill_trees: ' &8- &7Árboles talados: &f%trees%'
+  # la barra mientras se tala un árbol más grande (ajuste 'chopping')
+  chopping: '&6Talando el árbol &8(&f%logs% troncos&8)'
+  # se muestra en la barra de acción
+  sapling_protected: '&cEste brote fue plantado por WoodCutter y no se puede romper hasta que crezca.'

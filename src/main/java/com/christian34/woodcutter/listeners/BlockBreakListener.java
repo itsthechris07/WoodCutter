@@ -6,11 +6,13 @@ import com.christian34.woodcutter.events.WoodCutterEvent;
 import com.christian34.woodcutter.files.ConfigData;
 import com.christian34.woodcutter.hooks.EconomyHook;
 import com.christian34.woodcutter.hooks.WorldGuardHook;
+import com.christian34.woodcutter.platform.Platform;
 import com.christian34.woodcutter.skill.Skill;
 import com.christian34.woodcutter.utils.Message;
 import com.christian34.woodcutter.utils.Statistics;
 import com.christian34.woodcutter.woodcutting.Cutter;
 import com.christian34.woodcutter.woodcutting.PlacedLogs;
+import com.christian34.woodcutter.woodcutting.PlantedSaplings;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.NamespacedKey;
@@ -23,6 +25,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -48,6 +52,10 @@ public class BlockBreakListener implements Listener {
     public static final String PERMISSION_USE = "woodcutter.use";
     public static final String PERMISSION_GOODIE = "woodcutter.goodie";
     public static final String PERMISSION_BYPASS_DELAY = "woodcutter.bypass.delay";
+    /**
+     * break the saplings WoodCutter has planted (with 'replant.protect')
+     */
+    public static final String PERMISSION_REPLANT_BREAK = "woodcutter.replant.break";
     /**
      * followed by the seconds of the delay, e.g. for ranks
      */
@@ -89,9 +97,10 @@ public class BlockBreakListener implements Listener {
     }
 
     /**
-     * @param pattern the name of a world, * stands for any characters (e.g. sg_*), upper and lower case don't matter
+     * @param pattern the name of a world (or a WorldGuard region), * stands for any characters (e.g. sg_*), upper and
+     *                lower case don't matter
      */
-    static boolean matchesWorld(String world, String pattern) {
+    public static boolean matchesWorld(String world, String pattern) {
         return worldPattern(pattern).matcher(world).matches();
     }
 
@@ -146,7 +155,10 @@ public class BlockBreakListener implements Listener {
         if (isDisabled(block.getWorld().getName())) return -1;
 
         WorldGuardHook worldGuard = instance.getWorldGuard();
-        if (worldGuard != null && !worldGuard.isAllowed(player, block)) return -1;
+        if (worldGuard != null && !worldGuard.isAllowed(player, block, config.getString(ConfigData.Keys.WORLDGUARD_REGIONS_MODE),
+                config.getList(ConfigData.Keys.WORLDGUARD_REGIONS))) {
+            return -1;
+        }
         return level;
     }
 
@@ -160,7 +172,7 @@ public class BlockBreakListener implements Listener {
         if (remaining <= 0) return false;
         String message = instance.getConfigData().getString(ConfigData.Keys.DELAY_MSG);
         if (!message.isEmpty()) {
-            player.sendActionBar(Message.component(Message.format(message.replace("%time%", Long.toString(remaining)))));
+            Platform.get().sendActionBar(player, Message.format(message.replace("%time%", Long.toString(remaining))));
         }
         return true;
     }
@@ -181,7 +193,44 @@ public class BlockBreakListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockDamage(BlockDamageEvent e) {
-        if (cuttingLevel(e.getPlayer(), e.getBlock(), e.getPlayer().isSneaking()) >= 0) showDelay(e.getPlayer());
+        Player player = e.getPlayer();
+        int level = cuttingLevel(player, e.getBlock(), player.isSneaking());
+        if (level < 0 || showDelay(player) || e.getInstaBreak()) return;
+        // bigger trees take longer to chop
+        instance.getChopping().start(player, e.getBlock(), Cutter.maxBlocks(player, instance.getConfigData(), level));
+    }
+
+    /**
+     * saplings WoodCutter has planted can't be broken until they grow (setting 'replant.protect')
+     */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onSaplingBreak(BlockBreakEvent e) {
+        Block block = e.getBlock();
+        if (!PlantedSaplings.isPlanted(block)) return;
+        Player player = e.getPlayer();
+        if (instance.getConfigData().getBoolean(ConfigData.Keys.REPLANT_PROTECT) && !player.hasPermission(PERMISSION_REPLANT_BREAK)
+                && player.getGameMode() != GameMode.CREATIVE) {
+            e.setCancelled(true);
+            Message.SAPLING_PROTECTED.sendActionBar(player);
+            return;
+        }
+        PlantedSaplings.unmark(block);
+    }
+
+    /**
+     * a planted sapling that has grown is a tree
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onGrow(StructureGrowEvent e) {
+        PlantedSaplings.unmark(e.getLocation().getBlock());
+    }
+
+    /**
+     * a sapling that was washed away or moved leaves its mark - a player who places a block there gets a normal one
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlace(BlockPlaceEvent e) {
+        if (PlantedSaplings.isPlanted(e.getBlockPlaced())) PlantedSaplings.unmark(e.getBlockPlaced());
     }
 
     // after protection plugins, so trees in protected areas are not cut

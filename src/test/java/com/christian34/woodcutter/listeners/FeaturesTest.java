@@ -3,7 +3,15 @@ package com.christian34.woodcutter.listeners;
 import com.christian34.woodcutter.PluginTestBase;
 import com.christian34.woodcutter.enchantments.WoodCutterEnchantment;
 import com.christian34.woodcutter.files.ConfigData;
+import com.christian34.woodcutter.woodcutting.Chopping;
 import com.christian34.woodcutter.woodcutting.PlacedLogs;
+import com.christian34.woodcutter.woodcutting.PlantedSaplings;
+import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.mockbukkit.mockbukkit.attribute.AttributeInstanceMock;
+import org.bukkit.entity.Bee;
+import org.bukkit.event.block.BlockDamageAbortEvent;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -342,24 +350,25 @@ class FeaturesTest extends PluginTestBase {
         Block root = tree(X, 4);
         ItemStack axe = player.getInventory().getItemInMainHand();
         server.getPluginManager().callEvent(new BlockDamageEvent(player, root, axe, false));
-        assertNull(player.nextActionBar());
+        assertNull(actionBar(player));
 
         plugin.getDelays().put(player.getUniqueId(), System.currentTimeMillis());
         server.getPluginManager().callEvent(new BlockDamageEvent(player, root, axe, false));
-        assertNotNull(player.nextActionBar());
+        assertNotNull(actionBar(player));
         // not for blocks that would not cut a tree
         Block stone = world.getBlockAt(X + 5, Y, Z);
         stone.setType(Material.STONE);
         server.getPluginManager().callEvent(new BlockDamageEvent(player, stone, axe, false));
         player.setSneaking(false);
         server.getPluginManager().callEvent(new BlockDamageEvent(player, root, axe, false));
-        assertNull(player.nextActionBar());
+        assertNull(actionBar(player));
     }
 
     @Test
     void treeTipsOver() {
         setConfig(ConfigData.Keys.ANIMATION, true);
         setConfig(ConfigData.Keys.ANIMATION_MODE, "topple");
+        setConfig(ConfigData.Keys.TOPPLE_PHYSICS, "simple");
         PlayerMock player = addCutter("Cutter");
         breakBlock(player, tree(X, 7));
         // cut at once, a display for every log shows the falling tree
@@ -603,6 +612,221 @@ class FeaturesTest extends PluginTestBase {
         setConfig(ConfigData.Keys.DISABLED_WORLDS, List.of("other"));
         breakBlock(player, tree(X + 5, 6));
         assertEquals(1, logs(X + 5, 6));
+    }
+
+    @Test
+    void cocoaAndVinesFallWithTheTree() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 6);
+        Block cocoa = world.getBlockAt(X + 1, Y + 2, Z);
+        cocoa.setType(Material.COCOA);
+        for (int y = 1; y < 5; y++) world.getBlockAt(X - 1, Y + y, Z).setType(Material.VINE);
+        // vines that hang below the tree, on nothing but the vine above
+        for (int y = -2; y <= 0; y++) world.getBlockAt(X, Y + y, Z - 1).setType(Material.VINE);
+        Block hanging = world.getBlockAt(X, Y - 2, Z - 1);
+        // not next to the tree
+        Block other = world.getBlockAt(X + 3, Y + 2, Z);
+        other.setType(Material.COCOA);
+
+        breakBlock(player, root);
+        assertEquals(Material.AIR, cocoa.getType());
+        for (int y = 1; y < 5; y++) assertEquals(Material.AIR, world.getBlockAt(X - 1, Y + y, Z).getType());
+        assertEquals(Material.AIR, hanging.getType());
+        assertEquals(Material.COCOA, other.getType());
+    }
+
+    @Test
+    void attachedBlocksCanBeKept() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        setConfig(ConfigData.Keys.ATTACHED_BLOCKS, List.of());
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 6);
+        Block cocoa = world.getBlockAt(X + 1, Y + 2, Z);
+        cocoa.setType(Material.COCOA);
+        breakBlock(player, root);
+        assertEquals(Material.COCOA, cocoa.getType());
+    }
+
+    @Test
+    void beesOfTheNestAttack() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 6);
+        Block nest = world.getBlockAt(X + 1, Y + 3, Z);
+        nest.setType(Material.BEE_NEST);
+        Bee bee = world.spawn(new Location(world, X + 3.5, Y + 3, Z + 0.5), Bee.class);
+        bee.setHive(nest.getLocation());
+        Bee stranger = world.spawn(new Location(world, X + 4.5, Y + 3, Z + 0.5), Bee.class);
+
+        breakBlock(player, root);
+        assertEquals(Material.AIR, nest.getType());
+        assertTrue(bee.getAnger() > 0);
+        assertEquals(player, bee.getTarget());
+        assertEquals(0, stranger.getAnger());
+        // the nest itself does not drop
+        assertTrue(world.getEntitiesByClass(Item.class).stream().noneMatch(item -> item.getItemStack().getType() == Material.BEE_NEST));
+    }
+
+    @Test
+    void beesCanStayCalm() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        setConfig(ConfigData.Keys.BEES_ANGRY, false);
+        setConfig(ConfigData.Keys.BEES_DROP_NEST, true);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 6);
+        Block nest = world.getBlockAt(X + 1, Y + 3, Z);
+        nest.setType(Material.BEE_NEST);
+        Bee bee = world.spawn(new Location(world, X + 3.5, Y + 3, Z + 0.5), Bee.class);
+        bee.setHive(nest.getLocation());
+        breakBlock(player, root);
+        assertEquals(0, bee.getAnger());
+        assertTrue(world.getEntitiesByClass(Item.class).stream().anyMatch(item -> item.getItemStack().getType() == Material.BEE_NEST));
+    }
+
+    @Test
+    void plantedSaplingsAreProtected() {
+        setConfig(ConfigData.Keys.REPLANT, true);
+        setConfig(ConfigData.Keys.REPLANT_FREE, true);
+        setConfig(ConfigData.Keys.REPLANT_PROTECT, true);
+        setConfig(ConfigData.Keys.DELAY, false);
+        world.getBlockAt(X, Y - 1, Z).setType(Material.GRASS_BLOCK);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 6);
+        breakBlock(player, root);
+        root.setType(Material.AIR);
+        server.getScheduler().performTicks(2);
+        assertEquals(Material.OAK_SAPLING, root.getType());
+        assertTrue(PlantedSaplings.isPlanted(root));
+
+        PlayerMock other = addPlayer("Other");
+        BlockBreakEvent event = new BlockBreakEvent(root, other);
+        server.getPluginManager().callEvent(event);
+        assertTrue(event.isCancelled());
+        assertNotNull(actionBar(other));
+        // players with the permission (and in creative mode) can
+        other.addAttachment(plugin, BlockBreakListener.PERMISSION_REPLANT_BREAK, true);
+        event = new BlockBreakEvent(root, other);
+        server.getPluginManager().callEvent(event);
+        assertFalse(event.isCancelled());
+        assertFalse(PlantedSaplings.isPlanted(root));
+    }
+
+    @Test
+    void saplingsAreNotProtectedByDefault() {
+        setConfig(ConfigData.Keys.REPLANT, true);
+        setConfig(ConfigData.Keys.REPLANT_FREE, true);
+        setConfig(ConfigData.Keys.DELAY, false);
+        world.getBlockAt(X, Y - 1, Z).setType(Material.GRASS_BLOCK);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 6);
+        breakBlock(player, root);
+        root.setType(Material.AIR);
+        server.getScheduler().performTicks(2);
+        assertEquals(Material.OAK_SAPLING, root.getType());
+        BlockBreakEvent event = new BlockBreakEvent(root, addPlayer("Other"));
+        server.getPluginManager().callEvent(event);
+        assertFalse(event.isCancelled());
+    }
+
+    @Test
+    void saplingIsPlantedNextToATakenStump() {
+        setConfig(ConfigData.Keys.REPLANT, true);
+        setConfig(ConfigData.Keys.REPLANT_FREE, true);
+        setConfig(ConfigData.Keys.DELAY, false);
+        world.getBlockAt(X, Y - 1, Z).setType(Material.GRASS_BLOCK);
+        world.getBlockAt(X + 1, Y - 1, Z).setType(Material.GRASS_BLOCK);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 6);
+        breakBlock(player, root);
+        // something is on the stump
+        root.setType(Material.COBBLESTONE);
+        server.getScheduler().performTicks(2);
+        assertEquals(Material.COBBLESTONE, root.getType());
+        assertEquals(Material.OAK_SAPLING, world.getBlockAt(X + 1, Y, Z).getType());
+    }
+
+    @Test
+    void biggerTreesTakeLongerToChop() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        setConfig(ConfigData.Keys.CHOPPING_SLOWDOWN, 5);
+        Attribute attribute = Chopping.breakSpeed();
+        assertNotNull(attribute);
+        // the mocked player has no such attribute
+        PlayerMock player = new PlayerMock(server, "Cutter") {
+            {
+                attributes.putIfAbsent(attribute, new AttributeInstanceMock(attribute, 1));
+            }
+        };
+        server.addPlayer(player);
+        player.addAttachment(plugin, "woodcutter.use", true);
+        player.setSneaking(true);
+        player.getInventory().setItemInMainHand(enchantedAxe());
+        Block root = tree(X, 10);
+        ItemStack axe = player.getInventory().getItemInMainHand();
+        AttributeInstance speed = player.getAttribute(attribute);
+        assertNotNull(speed);
+        double before = speed.getValue();
+
+        server.getPluginManager().callEvent(new BlockDamageEvent(player, root, axe, false));
+        assertTrue(plugin.getChopping().isChopping(player));
+        // 10 logs with 5 % each: it takes 1.5 times as long
+        assertEquals(before / 1.5, speed.getValue(), 0.001);
+        server.getPluginManager().callEvent(new BlockDamageAbortEvent(player, root, axe));
+        assertFalse(plugin.getChopping().isChopping(player));
+        assertEquals(before, speed.getValue(), 0.001);
+
+        // breaking the log ends it as well
+        server.getPluginManager().callEvent(new BlockDamageEvent(player, root, axe, false));
+        assertTrue(plugin.getChopping().isChopping(player));
+        breakBlock(player, root);
+        assertFalse(plugin.getChopping().isChopping(player));
+        assertEquals(before, speed.getValue(), 0.001);
+    }
+
+    @Test
+    void choppingIsOffByDefault() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        PlayerMock player = addCutter("Cutter");
+        Block root = tree(X, 10);
+        server.getPluginManager().callEvent(new BlockDamageEvent(player, root, player.getInventory().getItemInMainHand(), false));
+        assertFalse(plugin.getChopping().isChopping(player));
+    }
+
+    @Test
+    void onlyTheConfiguredItemsAreAxes() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        PlayerMock player = addCutter("Cutter");
+        assertTrue(WoodCutterEnchantment.isAxe(new ItemStack(Material.DIAMOND_AXE)));
+        assertFalse(WoodCutterEnchantment.isAxe(new ItemStack(Material.MACE)));
+
+        setConfig(ConfigData.Keys.CUSTOM_AXES, List.of("minecraft:mace"));
+        assertTrue(WoodCutterEnchantment.isAxe(new ItemStack(Material.MACE)));
+        assertTrue(WoodCutterEnchantment.isAxe(new ItemStack(Material.DIAMOND_AXE)));
+
+        setConfig(ConfigData.Keys.CUSTOM_AXES_ONLY, true);
+        assertFalse(WoodCutterEnchantment.isAxe(new ItemStack(Material.DIAMOND_AXE)));
+        breakBlock(player, tree(X, 6));
+        assertEquals(6, logs(X, 6));
+
+        ItemStack mace = new ItemStack(Material.MACE);
+        assertTrue(WoodCutterEnchantment.apply(mace));
+        player.getInventory().setItemInMainHand(mace);
+        breakBlock(player, tree(X + 5, 6));
+        assertEquals(1, logs(X + 5, 6));
+    }
+
+    @Test
+    void extraLogsAreCut() {
+        setConfig(ConfigData.Keys.DELAY, false);
+        PlayerMock player = addCutter("Cutter");
+        for (int y = 0; y < 5; y++) world.getBlockAt(X, Y + y, Z).setType(Material.BONE_BLOCK);
+        breakBlock(player, world.getBlockAt(X, Y, Z));
+        assertEquals(Material.BONE_BLOCK, world.getBlockAt(X, Y + 4, Z).getType());
+
+        setConfig(ConfigData.Keys.EXTRA_LOGS, List.of("bone_block"));
+        breakBlock(player, world.getBlockAt(X, Y, Z));
+        assertEquals(Material.AIR, world.getBlockAt(X, Y + 4, Z).getType());
     }
 
 }

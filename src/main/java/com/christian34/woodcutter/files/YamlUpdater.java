@@ -51,6 +51,10 @@ final class YamlUpdater {
             throw new IOException(ex);
         }
 
+        // sections that are empty by default, e.g. the saplings of own logs: their entries are kept
+        List<String> emptySections = updated.getKeys(true).stream()
+                .filter(key -> updated.isConfigurationSection(key) && updated.getConfigurationSection(key).getKeys(false).isEmpty())
+                .map(key -> key + ".").toList();
         boolean write = force;
         for (String key : updated.getKeys(true)) {
             if (updated.isConfigurationSection(key)) continue;
@@ -59,6 +63,10 @@ final class YamlUpdater {
             } else {
                 write = true;
             }
+        }
+        for (String key : current.getKeys(true)) {
+            if (current.isConfigurationSection(key) || updated.isSet(key)) continue;
+            if (emptySections.stream().anyMatch(key::startsWith)) updated.set(key, current.get(key));
         }
         if (write) write(updated, header, file);
     }

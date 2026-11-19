@@ -3,7 +3,7 @@ version: ${version}
 author: Christian34
 main: com.christian34.woodcutter.WoodCutter
 api-version: "1.21"
-# only the region schedulers of Paper are used, so the same jar runs on Paper and Folia
+# the region schedulers of Paper are used where they exist, so the same jar runs on Paper, Folia and Spigot
 folia-supported: true
 # optional: region flag 'woodcutter' (WorldGuard), placeholders like %woodcutter_delay% (PlaceholderAPI), money for trees (Vault)
 softdepend: [WorldGuard, PlaceholderAPI, Vault]
@@ -22,6 +22,9 @@ permissions:
   woodcutter.bypass.delay:
     description: cut trees without the delay between two trees
     default: false
+  woodcutter.replant.break:
+    description: break the saplings WoodCutter has planted (if 'replant.protect' is true in the config)
+    default: op
   woodcutter.admin:
     description: reload the config, enchant tools and give enchanted items with the command
     default: op

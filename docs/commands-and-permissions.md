@@ -29,4 +29,5 @@ The defaults work without a permission plugin: everyone can use WoodCutter and o
 | `woodcutter.bypass.delay` | No delay between two trees | – |
 | `woodcutter.delay.<seconds>` | A shorter delay, e.g. `woodcutter.delay.10` for a rank | – |
 | `woodcutter.maxblocks.<amount>` | A higher limit of logs, e.g. `woodcutter.maxblocks.300` (at most 2000) | – |
+| `woodcutter.replant.break` | Break saplings WoodCutter has planted (with `replant.protect: true`) | operators |
 | `woodcutter.admin` | Reload, enchant, give and the settings in the menu | operators |

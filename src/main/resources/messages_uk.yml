@@ -1,0 +1,87 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                   - Повідомлення -                   | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# кольори: &c, &l, hex-кольори на кшталт &#ff8800 - або MiniMessage: <gold>, <gradient:#5e9c3a:#c9a46b>...</gradient>
+# (текст із тегами MiniMessage не повинен містити &-коди) - %prefix% замінюється префіксом нижче
+# порожній текст ('') не надсилається
+
+messages:
+  prefix: '&8[&9Wood&7Cutter&8] '
+  no_permission: '%prefix%&cВибачте, у вас немає на це дозволу!'
+  players_only: '%prefix%&cЦю команду можуть використовувати лише гравці!'
+  reloaded: '%prefix%&aКонфігурацію перезавантажено!'
+  enchant_success: '%prefix%&aІнструмент успішно зачаровано!'
+  enchant_failed: '%prefix%&cІнструмент не вдалося зачарувати!'
+  invalid_level: '%prefix%&cРівень має бути числом від 1 до %max%!'
+  player_not_online: "%prefix%&cГравець '%player%' не в мережі!"
+  no_axe: "%prefix%&c'%item%' - це не сокира! Використайте 'book' або сокиру, наприклад 'diamond_axe'."
+  give_sent: '%prefix%&a%player% отримав предмет.'
+  give_received_book: '%prefix%&aВи отримали книгу з WoodCutter!'
+  give_received_axe: '%prefix%&aВи отримали сокиру з WoodCutter!'
+  toggle_on: '%prefix%&aWoodCutter увімкнено, ви знову рубаєте дерева повністю!'
+  toggle_off: '%prefix%&7WoodCutter вимкнено, тепер ви ламаєте лише окремі колоди.'
+  # показується над панеллю швидкого доступу
+  not_enough_food: '&cВи надто голодні, щоб зрубати дерево повністю.'
+  not_enough_experience: '&cПотрібно %levels% рівнів досвіду, щоб зрубати дерево повністю.'
+  update_available: '%prefix%&7Доступне оновлення: &9https://github.com/itsthechris07/WoodCutter/releases/latest'
+  help_toggle: '&7/&9WoodCutter toggle &f| &7увімкнути або вимкнути WoodCutter для себе'
+  help_reload: '&7/&9WoodCutter reload &f| &7перезавантажити файли конфігурації'
+  help_enchant: '&7/&9WoodCutter enchant [level] &f| &7зачарувати сокиру в основній руці'
+  help_give: '&7/&9WoodCutter give <player> [book|axe] [level] &f| &7видати зачаровану книгу або сокиру'
+  axe_almost_broken: '&cВаша сокира майже зламана, дерево далі не рубається.'
+  # показується один раз над панеллю, коли гравець ламає колоду дерева, не присідаючи
+  sneak_hint: '&7Присядьте, ламаючи колоду, щоб зрубати все дерево.'
+  # навичка лісоруба - перші два показуються над панеллю після дерева
+  skill_xp: '&a+%xp% XP &8| &7Рівень &9%level% &8| &f%current%&7/&f%needed%'
+  skill_xp_max: '&a+%xp% XP &8| &7Рівень &9%level% &8(&7макс.&8)'
+  skill_level_up: '%prefix%&aВи досягли рівня лісоруба &9%level%&a!'
+  skill_level_up_title: '&9Рівень %level%'
+  skill_level_up_subtitle: '&7Лісоруб'
+  skill_disabled: '%prefix%&cНавичку лісоруба вимкнено!'
+  skill_no_data: "%prefix%&c'%player%' ще не зрубав жодного дерева!"
+  skill_info: '%prefix%&9%player% &8| &7Рівень &9%level% &8| &f%current%&7/&f%needed% XP'
+  skill_info_max: '%prefix%&9%player% &8| &7Рівень &9%level% &8(&7макс.&8) | &f%xp% XP'
+  skill_perk_speed: ' &8- &7Швидша рубка: &f+%value% колод за тік'
+  skill_perk_delay: ' &8- &7Менша затримка: &f-%value% секунд'
+  skill_perk_max_blocks: ' &8- &7Більші дерева: &f+%value% колод'
+  skill_perk_bonus_drops: ' &8- &7Бонусний дроп: &f+%value% %'
+  skill_perk_axe_saver: ' &8- &7Дбайливо із сокирою: &f%value% % колод її не пошкоджують'
+  skill_perk_costs: ' &8- &7Менші витрати: &f-%value% %'
+  skill_perk_forester_luck: ' &8- &7Удача лісника: &f%value% % листя щось скидає'
+  skill_unlock_replant: ' &8- &7Новий саджанець садиться безкоштовно'
+  skill_unlock_drops_to_inventory: ' &8- &7Колоди потрапляють у ваш інвентар'
+  skill_top_header: '%prefix%&7Найкращі лісоруби:'
+  skill_top_entry: ' &7%rank%. &9%player% &8| &7Рівень &9%level% &8| &f%xp% XP'
+  help_level: '&7/&9WoodCutter level [player] &f| &7показати рівень лісоруба та його бонуси'
+  help_top: '&7/&9WoodCutter top &f| &7показати найкращих лісорубів'
+  help_menu: '&7/&9WoodCutter menu &f| &7відкрити меню'
+  # меню (/woodcutter menu)
+  menu_title: '&8WoodCutter'
+  menu_toggle_on: '&aWoodCutter увімкнено'
+  menu_toggle_off: '&cWoodCutter вимкнено'
+  menu_toggle_lore: '&7Натисніть, щоб увімкнути або вимкнути'
+  menu_skill: '&9Рівень лісоруба %level%'
+  menu_skill_progress: '&f%current%&7/&f%needed% XP'
+  menu_skill_max: '&7Найвищий рівень &8| &f%xp% XP'
+  menu_top: '&9Найкращі лісоруби'
+  menu_settings: '&9Налаштування'
+  menu_settings_lore: '&7Натисніть, щоб змінити налаштування плагіна'
+  menu_settings_title: '&8Налаштування WoodCutter'
+  menu_setting_on: '&a%setting%'
+  menu_setting_off: '&c%setting%'
+  menu_setting_lore: '&7Натисніть, щоб увімкнути або вимкнути'
+  menu_back: '&7Назад'
+  # підзаголовок, коли дерево падає (анімація 'topple', з animation.topple.timber: true у конфігурації)
+  timber: '&6&lБережись!'
+  # гроші за зрубане дерево (economy.reward-per-log) - наприклад '%prefix%&a+%money% &7за %logs% колод'
+  economy_reward: ''
+  # показується над панеллю швидкого доступу
+  not_enough_money: '&cПотрібно %money%, щоб зрубати дерево повністю.'
+  skill_trees: ' &8- &7Зрубано дерев: &f%trees%'
+  # смуга, поки рубається більше дерево (налаштування 'chopping')
+  chopping: '&6Рубка дерева &8(&f%logs% колод&8)'
+  # показується над панеллю швидкого доступу
+  sapling_protected: '&cЦей саджанець посадив WoodCutter, його не можна зламати, доки він не виросте.'

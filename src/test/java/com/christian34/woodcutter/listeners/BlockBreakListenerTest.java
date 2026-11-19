@@ -66,11 +66,11 @@ class BlockBreakListenerTest extends PluginTestBase {
         breakBlock(player, tree(X, 6));
         // just the log is broken
         assertEquals(6, logs(X, 6));
-        Component hint = player.nextActionBar();
+        Component hint = actionBar(player);
         assertNotNull(hint);
         assertTrue(PlainTextComponentSerializer.plainText().serialize(hint).contains("Sneak"));
         breakBlock(player, world.getBlockAt(X, Y + 1, Z));
-        assertNull(player.nextActionBar());
+        assertNull(actionBar(player));
     }
 
     @Test
@@ -78,7 +78,7 @@ class BlockBreakListenerTest extends PluginTestBase {
         PlayerMock player = addPlayer("Player", "woodcutter.use");
         player.getInventory().setItemInMainHand(new ItemStack(Material.DIAMOND_AXE));
         breakBlock(player, tree(X, 6));
-        assertNull(player.nextActionBar());
+        assertNull(actionBar(player));
     }
 
     @Test

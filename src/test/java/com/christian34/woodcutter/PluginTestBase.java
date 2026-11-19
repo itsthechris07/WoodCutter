@@ -1,6 +1,7 @@
 package com.christian34.woodcutter;
 
 import com.christian34.woodcutter.enchantments.WoodCutterEnchantment;
+import com.christian34.woodcutter.platform.Platform;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
@@ -87,6 +88,20 @@ public abstract class PluginTestBase {
             messages.add(ChatColor.stripColor(PlainTextComponentSerializer.plainText().serialize(message)));
         }
         return messages;
+    }
+
+    /**
+     * @return true if the tests run with the platform of Spigot (gradle testSpigot)
+     */
+    protected static boolean spigot() {
+        return Platform.get().name().equals("spigot");
+    }
+
+    /**
+     * @return the next text of the action bar - with the platform of Spigot the mocked server shows it in the chat
+     */
+    protected static Component actionBar(@NotNull PlayerMock player) {
+        return spigot() ? player.nextComponentMessage() : player.nextActionBar();
     }
 
     protected static void assertContains(List<String> messages, String expected) {

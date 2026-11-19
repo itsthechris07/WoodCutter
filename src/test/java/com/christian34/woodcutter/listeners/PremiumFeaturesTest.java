@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
@@ -43,6 +44,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class PremiumFeaturesTest extends PluginTestBase {
     private static final int X = 0, Y = 70, Z = 0;
+    /**
+     * ticks until a falling tree has landed and disappeared
+     */
+    private static final int LANDED = 120;
 
     private Block tree(int x, int height) {
         for (int y = 0; y < height; y++) {
@@ -69,6 +74,12 @@ class PremiumFeaturesTest extends PluginTestBase {
     private PlayerMock toppleCutter() {
         setConfig(ConfigData.Keys.ANIMATION, true);
         setConfig(ConfigData.Keys.ANIMATION_MODE, "topple");
+        // the ground the tree falls on
+        for (int x = X - 6; x <= X + 14; x++) {
+            for (int z = Z - 6; z <= Z + 6; z++) {
+                world.getBlockAt(x, Y - 1, z).setType(Material.STONE);
+            }
+        }
         PlayerMock player = addCutter("Cutter");
         player.teleport(new Location(world, X - 3.5, Y, Z + 0.5));
         return player;
@@ -98,7 +109,7 @@ class PremiumFeaturesTest extends PluginTestBase {
         breakBlock(player, tree(X, 8));
         // nothing drops at the trunk while the tree falls
         assertTrue(world.getEntitiesByClass(Item.class).stream().noneMatch(item -> item.getLocation().getX() > X + 2));
-        server.getScheduler().performTicks(30);
+        server.getScheduler().performTicks(LANDED);
         List<Item> items = world.getEntitiesByClass(Item.class).stream().filter(item -> item.getItemStack().getType() == Material.OAK_LOG).toList();
         assertFalse(items.isEmpty());
         // the top of the tree lies seven blocks to the east
@@ -111,7 +122,7 @@ class PremiumFeaturesTest extends PluginTestBase {
         PlayerMock player = toppleCutter();
         dropItemsLikeTheServer();
         breakBlock(player, tree(X, 8));
-        server.getScheduler().performTicks(30);
+        server.getScheduler().performTicks(LANDED);
         // the log the player has broken as well
         assertEquals(8, world.getEntitiesByClass(Item.class).size());
         assertTrue(world.getEntitiesByClass(Item.class).stream().noneMatch(item -> item.getLocation().getX() > X + 2));
@@ -123,7 +134,7 @@ class PremiumFeaturesTest extends PluginTestBase {
         PlayerMock player = toppleCutter();
         breakBlock(player, tree(X, 8));
         assertTrue(world.getEntitiesByClass(Item.class).isEmpty());
-        server.getScheduler().performTicks(30);
+        server.getScheduler().performTicks(LANDED);
         assertEquals(7, world.getEntitiesByClass(Item.class).size());
         assertTrue(world.getEntitiesByClass(Item.class).stream().anyMatch(item -> item.getLocation().getX() > X + 5));
     }
@@ -138,13 +149,74 @@ class PremiumFeaturesTest extends PluginTestBase {
     }
 
     @Test
+    void treeFallsApart() {
+        setConfig(ConfigData.Keys.TOPPLE_PHYSICS, "fall-apart");
+        setConfig(ConfigData.Keys.BONUS_DROPS_CHANCE, 100);
+        PlayerMock player = toppleCutter();
+        breakBlock(player, tree(X, 8));
+        server.getScheduler().performTicks(LANDED + 100);
+        assertEquals(0, world.getEntitiesByClass(BlockDisplay.class).size());
+        assertEquals(7, world.getEntitiesByClass(Item.class).size());
+        assertTrue(world.getEntitiesByClass(Item.class).stream().anyMatch(item -> item.getLocation().getX() > X + 3));
+    }
+
+    @Test
+    void wallStopsTheTree() {
+        setConfig(ConfigData.Keys.BONUS_DROPS_CHANCE, 100);
+        PlayerMock player = toppleCutter();
+        for (int y = 0; y < 12; y++) {
+            for (int z = Z - 3; z <= Z + 3; z++) world.getBlockAt(X + 3, Y + y, z).setType(Material.STONE);
+        }
+        breakBlock(player, tree(X, 8));
+        server.getScheduler().performTicks(LANDED);
+        assertEquals(0, world.getEntitiesByClass(BlockDisplay.class).size());
+        List<Item> items = List.copyOf(world.getEntitiesByClass(Item.class));
+        assertEquals(7, items.size());
+        // the tree leans against the wall, nothing lies behind it
+        assertTrue(items.stream().allMatch(item -> item.getLocation().getX() < X + 4), () -> items.stream().map(Item::getLocation).toList().toString());
+    }
+
+    @Test
+    void treeFloatsOnWater() {
+        setConfig(ConfigData.Keys.BONUS_DROPS_CHANCE, 100);
+        PlayerMock player = toppleCutter();
+        // a lake east of the tree
+        for (int x = X + 1; x <= X + 14; x++) {
+            for (int z = Z - 6; z <= Z + 6; z++) {
+                world.getBlockAt(x, Y - 1, z).setType(Material.WATER);
+                world.getBlockAt(x, Y - 2, z).setType(Material.STONE);
+            }
+        }
+        breakBlock(player, tree(X, 8));
+        // it floats for a while
+        server.getScheduler().performTicks(60);
+        assertFalse(world.getEntitiesByClass(BlockDisplay.class).isEmpty());
+        server.getScheduler().performTicks(400);
+        assertEquals(0, world.getEntitiesByClass(BlockDisplay.class).size());
+        assertEquals(7, world.getEntitiesByClass(Item.class).size());
+    }
+
+    @Test
+    void fallingTreeGlows() {
+        setConfig(ConfigData.Keys.TOPPLE_GLOW, "#ff8800");
+        PlayerMock player = toppleCutter();
+        breakBlock(player, tree(X, 8));
+        List<BlockDisplay> displays = List.copyOf(world.getEntitiesByClass(BlockDisplay.class));
+        assertEquals(8, displays.size());
+        for (BlockDisplay display : displays) {
+            assertTrue(display.isGlowing());
+            assertEquals(org.bukkit.Color.fromRGB(0xff8800), display.getGlowColorOverride());
+        }
+    }
+
+    @Test
     void fallingTreeHitsMobs() {
         setConfig(ConfigData.Keys.TOPPLE_DAMAGE, 4);
         PlayerMock player = toppleCutter();
         Zombie zombie = world.spawn(new Location(world, X + 4.5, Y, Z + 0.5), Zombie.class);
         double health = zombie.getHealth();
         breakBlock(player, tree(X, 8));
-        server.getScheduler().performTicks(30);
+        server.getScheduler().performTicks(LANDED);
         assertEquals(health - 4, zombie.getHealth(), 0.001);
         assertTrue(zombie.getVelocity().getX() > 0);
         // not the player who cut it
@@ -162,6 +234,11 @@ class PremiumFeaturesTest extends PluginTestBase {
             public void showTitle(@NotNull Title title) {
                 subtitles.add(PlainTextComponentSerializer.plainText().serialize(title.subtitle()));
             }
+
+            @Override
+            public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+                subtitles.add(org.bukkit.ChatColor.stripColor(subtitle));
+            }
         };
         server.addPlayer(player);
         player.addAttachment(plugin, "woodcutter.use", true);
@@ -175,7 +252,7 @@ class PremiumFeaturesTest extends PluginTestBase {
         assertFalse(subtitles.contains("Timber!"), subtitles::toString);
 
         setConfig(ConfigData.Keys.TOPPLE_TIMBER, true);
-        server.getScheduler().performTicks(30);
+        server.getScheduler().performTicks(LANDED);
         breakBlock(player, tree(X, 8));
         assertEquals(1, logs(X, 8));
         assertTrue(subtitles.contains("Timber!"), subtitles::toString);
@@ -299,7 +376,7 @@ class PremiumFeaturesTest extends PluginTestBase {
     @Test
     void everyLanguageHasEveryText() throws Exception {
         YamlConfiguration english = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "messages.yml"));
-        for (String language : List.of("de", "fr", "es", "pl", "zh")) {
+        for (String language : List.of("de", "fr", "es", "pl", "zh", "ru", "uk", "cs", "pt")) {
             plugin.getConfigData().set(ConfigData.Keys.LANGUAGE, language);
             plugin.reload();
             File file = new File(plugin.getDataFolder(), "messages_" + language + ".yml");

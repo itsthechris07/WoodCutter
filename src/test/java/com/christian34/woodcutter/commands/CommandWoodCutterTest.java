@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 /**
  * WoodCutter 2026.
@@ -39,6 +40,8 @@ class CommandWoodCutterTest extends PluginTestBase {
 
     @Test
     void helpLinesAreClickable() {
+        // the mocked server drops the click events of Spigot, SpigotPlatformTest checks them
+        assumeFalse(spigot());
         PlayerMock admin = addPlayer("Admin", "woodcutter.admin");
         admin.performCommand("woodcutter");
         List<ClickEvent> clicks = new ArrayList<>();
@@ -67,6 +70,14 @@ class CommandWoodCutterTest extends PluginTestBase {
         assertEquals(Material.NETHERITE_AXE, axe.getType());
         assertTrue(WoodCutterEnchantment.has(book));
         assertTrue(WoodCutterEnchantment.has(axe));
+
+        // 'axe' is a diamond axe
+        server.dispatchCommand(server.getConsoleSender(), "woodcutter give Lucky axe 2");
+        server.getScheduler().performOneTick();
+        ItemStack diamond = player.getInventory().getItem(2);
+        assertNotNull(diamond);
+        assertEquals(Material.DIAMOND_AXE, diamond.getType());
+        assertEquals(2, WoodCutterEnchantment.level(diamond));
     }
 
     @Test

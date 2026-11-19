@@ -1,18 +1,14 @@
 package com.christian34.woodcutter.utils;
 
 import com.christian34.woodcutter.WoodCutter;
+import com.christian34.woodcutter.platform.Platform;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.title.Title;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Duration;
 import java.util.regex.Pattern;
 
 /**
@@ -87,7 +83,9 @@ public enum Message {
     TIMBER("timber"),
     ECONOMY_REWARD("economy_reward"),
     NOT_ENOUGH_MONEY("not_enough_money"),
-    SKILL_TREES("skill_trees");
+    SKILL_TREES("skill_trees"),
+    CHOPPING("chopping"),
+    SAPLING_PROTECTED("sapling_protected");
 
     /**
      * the colors of the server, with hex colors in the format Spigot uses (§x§r§r§g§g§b§b)
@@ -154,8 +152,7 @@ public enum Message {
     public void sendSubtitle(@NotNull Player receiver, String... replacements) {
         String text = getText(replacements);
         if (text.isEmpty()) return;
-        receiver.showTitle(Title.title(Component.empty(), component(text),
-                Title.Times.times(Duration.ofMillis(100), Duration.ofMillis(1200), Duration.ofMillis(500))));
+        Platform.get().showTitle(receiver, "", text, 2, 24, 10);
     }
 
     public void send(@NotNull CommandSender receiver, String... replacements) {
@@ -173,14 +170,12 @@ public enum Message {
     public void sendCommand(@NotNull CommandSender receiver, @NotNull String command, boolean run) {
         String text = getText();
         if (text.isEmpty()) return;
-        receiver.sendMessage(component(text)
-                .clickEvent(run ? ClickEvent.runCommand(command) : ClickEvent.suggestCommand(command))
-                .hoverEvent(HoverEvent.showText(Component.text(command, NamedTextColor.GRAY))));
+        Platform.get().sendCommand(receiver, text, command, run);
     }
 
     public void sendActionBar(@NotNull Player receiver, String... replacements) {
         String text = getText(replacements);
-        if (!text.isEmpty()) receiver.sendActionBar(component(text));
+        if (!text.isEmpty()) Platform.get().sendActionBar(receiver, text);
     }
 
 }

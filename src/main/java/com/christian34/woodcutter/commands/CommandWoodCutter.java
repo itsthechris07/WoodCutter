@@ -46,11 +46,16 @@ public class CommandWoodCutter implements TabExecutor {
     }
 
     /**
-     * @return an enchanted book for 'book' or an enchanted axe for the name of an axe (e.g. diamond_axe)
+     * @return an enchanted book for 'book', a diamond axe for 'axe' or an enchanted axe for the name of an axe (e.g.
+     * netherite_axe)
      */
     @Nullable
     static ItemStack createItem(String name, int level) {
-        Material material = name.equalsIgnoreCase("book") ? Material.ENCHANTED_BOOK : Material.matchMaterial(name);
+        Material material = switch (name.toLowerCase(Locale.ROOT)) {
+            case "book" -> Material.ENCHANTED_BOOK;
+            case "axe" -> Material.DIAMOND_AXE;
+            default -> Material.matchMaterial(name);
+        };
         if (material == null || material != Material.ENCHANTED_BOOK && !Tag.ITEMS_AXES.isTagged(material)) return null;
         ItemStack item = new ItemStack(material);
         return WoodCutterEnchantment.apply(item, level) ? item : null;
@@ -242,7 +247,7 @@ public class CommandWoodCutter implements TabExecutor {
         sender.sendMessage(" ");
         sender.sendMessage("§8-------------------------------------");
         sender.sendMessage(" ");
-        sender.sendMessage("§7Version: " + instance.getPluginMeta().getVersion());
+        sender.sendMessage("§7Version: " + instance.getDescription().getVersion());
         sender.sendMessage("§7WoodCutter by §9§lChristian34");
     }
 
@@ -262,6 +267,7 @@ public class CommandWoodCutter implements TabExecutor {
             for (Player player : Bukkit.getOnlinePlayers()) options.add(player.getName());
         } else if (admin && subcommand.equals("give") && args.length == 3) {
             options.add("book");
+            options.add("axe");
             for (Material axe : Tag.ITEMS_AXES.getValues()) options.add(axe.name().toLowerCase(Locale.ROOT));
         } else if (admin && (subcommand.equals("give") && args.length == 4 || subcommand.equals("enchant") && args.length == 2)) {
             for (int level = 1; level <= WoodCutterEnchantment.maxLevel(); level++) options.add(Integer.toString(level));

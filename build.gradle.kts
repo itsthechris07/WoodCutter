@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.christian34.woodcutter"
-version = "3.2.1"
+version = "3.3.0"
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
@@ -13,17 +13,33 @@ java {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     // WorldGuard
     maven("https://maven.enginehub.org/repo/")
     // PlaceholderAPI
     maven("https://repo.extendedclip.com/releases/")
 }
 
+// what only Paper and Folia have (components, region schedulers), compiled against their api and loaded only there
+val paper: SourceSet by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output
+}
+
+// Adventure for the texts: Spigot has none, so it is put into the jar as it is (not relocated) - Paper loads its own
+// classes first, so the plugin and the server share them there
+val adventure: Configuration by configurations.creating
+configurations.compileOnly { extendsFrom(adventure) }
+
 dependencies {
-    // Paper API already ships Adventure
-    // compiled against the oldest supported version (1.21), so newer api can't slip in;
-    // the tests run on the current one (testImplementation below)
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    // the plugin only uses the api of Spigot, compiled against the oldest supported version (1.21), so neither newer
+    // api nor the one of Paper can slip in - the tests run on Paper (testImplementation below)
+    compileOnly("org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT")
+    // the version of Paper 1.21
+    adventure("net.kyori:adventure-text-minimessage:4.17.0")
+    adventure("net.kyori:adventure-text-serializer-legacy:4.17.0")
+    adventure("net.kyori:adventure-text-serializer-plain:4.17.0")
+    "paperCompileOnly"("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    "paperCompileOnly"("org.jetbrains:annotations:26.1.0")
     compileOnly("org.jetbrains:annotations:26.1.0")
 
     // optional plugins (softdepend), their classes are only used if they are installed
@@ -42,6 +58,11 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+sourceSets.test {
+    compileClasspath += paper.output
+    runtimeClasspath += paper.output
+}
+
 // the same tests once more on other Minecraft versions (Paper api and MockBukkit of that version):
 // the oldest supported one (1.21.x) and the newest one, so the plugin keeps working on all of them
 val versionTests = mapOf(
@@ -53,8 +74,8 @@ versionTests.forEach { (name, libraries) ->
         java.setSrcDirs(sourceSets.test.get().java.srcDirs)
         resources.setSrcDirs(sourceSets.test.get().resources.srcDirs)
         // the plugin first, else the config.yml of PlaceholderAPI would be found as its resource
-        compileClasspath = sourceSets.main.get().output + compileClasspath
-        runtimeClasspath = sourceSets.main.get().output + runtimeClasspath
+        compileClasspath = sourceSets.main.get().output + paper.output + compileClasspath
+        runtimeClasspath = sourceSets.main.get().output + paper.output + runtimeClasspath
     }
     dependencies {
         libraries.forEach { "${name}Implementation"(it) }
@@ -82,6 +103,11 @@ tasks {
         options.release = 21
         options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:removal"))
     }
+    named<JavaCompile>("compilePaperJava") {
+        options.encoding = Charsets.UTF_8.name()
+        options.release = 21
+        options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:removal"))
+    }
     compileTestJava {
         options.encoding = Charsets.UTF_8.name()
     }
@@ -102,6 +128,23 @@ tasks {
             events("failed", "skipped")
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
+    }
+    // the same tests with the platform of Spigot (legacy texts, BukkitScheduler) on the mocked Paper server
+    val testSpigot = register<Test>("testSpigot") {
+        description = "Runs the tests with the platform of Spigot."
+        group = "verification"
+        testClassesDirs = sourceSets.test.get().output.classesDirs
+        classpath = sourceSets.test.get().runtimeClasspath
+        useJUnitPlatform()
+        systemProperty("woodcutter.offline", "true")
+        systemProperty("woodcutter.platform", "spigot")
+        testLogging {
+            events("failed", "skipped")
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
+    }
+    check {
+        dependsOn(testSpigot)
     }
     versionTests.forEach { (name, libraries) ->
         val versionTest = register<Test>(name) {
@@ -142,5 +185,11 @@ tasks {
         destinationDirectory = layout.projectDirectory.dir("release")
         // bStats refuses to start unless relocated
         relocate("org.bstats", "com.christian34.woodcutter.libs.bstats")
+        from(paper.output)
+        // set as a whole: add() would drop the default runtimeClasspath (bStats) of the convention
+        configurations = listOf(project.configurations.runtimeClasspath.get(), adventure)
+        dependencies {
+            exclude(dependency("org.jetbrains:annotations:.*"))
+        }
     }
 }

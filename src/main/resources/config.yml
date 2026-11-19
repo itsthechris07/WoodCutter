@@ -7,7 +7,7 @@
 # the texts of the plugin are in messages.yml (or messages_<language>.yml)
 
 config:
-  # the language of the texts: en (messages.yml), de, fr, es, pl or zh (messages_<language>.yml)
+  # the language of the texts: en (messages.yml), de, fr, es, pl, zh, ru, uk, cs or pt (messages_<language>.yml)
   language: en
   # worlds without WoodCutter - * stands for any characters, so sg_* matches sg_1, sg_lobby, ...
   disabled-worlds:
@@ -40,6 +40,38 @@ config:
   # logs that are never cut, by name or a pattern - * stands for any characters, e.g. stripped_* for all stripped
   # logs (which are mostly built by players) or cherry_log
   excluded-logs: []
+  # blocks that are cut like logs, besides the logs of Minecraft - e.g. the logs of mods on hybrid servers, by name
+  # or a pattern (* stands for any characters)
+  extra-logs: []
+  # blocks that are removed with the leaves of a cut tree, besides the leaves of Minecraft, e.g. nether_wart_block
+  extra-leaves: []
+  # blocks on the logs of a tree that are removed with it, their items drop (and vines below them as well)
+  attached-blocks:
+    - cocoa
+    - vine
+    - shelf_mushroom
+  # saplings of logs that have none in Minecraft (or another one), as 'log: sapling', e.g.
+  # saplings:
+  #   my_log: my_sapling
+  saplings: {}
+  # items of other plugins that are axes for WoodCutter (they cut trees and get the enchantment):
+  # itemsadder:<namespace>:<id>, nexo:<id>, oraxen:<id> or mmoitems:<type>:<id> - or items of Minecraft, e.g. mace
+  custom-axes:
+    items: []
+    # true: only these items are axes for WoodCutter, not the axes of Minecraft
+    only: false
+  # bee nests in a cut tree fall with it
+  bees:
+    # the bees fly out and attack the player who cut the tree
+    angry: true
+    # the nest drops as an item (without its bees)
+    drop-nest: false
+  # needs WorldGuard: regions by their id (* stands for any characters), __global__ is everywhere outside of regions
+  # blacklist: WoodCutter is disabled in the listed regions, whitelist: it is only enabled in them
+  # (the region flag 'woodcutter' works as well: /rg flag <region> woodcutter deny)
+  worldguard-regions:
+    mode: blacklist
+    list: []
   # if true player must sit to use woodcutter
   require-sneaking: true
   delay:
@@ -64,6 +96,22 @@ config:
     blocks-per-tick: 2
     # with the mode 'topple':
     topple:
+      # how the tree falls:
+      # simple: it tips over at an even pace and disappears on the ground
+      # rigid: it falls faster and faster, stops at what it hits (hills, walls, other trees), bounces and slides
+      # fall-apart: like rigid, but it breaks into its logs when it hits the ground, which tumble apart
+      physics: rigid
+      # where the tree falls to:
+      # away: away from the player, facing: where the player looks, slope: down the hill (or where there is the most
+      # room), random: anywhere
+      direction: away
+      # the tree floats on water instead of sinking (with the physics rigid and fall-apart)
+      float-on-water: true
+      # ticks between two positions of the falling tree sent to the players (1 is the smoothest, higher values send
+      # less to the players of big servers - they still see a smooth movement)
+      update-interval: 2
+      # the falling tree glows in this color, e.g. '#7cfc00' ('' disables it)
+      glow: ''
       # the items drop where the tree hits the ground instead of where it stood (not with 'drops-to-inventory')
       drops-where-it-lands: true
       # mobs and players the tree falls on are pushed away
@@ -72,6 +120,44 @@ config:
       damage: 0
       # shows "Timber!" (message 'timber') as a subtitle to the player who cut the tree
       timber: false
+  # sounds and particles of the animations
+  effects:
+    # sounds as 'sound volume pitch', e.g. 'minecraft:block.wood.break 1 0.8' - all sounds of a list play together,
+    # [] plays none (the names of the sounds: https://minecraft.wiki/w/Sounds.json)
+    sounds:
+      # a log of the tree is cut (the mode 'layers'), the pitch rises towards the top of the tree
+      chop:
+        - 'minecraft:block.wood.break 1 0.7'
+      # the tree starts to fall (the mode 'topple')
+      creak:
+        - 'minecraft:block.wooden_door.open 1.5 0.5'
+        - 'minecraft:block.wood.break 1.5 0.6'
+      # the tree hits the ground
+      impact:
+        - 'minecraft:block.wood.break 2 0.5'
+        - 'minecraft:entity.generic.big_fall 1.5 0.6'
+      # the tree falls into water
+      splash:
+        - 'minecraft:entity.generic.splash 1.5 0.8'
+      # the leaves of the tree decay
+      leaves:
+        - 'minecraft:block.grass.break 0.6 1'
+    particles:
+      # leaves fall from the crown of a falling tree
+      falling-leaves: true
+      # dust and splinters where the tree hits the ground
+      impact: true
+      # the leaves of the tree burst when they decay
+      leaves: true
+  # bigger trees take longer to chop: the log a player breaks to cut a tree breaks slower, a bar shows the progress
+  chopping:
+    # percent every log of the tree makes breaking the log slower, e.g. 5: a tree of 20 logs takes twice as long
+    # (0 disables it)
+    slowdown-per-log: 0
+    # the most breaking the log can take, in times as long as a single log
+    max-factor: 6
+    # how the progress is shown: bossbar, actionbar or none
+    progress: bossbar
   # the leaves of a cut tree decay within seconds
   fast-leaf-decay: true
   # plants a new sapling when the lowest log of a tree is broken - four of them for trees with a trunk of 2x2 logs
@@ -79,6 +165,8 @@ config:
     enabled: true
     # false: the sapling is taken from the inventory of the player, nothing is planted without one
     free: false
+    # players can't break the planted saplings until they grow (players with woodcutter.replant.break can)
+    protect: false
   # logs (and their bonus drops) are put into the inventory of the player instead of dropped
   drops-to-inventory: false
   bonus-drops:

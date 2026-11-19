@@ -1,5 +1,6 @@
 package com.christian34.woodcutter.hooks;
 
+import com.christian34.woodcutter.listeners.BlockBreakListener;
 import com.christian34.woodcutter.utils.Debug;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
@@ -8,9 +9,14 @@ import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * WoodCutter 2026.
@@ -51,11 +57,21 @@ public class WorldGuardHook {
     }
 
     /**
-     * @return false if the flag denies WoodCutter for the player at the block
+     * @param mode    of the setting 'worldguard-regions': blacklist or whitelist
+     * @param regions the ids of the regions of the setting, * stands for any characters
+     * @return false if the flag or the setting denies WoodCutter for the player at the block
      */
-    public boolean isAllowed(Player player, Block block) {
-        return WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
-                .testState(BukkitAdapter.adapt(block.getLocation()), WorldGuardPlugin.inst().wrapPlayer(player), flag);
+    public boolean isAllowed(Player player, Block block, String mode, List<String> regions) {
+        RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
+        com.sk89q.worldedit.util.Location location = BukkitAdapter.adapt(block.getLocation());
+        if (!query.testState(location, WorldGuardPlugin.inst().wrapPlayer(player), flag)) return false;
+        if (regions.isEmpty()) return true;
+        List<String> ids = new ArrayList<>();
+        for (ProtectedRegion region : query.getApplicableRegions(location)) ids.add(region.getId());
+        // outside of all regions
+        if (ids.isEmpty()) ids.add(ProtectedRegion.GLOBAL_REGION);
+        boolean listed = ids.stream().anyMatch(id -> regions.stream().anyMatch(pattern -> BlockBreakListener.matchesWorld(id, pattern.trim())));
+        return mode.equalsIgnoreCase("whitelist") == listed;
     }
 
 }

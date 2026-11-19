@@ -7,7 +7,8 @@ title: WoodCutter
 WoodCutter adds an enchantment for axes. When a player breaks one log with it, the whole tree is cut. It comes with
 levels, two animations, a woodcutting skill and many settings. To play, no commands are needed: sneak and break a log.
 
-**Requirements:** Paper or Folia 1.21 or newer (tested on 1.21.11, 26.2 and 26.3) and Java 21 or newer.
+**Requirements:** Paper or Folia 1.21 or newer (tested on 1.21.11, 26.2 and 26.3) and Java 21 or newer. Spigot gets
+basic support, Paper is recommended.
 
 **Download:** [GitHub](https://github.com/itsthechris07/WoodCutter/releases/latest) ·
 [Modrinth](https://modrinth.com/plugin/woodcutter-christian34) ·

@@ -12,12 +12,14 @@ import com.christian34.woodcutter.listeners.BlockPlaceListener;
 import com.christian34.woodcutter.listeners.EnchantListener;
 import com.christian34.woodcutter.listeners.MenuListener;
 import com.christian34.woodcutter.listeners.SourcesListener;
+import com.christian34.woodcutter.platform.Platform;
 import com.christian34.woodcutter.skill.Skill;
 import com.christian34.woodcutter.utils.Debug;
 import com.christian34.woodcutter.utils.Permissions;
 import com.christian34.woodcutter.utils.Statistics;
 import com.christian34.woodcutter.utils.TaskManager;
 import com.christian34.woodcutter.utils.Updater;
+import com.christian34.woodcutter.woodcutting.Chopping;
 import com.christian34.woodcutter.woodcutting.Cutter;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
@@ -56,6 +58,7 @@ public class WoodCutter extends JavaPlugin {
     private Skill skill;
     private Updater updater;
     private WorldGuardHook worldGuard;
+    private Chopping chopping;
 
     public static WoodCutter getInstance() {
         return instance;
@@ -83,6 +86,13 @@ public class WoodCutter extends JavaPlugin {
 
     public Updater getUpdater() {
         return updater;
+    }
+
+    /**
+     * bigger trees take longer to chop
+     */
+    public Chopping getChopping() {
+        return chopping;
     }
 
     public Map<UUID, Long> getDelays() {
@@ -148,6 +158,9 @@ public class WoodCutter extends JavaPlugin {
 
         hookPlugins();
         hookMetrics();
+        if (Platform.get().name().equals("spigot")) {
+            Debug.log("Spigot gets basic support - Paper is recommended for WoodCutter: https://papermc.io");
+        }
         // the same jar is on all of these sites
         Debug.log("If you like WoodCutter, please leave a review where you downloaded it:");
         Debug.log("  Modrinth: https://modrinth.com/plugin/woodcutter-christian34");
@@ -159,6 +172,7 @@ public class WoodCutter extends JavaPlugin {
     @Override
     public void onDisable() {
         Cutter.landAll();
+        if (chopping != null) chopping.stopAll();
         if (skill != null) skill.save();
     }
 
@@ -179,6 +193,8 @@ public class WoodCutter extends JavaPlugin {
         pluginManager.registerEvents(new SourcesListener(this), this);
         pluginManager.registerEvents(new MenuListener(this), this);
         pluginManager.registerEvents(updater, this);
+        this.chopping = new Chopping(this);
+        pluginManager.registerEvents(chopping, this);
     }
 
     /**

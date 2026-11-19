@@ -1,0 +1,87 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                    - Mensagens -                     | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# cores: &c, &l, cores hex como &#ff8800 - ou MiniMessage: <gold>, <gradient:#5e9c3a:#c9a46b>...</gradient>
+# (um texto com tags MiniMessage não pode ter códigos &) - %prefix% é trocado pelo prefixo abaixo
+# um texto vazio ('') não é enviado
+
+messages:
+  prefix: '&8[&9Wood&7Cutter&8] '
+  no_permission: '%prefix%&cDesculpe, mas você não tem permissão para isso!'
+  players_only: '%prefix%&cEste comando só pode ser usado por jogadores!'
+  reloaded: '%prefix%&aA configuração foi recarregada!'
+  enchant_success: '%prefix%&aA ferramenta foi encantada com sucesso!'
+  enchant_failed: '%prefix%&cA ferramenta não pôde ser encantada!'
+  invalid_level: '%prefix%&cO nível tem que ser um número de 1 a %max%!'
+  player_not_online: "%prefix%&cO jogador '%player%' não está online!"
+  no_axe: "%prefix%&c'%item%' não é um machado! Use 'book' ou um machado como 'diamond_axe'."
+  give_sent: '%prefix%&a%player% recebeu o item.'
+  give_received_book: '%prefix%&aVocê recebeu um livro com WoodCutter!'
+  give_received_axe: '%prefix%&aVocê recebeu um machado com WoodCutter!'
+  toggle_on: '%prefix%&aO WoodCutter está ativado, você corta árvores inteiras de novo!'
+  toggle_off: '%prefix%&7O WoodCutter está desativado, agora você só quebra troncos soltos.'
+  # mostrado na barra de ação
+  not_enough_food: '&cVocê está com muita fome para cortar uma árvore inteira.'
+  not_enough_experience: '&cVocê precisa de %levels% níveis de experiência para cortar uma árvore inteira.'
+  update_available: '%prefix%&7Uma nova atualização está disponível em: &9https://github.com/itsthechris07/WoodCutter/releases/latest'
+  help_toggle: '&7/&9WoodCutter toggle &f| &7ativa ou desativa o WoodCutter para você'
+  help_reload: '&7/&9WoodCutter reload &f| &7recarrega os arquivos de configuração'
+  help_enchant: '&7/&9WoodCutter enchant [level] &f| &7encanta o machado na mão principal'
+  help_give: '&7/&9WoodCutter give <player> [book|axe] [level] &f| &7dá um livro ou machado encantado'
+  axe_almost_broken: '&cSeu machado está quase quebrado, a árvore não é cortada além disso.'
+  # mostrado uma vez na barra de ação, quando um jogador quebra um tronco de árvore sem agachar
+  sneak_hint: '&7Agache enquanto quebra um tronco para cortar a árvore inteira.'
+  # a habilidade de lenhador - as duas primeiras são mostradas na barra de ação depois de uma árvore
+  skill_xp: '&a+%xp% XP &8| &7Nível &9%level% &8| &f%current%&7/&f%needed%'
+  skill_xp_max: '&a+%xp% XP &8| &7Nível &9%level% &8(&7máx.&8)'
+  skill_level_up: '%prefix%&aVocê alcançou o nível de lenhador &9%level%&a!'
+  skill_level_up_title: '&9Nível %level%'
+  skill_level_up_subtitle: '&7Lenhador'
+  skill_disabled: '%prefix%&cA habilidade de lenhador está desativada!'
+  skill_no_data: "%prefix%&c'%player%' ainda não cortou nenhuma árvore!"
+  skill_info: '%prefix%&9%player% &8| &7Nível &9%level% &8| &f%current%&7/&f%needed% XP'
+  skill_info_max: '%prefix%&9%player% &8| &7Nível &9%level% &8(&7máx.&8) | &f%xp% XP'
+  skill_perk_speed: ' &8- &7Corte mais rápido: &f+%value% troncos por tick'
+  skill_perk_delay: ' &8- &7Espera menor: &f-%value% segundos'
+  skill_perk_max_blocks: ' &8- &7Árvores maiores: &f+%value% troncos'
+  skill_perk_bonus_drops: ' &8- &7Drops bônus: &f+%value% %'
+  skill_perk_axe_saver: ' &8- &7Cuidado com o machado: &f%value% % dos troncos não o danificam'
+  skill_perk_costs: ' &8- &7Custos menores: &f-%value% %'
+  skill_perk_forester_luck: ' &8- &7Sorte do guarda-florestal: &f%value% % das folhas derrubam algo'
+  skill_unlock_replant: ' &8- &7Uma nova muda é plantada de graça'
+  skill_unlock_drops_to_inventory: ' &8- &7Os troncos vão para o seu inventário'
+  skill_top_header: '%prefix%&7Os melhores lenhadores:'
+  skill_top_entry: ' &7%rank%. &9%player% &8| &7Nível &9%level% &8| &f%xp% XP'
+  help_level: '&7/&9WoodCutter level [player] &f| &7mostra o nível de lenhador e seus bônus'
+  help_top: '&7/&9WoodCutter top &f| &7mostra os melhores lenhadores'
+  help_menu: '&7/&9WoodCutter menu &f| &7abre o menu'
+  # o menu (/woodcutter menu)
+  menu_title: '&8WoodCutter'
+  menu_toggle_on: '&aO WoodCutter está ativado'
+  menu_toggle_off: '&cO WoodCutter está desativado'
+  menu_toggle_lore: '&7Clique para ativar ou desativar'
+  menu_skill: '&9Nível de lenhador %level%'
+  menu_skill_progress: '&f%current%&7/&f%needed% XP'
+  menu_skill_max: '&7Nível máximo &8| &f%xp% XP'
+  menu_top: '&9Os melhores lenhadores'
+  menu_settings: '&9Configurações'
+  menu_settings_lore: '&7Clique para mudar as configurações do plugin'
+  menu_settings_title: '&8Configurações do WoodCutter'
+  menu_setting_on: '&a%setting%'
+  menu_setting_off: '&c%setting%'
+  menu_setting_lore: '&7Clique para ativar ou desativar'
+  menu_back: '&7Voltar'
+  # mostrado como subtítulo quando uma árvore tomba (animação 'topple', com animation.topple.timber: true na config)
+  timber: '&6&lMadeira!'
+  # dinheiro por uma árvore cortada (economy.reward-per-log) - por exemplo '%prefix%&a+%money% &7por %logs% troncos'
+  economy_reward: ''
+  # mostrado na barra de ação
+  not_enough_money: '&cVocê precisa de %money% para cortar uma árvore inteira.'
+  skill_trees: ' &8- &7Árvores cortadas: &f%trees%'
+  # a barra enquanto uma árvore maior é cortada (configuração 'chopping')
+  chopping: '&6Cortando a árvore &8(&f%logs% troncos&8)'
+  # mostrado na barra de ação
+  sapling_protected: '&cEsta muda foi plantada pelo WoodCutter e não pode ser quebrada até crescer.'

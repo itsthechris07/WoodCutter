@@ -17,11 +17,15 @@ import org.bukkit.Particle;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Beehive;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Leaves;
+import org.bukkit.entity.Bee;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -147,8 +151,16 @@ public class Cutter {
      * with the animation 'topple': the items drop where the tree hits the ground
      */
     private final boolean dropsWhereItLands;
-    private final boolean knockback;
-    private final double damage;
+    /**
+     * how a tree of the animation 'topple' falls
+     */
+    private final FallingTree.Settings toppleSettings;
+    /**
+     * planted saplings can't be broken by players until they grow
+     */
+    private final boolean protectSaplings;
+    private final boolean angryBees;
+    private final boolean dropNests;
     /**
      * with the animation 'topple': "Timber!" is shown to the player
      */
@@ -191,8 +203,10 @@ public class Cutter {
         this.blocksPerTick = !animated || topple ? 0
                 : Math.max(1, config.getInt(ConfigData.Keys.ANIMATION_BLOCKS_PER_TICK)) + (int) Math.round(skill.perk(player, Skill.PERK_SPEED));
         this.dropsWhereItLands = topple && !dropsToInventory && config.getBoolean(ConfigData.Keys.TOPPLE_DROPS_WHERE_IT_LANDS);
-        this.knockback = config.getBoolean(ConfigData.Keys.TOPPLE_KNOCKBACK);
-        this.damage = config.getDouble(ConfigData.Keys.TOPPLE_DAMAGE);
+        this.toppleSettings = topple ? FallingTree.Settings.of(config) : FallingTree.Settings.SIMPLE;
+        this.protectSaplings = config.getBoolean(ConfigData.Keys.REPLANT_PROTECT);
+        this.angryBees = config.getBoolean(ConfigData.Keys.BEES_ANGRY);
+        this.dropNests = config.getBoolean(ConfigData.Keys.BEES_DROP_NEST);
         this.timber = config.getBoolean(ConfigData.Keys.TOPPLE_TIMBER);
     }
 
@@ -227,7 +241,7 @@ public class Cutter {
      * @return true for the blocks trees and huge mushrooms are made of, which are remembered when players place them
      */
     public static boolean isWood(Material type) {
-        return Tag.LOGS.isTagged(type) || MUSHROOM.contains(type);
+        return TreeBlocks.isAnyLog(type) || MUSHROOM.contains(type);
     }
 
     /**
@@ -296,13 +310,7 @@ public class Cutter {
      */
     @Nullable
     static Material sapling(Material log) {
-        String type = Statistics.treeType(log);
-        String name = switch (type) {
-            case "mangrove" -> "mangrove_propagule";
-            case "crimson", "warped" -> type + "_fungus";
-            default -> type + "_sapling";
-        };
-        return Material.matchMaterial(name);
+        return TreeBlocks.sapling(log);
     }
 
     private static boolean isGround(Material sapling, Block ground) {
@@ -357,7 +365,7 @@ public class Cutter {
             bottom = below;
         }
         Material ground = bottom.getRelative(BlockFace.DOWN).getType();
-        if (!ground.isSolid() || Tag.LEAVES.isTagged(ground) || CROWNS.contains(ground.name())) return false;
+        if (!ground.isSolid() || TreeBlocks.isLeaves(ground) || CROWNS.contains(ground.name())) return false;
         int x = bottom.getX() - block.getX();
         int z = bottom.getZ() - block.getZ();
         // the trunk of the tree itself, or another log of its trunk next to it
@@ -391,7 +399,7 @@ public class Cutter {
             if (distance > LEAF_DISTANCE) continue;
             for (BlockFace face : FACES) {
                 Block next = current.getRelative(face);
-                if (!isInRange(next) || distances.containsKey(next) || !Tag.LEAVES.isTagged(next.getType())) continue;
+                if (!isInRange(next) || distances.containsKey(next) || !TreeBlocks.isLeaves(next.getType())) continue;
                 distances.put(next, distance);
                 leaves.add(next);
                 queue.add(next);
@@ -408,7 +416,17 @@ public class Cutter {
             return false;
         }
         // on Folia blocks of other regions must not be touched
-        return !TaskManager.isFolia() || Bukkit.isOwnedByCurrentRegion(target);
+        return !TaskManager.isFolia() || TaskManager.owns(target);
+    }
+
+    /**
+     * @return the amount of logs of the tree the player would cut (without the block itself), 0 if it is no tree -
+     * nothing is changed
+     */
+    public int count() {
+        this.logs = findLogs();
+        if (logs.isEmpty() || requireLeaves && !mushroom && !hasCrown()) return 0;
+        return logs.size();
     }
 
     /**
@@ -431,18 +449,21 @@ public class Cutter {
         this.leaves = decayLeaves ? findLeaves(logs) : List.of();
         this.sapling = replant ? plantableSapling() : null;
         if (sapling != null) this.trunk = findTrunk();
+        List<Block> attached = findAttached();
         // the server removes the broken log and drops its items after the event
         ORIGINS.put(player.getUniqueId(), block);
         TaskManager.regionLater(block.getLocation(), () -> {
             ORIGINS.remove(player.getUniqueId(), block);
-            if (sapling != null) plant(block);
+            if (sapling != null) plant(block, trunk.isEmpty());
         }, 1);
 
         if (topple) {
-            FallingTree tree = new FallingTree(block, player);
-            tree.hits(knockback, damage);
+            int height = logs.stream().mapToInt(Block::getY).max().orElse(block.getY()) - block.getY() + 1;
+            FallingTree tree = new FallingTree(block, player, toppleSettings, height);
             tree.add(block, block.getBlockData());
             this.fallingTree = tree;
+            // cocoa, vines and nests would drop or stay in the air when their log is gone
+            removeAttached(attached);
             if (dropsWhereItLands) LANDING.put(player.getUniqueId(), tree);
             try {
                 breakLogs(0, logs.size());
@@ -457,14 +478,92 @@ public class Cutter {
             if (tree.start() && timber) Message.TIMBER.sendSubtitle(player);
             finish();
         } else if (blocksPerTick == 0) {
+            removeAttached(attached);
             breakLogs(0, logs.size());
             finish();
         } else {
+            removeAttached(attached);
             // layer by layer, every layer from the trunk to the tips of its branches
             logs.sort(Comparator.comparingInt(Block::getY).thenComparingInt(this::distanceToTrunk));
             step(0);
         }
         return logs.size();
+    }
+
+    /**
+     * @return the blocks on the logs of the tree that are removed with it (setting 'attached-blocks', and the vines
+     * below them) and the nests of bees
+     */
+    private List<Block> findAttached() {
+        if (mushroom) return List.of();
+        List<Block> attached = new ArrayList<>();
+        Set<Block> visited = new HashSet<>();
+        List<Block> trunk = new ArrayList<>(logs);
+        trunk.add(block);
+        for (Block log : trunk) {
+            for (BlockFace face : FACES) {
+                Block next = log.getRelative(face);
+                if (!isInRange(next) || !visited.add(next)) continue;
+                Material type = next.getType();
+                if (type != Material.BEE_NEST && !TreeBlocks.isAttached(type)) continue;
+                attached.add(next);
+                // the vines that hang below
+                Block below = next.getRelative(BlockFace.DOWN);
+                while (type == Material.VINE && below.getType() == Material.VINE && isInRange(below) && visited.add(below)) {
+                    attached.add(below);
+                    below = below.getRelative(BlockFace.DOWN);
+                }
+            }
+        }
+        return attached;
+    }
+
+    /**
+     * removes the blocks on the tree as the player (protection plugins can deny it), their items drop like the ones
+     * of the logs - the bees of a nest fly out and attack the player
+     */
+    private void removeAttached(List<Block> attached) {
+        ItemStack axe = player.getInventory().getItemInMainHand();
+        for (Block target : attached) {
+            if (TaskManager.isFolia() && !TaskManager.owns(target)) continue;
+            BlockData data = target.getBlockData();
+            BlockBreakEvent event = new BlockBreakEvent(target, player);
+            // nests drop nothing without silk touch, unless the setting wants it
+            boolean nest = data.getMaterial() == Material.BEE_NEST;
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) continue;
+            List<ItemStack> items = new ArrayList<>();
+            if (event.isDropItems() && player.getGameMode() != GameMode.CREATIVE) {
+                if (nest) {
+                    if (dropNests) items.add(new ItemStack(Material.BEE_NEST));
+                } else {
+                    items.addAll(target.getDrops(axe, player));
+                }
+            }
+            if (nest) releaseBees(target);
+            target.setType(Material.AIR, false);
+            for (ItemStack item : items) drop(target, item);
+            if (fallingTree != null) fallingTree.addLeaf(target, data);
+        }
+    }
+
+    /**
+     * the bees of the nest fly out, they and the bees outside that belong to it attack the player
+     */
+    private void releaseBees(Block nest) {
+        List<Bee> bees = new ArrayList<>();
+        if (nest.getState() instanceof Beehive hive && hive.getEntityCount() > 0) bees.addAll(hive.releaseEntities());
+        Location location = nest.getLocation();
+        for (Entity entity : nest.getWorld().getNearbyEntities(location.clone().add(0.5, 0.5, 0.5), 32, 32, 32, Bee.class::isInstance)) {
+            Bee bee = (Bee) entity;
+            if (location.equals(bee.getHive()) && !bees.contains(bee)) bees.add(bee);
+        }
+        if (!angryBees || player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
+        for (Bee bee : bees) {
+            if (TaskManager.isFolia() && !TaskManager.owns(bee)) continue;
+            bee.setAnger(400);
+            bee.setTarget(player);
+        }
     }
 
     /**
@@ -481,7 +580,7 @@ public class Cutter {
     private static boolean isCrown(Block log) {
         for (BlockFace face : FACES) {
             Material type = log.getRelative(face).getType();
-            if (Tag.LEAVES.isTagged(type) || CROWNS.contains(type.name())) return true;
+            if (TreeBlocks.isLeaves(type) || CROWNS.contains(type.name())) return true;
         }
         return false;
     }
@@ -540,7 +639,7 @@ public class Cutter {
                 Material type = data.getMaterial();
                 // changed since the tree was found
                 if (!isLog(type)) continue;
-                if (TaskManager.isFolia() && !Bukkit.isOwnedByCurrentRegion(target)) continue;
+                if (TaskManager.isFolia() && !TaskManager.owns(target)) continue;
                 if (!player.breakBlock(target)) continue;
                 broken++;
                 // the player does not get the sound and particles of blocks they break themselves
@@ -563,8 +662,7 @@ public class Cutter {
      */
     private void playBreakEffect(Block broken, BlockData data, float progress) {
         Location center = broken.getLocation().add(0.5, 0.5, 0.5);
-        // by its name, as the sounds became a registry in 1.21.3
-        player.playSound(center, "minecraft:block.wood.break", 1, 0.7f + 0.5f * progress);
+        Effects.playTo(player, center, Effects.CHOP, 0.5f * progress);
         player.spawnParticle(Particle.BLOCK, center, 20, 0.25, 0.25, 0.25, data);
     }
 
@@ -586,7 +684,7 @@ public class Cutter {
     private void finish() {
         if (experiencePerLog > 0) TaskManager.regionLater(block.getLocation(), this::dropExperience, 1);
         // the other saplings of a big tree, when its logs are gone
-        if (!trunk.isEmpty()) TaskManager.regionLater(block.getLocation(), () -> trunk.forEach(this::plant), 2);
+        if (!trunk.isEmpty()) TaskManager.regionLater(block.getLocation(), () -> trunk.forEach(log -> plant(log, false)), 2);
         if (leaves.isEmpty()) return;
         // with the animation the leaves follow the logs: from the bottom to the top within two seconds at most
         int leavesPerTick = !animated ? leaves.size() : Math.max(Math.max(1, blocksPerTick) * LEAVES_PER_LOG, (leaves.size() + 39) / 40);
@@ -605,7 +703,7 @@ public class Cutter {
         // the rest is the chance for another point
         if (ThreadLocalRandom.current().nextDouble() < exact - points) points++;
         if (points <= 0) return;
-        if (dropsToInventory && player.isOnline() && Bukkit.isOwnedByCurrentRegion(player)) {
+        if (dropsToInventory && player.isOnline() && TaskManager.owns(player)) {
             player.giveExp(points);
             return;
         }
@@ -621,12 +719,44 @@ public class Cutter {
     }
 
     /**
-     * plants the sapling as the player: protection plugins can deny it, logging plugins record it
+     * @return true if a sapling can be planted there: air or a plant like grass, with ground for the sapling below
      */
-    private void plant(Block block) {
+    private boolean canPlant(Block target) {
+        if (!isInRange(target)) return false;
+        Material type = target.getType();
+        boolean free = type.isAir() || !target.isLiquid() && Tag.REPLACEABLE.isTagged(type) && !Tag.SAPLINGS.isTagged(type);
+        return free && isGround(sapling, target.getRelative(BlockFace.DOWN));
+    }
+
+    /**
+     * plants the sapling as the player: protection plugins can deny it, logging plugins record it
+     *
+     * @param movable true plants it next to the stump if something is on it (not for the saplings of big trees)
+     */
+    private void plant(Block block, boolean movable) {
+        if (!player.isOnline()) return;
+        if (!canPlant(block)) {
+            if (!movable) return;
+            Block free = null;
+            // the closest free place around the stump, also one block higher or lower
+            for (int radius = 1; radius <= 2 && free == null; radius++) {
+                for (int x = -radius; x <= radius && free == null; x++) {
+                    for (int z = -radius; z <= radius && free == null; z++) {
+                        if (Math.max(Math.abs(x), Math.abs(z)) != radius) continue;
+                        for (int y : new int[]{0, 1, -1}) {
+                            Block candidate = block.getRelative(x, y, z);
+                            if (canPlant(candidate)) {
+                                free = candidate;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (free == null) return;
+            block = free;
+        }
         Block ground = block.getRelative(BlockFace.DOWN);
-        if (!player.isOnline() || !block.getType().isAir() || !isGround(sapling, ground)) return;
-        if (TaskManager.isFolia() && !Bukkit.isOwnedByCurrentRegion(block)) return;
         ItemStack item = new ItemStack(sapling);
         boolean paid = !freeSapling && player.getGameMode() != GameMode.CREATIVE;
         if (paid && !player.getInventory().removeItem(item.clone()).isEmpty()) return;
@@ -638,6 +768,8 @@ public class Cutter {
         if (event.isCancelled() || !event.canBuild()) {
             replaced.update(true, false);
             if (paid) player.getInventory().addItem(item);
+        } else if (protectSaplings) {
+            PlantedSaplings.mark(block);
         }
     }
 
@@ -685,13 +817,14 @@ public class Cutter {
     private void decay(int from, int leavesPerTick) {
         int to = Math.min(leaves.size(), from + leavesPerTick);
         boolean rustled = false;
+        boolean particles = Effects.particles(ConfigData.Keys.PARTICLES_LEAVES);
         for (Block leaf : leaves.subList(from, to)) {
             BlockData data = leaf.getBlockData();
             if (!decayLeaf(leaf, null, true) || !animated) continue;
             Location center = leaf.getLocation().add(0.5, 0.5, 0.5);
-            leaf.getWorld().spawnParticle(Particle.BLOCK, center, 6, 0.3, 0.3, 0.3, data);
+            if (particles) leaf.getWorld().spawnParticle(Particle.BLOCK, center, 6, 0.3, 0.3, 0.3, data);
             // one sound for the leaves of a tick
-            if (!rustled) leaf.getWorld().playSound(center, "minecraft:block.grass.break", 0.6f, 1);
+            if (!rustled) Effects.play(center, Effects.LEAVES, 0);
             rustled = true;
         }
         if (to < leaves.size()) TaskManager.regionLater(block.getLocation(), () -> decay(to, leavesPerTick), 1);
@@ -705,12 +838,17 @@ public class Cutter {
      * @return true if the leaf has decayed
      */
     private boolean decayLeaf(Block leaf, @Nullable FallingTree tree, boolean checkDistance) {
-        if (TaskManager.isFolia() && !Bukkit.isOwnedByCurrentRegion(leaf)) return false;
-        if (!(leaf.getBlockData() instanceof Leaves data) || data.isPersistent()) return false;
-        if (checkDistance && data.getDistance() < LEAF_DISTANCE) return false;
-        LeavesDecayEvent event = new LeavesDecayEvent(leaf);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return false;
+        if (TaskManager.isFolia() && !TaskManager.owns(leaf)) return false;
+        if (leaf.getBlockData() instanceof Leaves data) {
+            if (data.isPersistent()) return false;
+            if (checkDistance && data.getDistance() < LEAF_DISTANCE) return false;
+            LeavesDecayEvent event = new LeavesDecayEvent(leaf);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) return false;
+        } else {
+            // blocks of the setting 'extra-leaves' don't decay on their own: they stay while a log is close
+            if (!TreeBlocks.isLeaves(leaf.getType()) || checkDistance && hasLogNearby(leaf)) return false;
+        }
         Material lucky = foresterLuck > 0 && ThreadLocalRandom.current().nextDouble(100) < foresterLuck ? luckyDrop() : null;
         if (tree == null) {
             leaf.breakNaturally();
@@ -721,6 +859,21 @@ public class Cutter {
         if (lucky != null) tree.drop(leaf, new ItemStack(lucky));
         leaf.setType(Material.AIR);
         return true;
+    }
+
+    /**
+     * @return true if a log is at most three blocks away from the block
+     */
+    private boolean hasLogNearby(Block target) {
+        for (int x = -3; x <= 3; x++) {
+            for (int y = -3; y <= 3; y++) {
+                for (int z = -3; z <= 3; z++) {
+                    Block next = target.getRelative(x, y, z);
+                    if (isInRange(next) && TreeBlocks.isAnyLog(next.getType())) return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -746,9 +899,9 @@ public class Cutter {
                 // the log the player has broken is removed by the server after the event
                 if (next.equals(block) || steps.containsKey(next) || !isInRange(next)) continue;
                 Material type = next.getType();
-                if (Tag.LOGS.isTagged(type)) {
+                if (TreeBlocks.isAnyLog(type)) {
                     keepers.add(next);
-                } else if (step < LEAF_DISTANCE - 1 && Tag.LEAVES.isTagged(type)) {
+                } else if (step < LEAF_DISTANCE - 1 && TreeBlocks.isLeaves(type)) {
                     steps.put(next, step);
                     queue.add(next);
                 }
@@ -760,7 +913,7 @@ public class Cutter {
         for (Block log : keepers) {
             for (BlockFace face : FACES) {
                 Block next = log.getRelative(face);
-                if (!distances.containsKey(next) && isInRange(next) && Tag.LEAVES.isTagged(next.getType())) {
+                if (!distances.containsKey(next) && isInRange(next) && TreeBlocks.isLeaves(next.getType())) {
                     distances.put(next, 1);
                     queue.add(next);
                 }
@@ -772,7 +925,7 @@ public class Cutter {
             if (distance >= LEAF_DISTANCE) continue;
             for (BlockFace face : FACES) {
                 Block next = current.getRelative(face);
-                if (distances.containsKey(next) || !isInRange(next) || !Tag.LEAVES.isTagged(next.getType())) continue;
+                if (distances.containsKey(next) || !isInRange(next) || !TreeBlocks.isLeaves(next.getType())) continue;
                 distances.put(next, distance);
                 queue.add(next);
             }

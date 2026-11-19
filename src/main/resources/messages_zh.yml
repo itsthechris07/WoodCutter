@@ -81,3 +81,7 @@ messages:
   # 显示在动作栏
   not_enough_money: '&c你需要 %money% 才能砍倒整棵树。'
   skill_trees: ' &8- &7已砍倒的树：&f%trees%'
+  # 砍伐较大的树时显示的进度条（设置 'chopping'）
+  chopping: '&6正在砍树 &8(&f%logs% 根原木&8)'
+  # 显示在动作栏
+  sapling_protected: '&c这棵树苗是 WoodCutter 种下的，长大之前无法破坏。'

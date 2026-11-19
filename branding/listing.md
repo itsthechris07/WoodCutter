@@ -12,7 +12,7 @@ Modrinth summary / Hangar description (max. 256 characters):
 
 SpigotMC tag line (max. 100 characters):
 
-> Timber enchantment: cut whole trees with one log – levels, animation, replanting, skill. Paper 1.21+
+> Timber enchantment: cut whole trees with one log – levels, animation, replanting, skill. 1.21+
 
 ## Tags
 
@@ -26,10 +26,24 @@ SpigotMC tag line (max. 100 characters):
 
 For the top of the description, right below the banner:
 
-> **Paper & Folia 1.21 – 26.3** · Java 21+ · one jar for all versions · Spigot is not supported
+> **Paper & Folia 1.21 – 26.3** · Java 21+ · one jar for all versions · Spigot: basic support
 >
 > Works with WorldGuard (region flag), PlaceholderAPI, CoreProtect and every protection plugin – each log is broken
 > as the player.
+
+## Changelog 3.3.0
+
+> - Physics for the animation 'topple': the tree bounces, comes to rest on slopes, walls and other trees, floats on
+>   water or breaks apart – falling away from the player, where they look, down the hill or at random. Glow if you like.
+> - Sounds and particles of the animations can be changed or switched off.
+> - Chopping: bigger trees take longer to chop, with a boss bar (optional).
+> - Cocoa, vines and bee nests fall with the tree – the bees attack the player.
+> - Saplings next to the stump if something is on it, and protected until they grow (optional).
+> - Logs, leaves and saplings of mods, axes of ItemsAdder, Nexo, Oraxen and MMOItems.
+> - WorldGuard: blacklist or whitelist of regions in the config.
+> - Russian, Ukrainian, Czech and Portuguese.
+> - Spigot 1.21+ with basic support (Paper is recommended).
+> - Tested on Paper 1.21.11, 26.2, 26.3 and Spigot 1.21.11.
 
 ## Changelog 3.2.1
 

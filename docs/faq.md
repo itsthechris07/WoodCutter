@@ -18,7 +18,8 @@ Logs placed by players are remembered and never cut (`destroy-fake-trees: false`
 (`require-leaves: true`).
 
 **Does it work on Spigot?**
-No. WoodCutter needs Paper or Folia 1.21 or newer.
+Yes, with basic support: Spigot 1.21 or newer runs with the same jar, but WoodCutter is made for Paper. Bugs that only
+happen on Spigot have a low priority, and new features may need Paper – if you can, use Paper.
 
 **Does it work with Folia?**
 Yes, with the same jar.

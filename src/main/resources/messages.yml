@@ -81,3 +81,7 @@ messages:
   # shown over the action bar
   not_enough_money: '&cYou need %money% to cut a whole tree.'
   skill_trees: ' &8- &7Trees cut: &f%trees%'
+  # the bar while a bigger tree is chopped (setting 'chopping')
+  chopping: '&6Chopping the tree &8(&f%logs% logs&8)'
+  # shown over the action bar
+  sapling_protected: "&cThis sapling was planted by WoodCutter and can't be broken until it grows."

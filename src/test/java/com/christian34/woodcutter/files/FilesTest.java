@@ -61,6 +61,21 @@ class FilesTest extends PluginTestBase {
     }
 
     @Test
+    void ownEntriesOfEmptySectionsAreKept() throws Exception {
+        File file = new File(plugin.getDataFolder(), "config.yml");
+        YamlConfiguration old = YamlConfiguration.loadConfiguration(file);
+        old.set("config.saplings.my_log", "my_sapling");
+        // a missing setting makes the file be updated
+        old.set("config.chopping", null);
+        old.save(file);
+        plugin.reload();
+        YamlConfiguration updated = YamlConfiguration.loadConfiguration(file);
+        assertEquals(6, updated.getInt("config.chopping.max-factor"));
+        assertEquals("my_sapling", updated.getString("config.saplings.my_log"));
+        assertEquals("my_sapling", plugin.getConfigData().getMap(ConfigData.Keys.SAPLINGS).get("my_log"));
+    }
+
+    @Test
     void completeFilesAreNotTouched() throws Exception {
         File file = new File(plugin.getDataFolder(), "config.yml");
         String text = Files.readString(file.toPath()).replace("  level: 30", "  # my own note\n  level:    25");

@@ -39,10 +39,24 @@ in `/woodcutter menu`.
 | `require-leaves` | `true` | Logs without leaves (or wart blocks in the Nether) are no tree |
 | `mushrooms` | `true` | Huge mushrooms are cut when their stem is broken with an axe |
 | `excluded-logs` | `[]` | Logs that are never cut, by name or pattern, e.g. `stripped_*` or `cherry_log` |
+| `extra-logs` | `[]` | Blocks that are cut like logs, e.g. the logs of mods on hybrid servers (`*` stands for any characters) |
+| `extra-leaves` | `[]` | Blocks that are removed with the leaves of a cut tree, e.g. `nether_wart_block` |
+| `attached-blocks` | `[cocoa, vine, shelf_mushroom]` | Blocks on the logs that are removed with the tree, their items drop (and the vines below them) |
+| `saplings` | `{}` | Saplings of logs that have none (or another one), as `log: sapling` |
+| `custom-axes.items` | `[]` | Items of other plugins that are axes: `itemsadder:<namespace>:<id>`, `nexo:<id>`, `oraxen:<id>`, `mmoitems:<type>:<id>` – or items of Minecraft, e.g. `mace` |
+| `custom-axes.only` | `false` | `true`: only these items are axes, not the axes of Minecraft |
+| `bees.angry` | `true` | The bees of a nest in the tree fly out and attack the player who cut it |
+| `bees.drop-nest` | `false` | The nest drops as an item (without its bees) |
+| `worldguard-regions.mode` | `blacklist` | `blacklist`: WoodCutter is disabled in the listed regions. `whitelist`: only enabled in them |
+| `worldguard-regions.list` | `[]` | Region ids, `*` stands for any characters, `__global__` is everywhere outside of regions |
 | `fast-leaf-decay` | `true` | The leaves of a cut tree decay within seconds |
-| `replant.enabled` | `true` | A new sapling is planted, four of them for trees with a 2x2 trunk |
+| `replant.enabled` | `true` | A new sapling is planted, four of them for trees with a 2x2 trunk – next to the stump if something is on it |
 | `replant.free` | `false` | `false`: the sapling is taken from the inventory of the player |
+| `replant.protect` | `false` | Players can't break the planted saplings until they grow (except with `woodcutter.replant.break`) |
 | `protect-axe` | `true` | Cutting stops before the hit that would break the axe |
+| `chopping.slowdown-per-log` | `0` | Percent every log of the tree makes breaking the log slower, e.g. `5`: a tree of 20 logs takes twice as long (`0` disables it) |
+| `chopping.max-factor` | `6` | The most breaking the log can take, in times as long as a single log |
+| `chopping.progress` | `bossbar` | How the progress is shown: `bossbar`, `actionbar` or `none` |
 
 ## Animation
 
@@ -55,6 +69,27 @@ in `/woodcutter menu`.
 | `animation.topple.knockback` | `true` | Mobs and players the tree falls on are pushed away |
 | `animation.topple.damage` | `0` | Damage the tree does to them (2 = a heart), as the player who cut it, so PvP and protection plugins can deny it |
 | `animation.topple.timber` | `false` | Shows "Timber!" (message `timber`) as a subtitle to the player who cut the tree |
+| `animation.topple.physics` | `rigid` | `rigid`: the tree falls in one piece, bounces and comes to rest on what is below it – walls and other trees stop it. `fall-apart`: it breaks into its blocks when it hits the ground. `simple`: the 90° fall of older versions |
+| `animation.topple.direction` | `away` | `away` from the player, where the player is `facing`, down the `slope` (away from the player on even ground) or `random` |
+| `animation.topple.float-on-water` | `true` | A tree that falls into water floats for a few seconds |
+| `animation.topple.update-interval` | `2` | Ticks between two positions sent to the players (1–10) – higher values save bandwidth, the players' clients smooth the movement |
+| `animation.topple.glow` | `''` | The falling tree glows in a color, e.g. `'#ff8800'` (`''` for none) |
+
+### Effects
+
+| Setting | Default | Description |
+|---|---|---|
+| `effects.sounds.chop` | `block.wood.break` | Played to the player for every log of the animation `layers` |
+| `effects.sounds.creak` | `block.wooden_door.open`, `block.wood.break` | When a tree starts to tip over |
+| `effects.sounds.impact` | `block.wood.break`, `entity.generic.big_fall` | When it hits the ground |
+| `effects.sounds.splash` | `entity.generic.splash` | When it falls into water |
+| `effects.sounds.leaves` | `block.grass.break` | When leaves decay |
+| `effects.particles.falling-leaves` | `true` | Leaves fall from the crown of a tipping tree |
+| `effects.particles.impact` | `true` | Dust of the logs and the ground where the tree lands |
+| `effects.particles.leaves` | `true` | Particles of decaying leaves |
+
+Every sound is a list of `'sound volume pitch'`, e.g. `'minecraft:block.wood.break 1 0.7'` – sounds of resource packs
+work as well, and `[]` plays nothing.
 
 ## Drops
 

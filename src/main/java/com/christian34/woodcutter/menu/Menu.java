@@ -4,13 +4,11 @@ import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.commands.CommandWoodCutter;
 import com.christian34.woodcutter.files.ConfigData;
 import com.christian34.woodcutter.listeners.BlockBreakListener;
+import com.christian34.woodcutter.platform.Platform;
 import com.christian34.woodcutter.skill.Skill;
 import com.christian34.woodcutter.utils.Debug;
 import com.christian34.woodcutter.utils.Message;
 import com.christian34.woodcutter.utils.Statistics;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -76,7 +74,7 @@ public class Menu implements InventoryHolder {
         // only admins see the settings
         this.page = page == Page.SETTINGS && !isAdmin() ? Page.MAIN : page;
         Message title = this.page == Page.MAIN ? Message.MENU_TITLE : Message.MENU_SETTINGS_TITLE;
-        this.inventory = Bukkit.createInventory(this, this.page == Page.MAIN ? SIZE : SETTINGS_SIZE, component(title.getText()));
+        this.inventory = Platform.get().createInventory(this, this.page == Page.MAIN ? SIZE : SETTINGS_SIZE, title.getText());
         fill();
     }
 
@@ -116,15 +114,11 @@ public class Menu implements InventoryHolder {
         return item;
     }
 
-    private static Component component(String text) {
-        return Message.component(text).decoration(TextDecoration.ITALIC, false);
-    }
-
     private static ItemStack item(Material material, String name, List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(component(name));
-        meta.lore(lore.stream().filter(line -> !line.isEmpty()).map(Menu::component).toList());
+        Platform.get().setDisplayName(meta, name);
+        Platform.get().setLore(meta, lore.stream().filter(line -> !line.isEmpty()).toList());
         // no damage of the axe and the like
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);

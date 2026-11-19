@@ -3,6 +3,7 @@ package com.christian34.woodcutter.files;
 import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.utils.Debug;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,7 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -109,6 +112,21 @@ public class ConfigData {
     }
 
     /**
+     * @return the entries of a section as texts, e.g. the saplings of own logs - empty if it is no section
+     */
+    @NotNull
+    public Map<String, String> getMap(@NotNull String key) {
+        ConfigurationSection section = data.getConfigurationSection(DATA_PREFIX + key);
+        if (section == null) return Map.of();
+        Map<String, String> map = new LinkedHashMap<>();
+        for (String entry : section.getKeys(false)) {
+            String value = section.getString(entry);
+            if (value != null) map.put(entry, value);
+        }
+        return map;
+    }
+
+    /**
      * @return the settings (e.g. replant.enabled) that differ from the default config of the jar
      */
     @NotNull
@@ -162,6 +180,32 @@ public class ConfigData {
         public static final String TOPPLE_KNOCKBACK = "animation.topple.knockback";
         public static final String TOPPLE_DAMAGE = "animation.topple.damage";
         public static final String TOPPLE_TIMBER = "animation.topple.timber";
+        public static final String TOPPLE_PHYSICS = "animation.topple.physics";
+        public static final String TOPPLE_DIRECTION = "animation.topple.direction";
+        public static final String TOPPLE_FLOAT_ON_WATER = "animation.topple.float-on-water";
+        public static final String TOPPLE_UPDATE_INTERVAL = "animation.topple.update-interval";
+        public static final String TOPPLE_GLOW = "animation.topple.glow";
+        /**
+         * followed by the name of the sound: chop, creak, impact, splash or leaves
+         */
+        public static final String EFFECTS_SOUNDS = "effects.sounds.";
+        public static final String PARTICLES_FALLING_LEAVES = "effects.particles.falling-leaves";
+        public static final String PARTICLES_IMPACT = "effects.particles.impact";
+        public static final String PARTICLES_LEAVES = "effects.particles.leaves";
+        public static final String CHOPPING_SLOWDOWN = "chopping.slowdown-per-log";
+        public static final String CHOPPING_MAX_FACTOR = "chopping.max-factor";
+        public static final String CHOPPING_PROGRESS = "chopping.progress";
+        public static final String EXTRA_LOGS = "extra-logs";
+        public static final String EXTRA_LEAVES = "extra-leaves";
+        public static final String ATTACHED_BLOCKS = "attached-blocks";
+        public static final String SAPLINGS = "saplings";
+        public static final String CUSTOM_AXES = "custom-axes.items";
+        public static final String CUSTOM_AXES_ONLY = "custom-axes.only";
+        public static final String BEES_ANGRY = "bees.angry";
+        public static final String BEES_DROP_NEST = "bees.drop-nest";
+        public static final String WORLDGUARD_REGIONS_MODE = "worldguard-regions.mode";
+        public static final String WORLDGUARD_REGIONS = "worldguard-regions.list";
+        public static final String REPLANT_PROTECT = "replant.protect";
         public static final String REQUIRE_LEAVES = "require-leaves";
         public static final String MUSHROOMS = "mushrooms";
         public static final String EXCLUDED_LOGS = "excluded-logs";

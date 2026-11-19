@@ -1,0 +1,87 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                     - Zprávy -                       | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# barvy: &c, &l, hex barvy jako &#ff8800 - nebo MiniMessage: <gold>, <gradient:#5e9c3a:#c9a46b>...</gradient>
+# (text s tagy MiniMessage nesmí obsahovat &-kódy) - %prefix% se nahradí prefixem níže
+# prázdný text ('') se neposílá
+
+messages:
+  prefix: '&8[&9Wood&7Cutter&8] '
+  no_permission: '%prefix%&cPromiň, ale na tohle nemáš oprávnění!'
+  players_only: '%prefix%&cTento příkaz mohou používat jen hráči!'
+  reloaded: '%prefix%&aKonfigurace byla znovu načtena!'
+  enchant_success: '%prefix%&aNástroj byl úspěšně očarován!'
+  enchant_failed: '%prefix%&cNástroj se nepodařilo očarovat!'
+  invalid_level: '%prefix%&cÚroveň musí být číslo od 1 do %max%!'
+  player_not_online: "%prefix%&cHráč '%player%' není online!"
+  no_axe: "%prefix%&c'%item%' není sekera! Použij 'book' nebo sekeru, např. 'diamond_axe'."
+  give_sent: '%prefix%&a%player% dostal předmět.'
+  give_received_book: '%prefix%&aDostal jsi knihu s WoodCutter!'
+  give_received_axe: '%prefix%&aDostal jsi sekeru s WoodCutter!'
+  toggle_on: '%prefix%&aWoodCutter je zapnutý, zase kácíš celé stromy!'
+  toggle_off: '%prefix%&7WoodCutter je vypnutý, teď rozbíjíš jen jednotlivé kmeny.'
+  # zobrazuje se nad lištou předmětů
+  not_enough_food: '&cMáš moc velký hlad, abys pokácel celý strom.'
+  not_enough_experience: '&cK pokácení celého stromu potřebuješ %levels% úrovní zkušeností.'
+  update_available: '%prefix%&7Je dostupná nová aktualizace: &9https://github.com/itsthechris07/WoodCutter/releases/latest'
+  help_toggle: '&7/&9WoodCutter toggle &f| &7zapne nebo vypne WoodCutter pro tebe'
+  help_reload: '&7/&9WoodCutter reload &f| &7znovu načte konfigurační soubory'
+  help_enchant: '&7/&9WoodCutter enchant [level] &f| &7očaruje sekeru v hlavní ruce'
+  help_give: '&7/&9WoodCutter give <player> [book|axe] [level] &f| &7dá očarovanou knihu nebo sekeru'
+  axe_almost_broken: '&cTvoje sekera je skoro rozbitá, strom se dál nekácí.'
+  # zobrazí se jednou nad lištou, když hráč rozbije kmen stromu bez plížení
+  sneak_hint: '&7Plíž se, když rozbíjíš kmen, a pokácíš celý strom.'
+  # dovednost dřevorubce - první dvě se zobrazují nad lištou po stromu
+  skill_xp: '&a+%xp% XP &8| &7Úroveň &9%level% &8| &f%current%&7/&f%needed%'
+  skill_xp_max: '&a+%xp% XP &8| &7Úroveň &9%level% &8(&7max&8)'
+  skill_level_up: '%prefix%&aDosáhl jsi úrovně dřevorubce &9%level%&a!'
+  skill_level_up_title: '&9Úroveň %level%'
+  skill_level_up_subtitle: '&7Dřevorubec'
+  skill_disabled: '%prefix%&cDovednost dřevorubce je vypnutá!'
+  skill_no_data: "%prefix%&c'%player%' ještě nepokácel žádný strom!"
+  skill_info: '%prefix%&9%player% &8| &7Úroveň &9%level% &8| &f%current%&7/&f%needed% XP'
+  skill_info_max: '%prefix%&9%player% &8| &7Úroveň &9%level% &8(&7max&8) | &f%xp% XP'
+  skill_perk_speed: ' &8- &7Rychlejší kácení: &f+%value% kmenů za tick'
+  skill_perk_delay: ' &8- &7Kratší prodleva: &f-%value% sekund'
+  skill_perk_max_blocks: ' &8- &7Větší stromy: &f+%value% kmenů'
+  skill_perk_bonus_drops: ' &8- &7Bonusové dropy: &f+%value% %'
+  skill_perk_axe_saver: ' &8- &7Šetrně se sekerou: &f%value% % kmenů ji nepoškodí'
+  skill_perk_costs: ' &8- &7Nižší náklady: &f-%value% %'
+  skill_perk_forester_luck: ' &8- &7Štěstí lesníka: &f%value% % listí něco upustí'
+  skill_unlock_replant: ' &8- &7Nový stromek se zasadí zdarma'
+  skill_unlock_drops_to_inventory: ' &8- &7Kmeny jdou do tvého inventáře'
+  skill_top_header: '%prefix%&7Nejlepší dřevorubci:'
+  skill_top_entry: ' &7%rank%. &9%player% &8| &7Úroveň &9%level% &8| &f%xp% XP'
+  help_level: '&7/&9WoodCutter level [player] &f| &7ukáže úroveň dřevorubce a její výhody'
+  help_top: '&7/&9WoodCutter top &f| &7ukáže nejlepší dřevorubce'
+  help_menu: '&7/&9WoodCutter menu &f| &7otevře menu'
+  # menu (/woodcutter menu)
+  menu_title: '&8WoodCutter'
+  menu_toggle_on: '&aWoodCutter je zapnutý'
+  menu_toggle_off: '&cWoodCutter je vypnutý'
+  menu_toggle_lore: '&7Klikni pro zapnutí nebo vypnutí'
+  menu_skill: '&9Úroveň dřevorubce %level%'
+  menu_skill_progress: '&f%current%&7/&f%needed% XP'
+  menu_skill_max: '&7Nejvyšší úroveň &8| &f%xp% XP'
+  menu_top: '&9Nejlepší dřevorubci'
+  menu_settings: '&9Nastavení'
+  menu_settings_lore: '&7Klikni pro změnu nastavení pluginu'
+  menu_settings_title: '&8Nastavení WoodCutter'
+  menu_setting_on: '&a%setting%'
+  menu_setting_off: '&c%setting%'
+  menu_setting_lore: '&7Klikni pro zapnutí nebo vypnutí'
+  menu_back: '&7Zpět'
+  # podtitulek, když strom padá (animace 'topple', s animation.topple.timber: true v konfiguraci)
+  timber: '&6&lPozor, padá!'
+  # peníze za pokácený strom (economy.reward-per-log) - např. '%prefix%&a+%money% &7za %logs% kmenů'
+  economy_reward: ''
+  # zobrazuje se nad lištou předmětů
+  not_enough_money: '&cK pokácení celého stromu potřebuješ %money%.'
+  skill_trees: ' &8- &7Pokácené stromy: &f%trees%'
+  # lišta při kácení většího stromu (nastavení 'chopping')
+  chopping: '&6Kácení stromu &8(&f%logs% kmenů&8)'
+  # zobrazuje se nad lištou předmětů
+  sapling_protected: '&cTento stromek zasadil WoodCutter a nejde rozbít, dokud nevyroste.'

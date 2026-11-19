@@ -1,7 +1,7 @@
 package com.christian34.woodcutter.utils;
 
+import com.christian34.woodcutter.platform.Platform;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.plugin.Plugin;
@@ -11,12 +11,12 @@ import org.jetbrains.annotations.NotNull;
  * WoodCutter 2026.
  * <p>
  * Logs messages of WoodCutter to the console. Messages may contain legacy colors (§c), which are shown as colors in
- * the console.
+ * the console of Paper.
  *
  * @author Christian34
  */
 public final class Debug {
-    private static ComponentLogger logger;
+    private static Plugin plugin;
 
     private Debug() {
     }
@@ -25,24 +25,24 @@ public final class Debug {
      * called once when the plugin is enabled
      */
     public static void init(@NotNull Plugin plugin) {
-        logger = plugin.getComponentLogger();
+        Debug.plugin = plugin;
     }
 
     /**
      * logs an action on the debug level, which is hidden unless it is enabled for WoodCutter in the logging config
      */
     public static void recordAction(String message) {
-        if (logger != null) logger.debug(format(message));
+        if (plugin != null) Platform.get().log(plugin, "debug", message);
     }
 
     public static void log(String message) {
-        if (logger == null) fallback(message);
-        else logger.info(format(message));
+        if (plugin == null) fallback(message);
+        else Platform.get().log(plugin, "info", message);
     }
 
     public static void warn(String message) {
-        if (logger == null) fallback(message);
-        else logger.warn(format(message));
+        if (plugin == null) fallback(message);
+        else Platform.get().log(plugin, "warn", message);
     }
 
     static Component format(String message) {

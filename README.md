@@ -5,8 +5,8 @@
 **WoodCutter** adds an enchantment for axes that cuts the whole tree when you break one log – with levels, a falling
 animation, a woodcutting skill and a lot of settings. No commands are needed to play: sneak, break a log, done.
 
-**Requirements:** Paper or Folia 1.21 or newer (tested with 1.21.11, 26.2 and 26.3), Java 21 or newer. Spigot is
-not supported.
+**Requirements:** Paper or Folia 1.21 or newer (tested with 1.21.11, 26.2 and 26.3), Java 21 or newer. Spigot runs
+with the same jar, with basic support – Paper is recommended.
 
 **Download:** [GitHub](https://github.com/itsthechris07/WoodCutter/releases/latest) ·
 [Modrinth](https://modrinth.com/plugin/woodcutter-christian34) ·
@@ -32,11 +32,17 @@ not supported.
 
 - **Every tree:** all logs of the game, including cherry, mangrove and the huge fungi of the Nether. Huge mushrooms
   are cut as well.
-- **Animations:** the tree falls log by log from the bottom to the top, or tips over away from the player with its
-  leaves – the items drop where it hits the ground, and mobs in the way are pushed away.
+- **Animations:** the tree falls log by log from the bottom to the top, or tips over with its leaves – with physics:
+  it bounces, comes to rest on slopes, walls and other trees, floats on water or breaks apart. It falls away from
+  the player, where they look, down the hill or at random. The items drop where it hits the ground, and mobs in the
+  way are pushed away. No resource pack or mod is needed.
+- **Sounds, particles and glow** can be changed or switched off, sounds of resource packs work as well.
+- **Chopping:** bigger trees can take longer to chop, with the progress in a boss bar or the action bar.
 - **Buildings are safe:** logs placed by players are never cut, and logs without leaves are no tree.
-- **Fast leaf decay**, **replanting** (four saplings for big trees), **drops into the inventory**, **bonus drops**
-  and **experience drops**.
+- **Cocoa, vines and bee nests** fall with the tree – the bees attack the player who cut it.
+- **Fast leaf decay**, **replanting** (four saplings for big trees, next to the stump if something is on it, and
+  protected until they grow if you like), **drops into the inventory**, **bonus drops** and **experience drops**.
+- **Custom blocks and axes:** logs, leaves and saplings of mods, and axes of ItemsAdder, Nexo, Oraxen and MMOItems.
 - **Axe protection:** cutting stops before the hit that would break the axe.
 - **Costs and delay:** a tree can cost food points, experience levels or money (Vault), and a delay between two
   trees keeps it fair. Trees can also earn money.
@@ -77,19 +83,24 @@ Aliases: `/wcutter`, `/woodc`
 | `woodcutter.bypass.delay` | No delay between two trees | – |
 | `woodcutter.delay.<seconds>` | A shorter delay, e.g. for ranks | – |
 | `woodcutter.maxblocks.<amount>` | A higher limit of logs, e.g. for ranks | – |
+| `woodcutter.replant.break` | Break saplings WoodCutter has planted (with `replant.protect: true`) | operators |
 | `woodcutter.admin` | Reload, enchant, give and the settings in the menu | operators |
 
 ## Server
 
 - **Versions:** one jar for Paper 1.21 up to 26.3 – the tests run on 1.21.11, 26.2 and 26.3.
+- **Spigot** gets basic support with the same jar. Paper is recommended, and bugs that only happen on Spigot have a
+  low priority.
 - **Folia** is supported, with the same jar.
 - **WorldGuard** (optional): the region flag `woodcutter` – `/rg flag <region> woodcutter deny` disables WoodCutter
-  in a region.
+  in a region – or a blacklist or whitelist of regions in the config.
+- **ItemsAdder, Nexo, Oraxen, MMOItems** (optional): their items can be axes for WoodCutter.
 - **PlaceholderAPI** (optional): `%woodcutter_enabled%`, `%woodcutter_level%`, `%woodcutter_max_blocks%`,
   `%woodcutter_delay%`, `%woodcutter_skill_level%`, `%woodcutter_skill_xp%`, `%woodcutter_skill_xp_needed%` and
   `%woodcutter_trees%` and `%woodcutter_top_<rank>_name%`, `..._level%`, `..._xp%`, `..._trees%` for the ranking.
 - **Vault** (optional): money for cut trees and trees that cost money, with EssentialsX, CMI or another economy.
-- **Languages:** English, German, French, Spanish, Polish and Chinese (`language: de`, …). All texts can be changed,
+- **Languages:** English, German, French, Spanish, Polish, Chinese, Russian, Ukrainian, Czech and Portuguese
+  (`language: de`, …). All texts can be changed,
   with color codes, hex colors (`&#ff8800`) or MiniMessage.
 - **Disabled worlds** with patterns: `sg_*` matches `sg_1`, `sg_lobby`, …
 - The config is updated automatically: new settings are added with their comments, your values stay.

@@ -2,10 +2,8 @@ package com.christian34.woodcutter.enchantments;
 
 import com.christian34.woodcutter.WoodCutter;
 import com.christian34.woodcutter.files.ConfigData;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import com.christian34.woodcutter.hooks.CustomItems;
+import com.christian34.woodcutter.platform.Platform;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
@@ -14,8 +12,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -68,8 +64,14 @@ public final class WoodCutterEnchantment {
         return Math.min(maxLevel(), Math.max(first, second));
     }
 
+    /**
+     * @return true for the axes of Minecraft and the items of other plugins of the setting 'custom-axes' - with
+     * 'custom-axes.only' just for the latter
+     */
     public static boolean isAxe(@Nullable ItemStack item) {
-        return item != null && Tag.ITEMS_AXES.isTagged(item.getType());
+        if (item == null) return false;
+        int custom = CustomItems.isCustomAxe(item);
+        return custom > 0 || custom == 0 && Tag.ITEMS_AXES.isTagged(item.getType());
     }
 
     /**
@@ -91,25 +93,18 @@ public final class WoodCutterEnchantment {
         ItemMeta meta = item.getItemMeta();
         Integer level = meta.getPersistentDataContainer().get(key(), PersistentDataType.INTEGER);
         if (level != null) return Math.max(1, Math.min(maxLevel(), level));
-        List<Component> lore = meta.lore();
-        if (lore == null) return 0;
-        for (Component line : lore) {
-            if (isLore(line)) return 1;
-        }
-        return 0;
+        return Platform.get().hasLoreLine(meta, WoodCutterEnchantment::isLore) ? 1 : 0;
     }
 
-    private static boolean isLore(Component line) {
-        String text = PlainTextComponentSerializer.plainText().serialize(line);
+    private static boolean isLore(String text) {
         return text.equals(NAME) || text.startsWith(NAME + " ");
     }
 
     /**
      * the levels are only shown if there is more than one, like vanilla does
      */
-    private static Component lore(int level) {
-        String text = maxLevel() == 1 ? NAME : NAME + " " + ROMAN[level];
-        return Component.text(text, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
+    private static String lore(int level) {
+        return maxLevel() == 1 ? NAME : NAME + " " + ROMAN[level];
     }
 
     public static boolean apply(@Nullable ItemStack item) {
@@ -124,9 +119,7 @@ public final class WoodCutterEnchantment {
         if (meta == null) return false;
         level = Math.max(1, Math.min(maxLevel(), level));
         meta.getPersistentDataContainer().set(key(), PersistentDataType.INTEGER, level);
-        List<Component> lore = withoutLore(meta);
-        lore.add(lore(level));
-        meta.lore(lore);
+        Platform.get().replaceLoreLines(meta, WoodCutterEnchantment::isLore, lore(level));
         // tools without another enchantment would not glint
         if (!meta.hasEnchants()) meta.setEnchantmentGlintOverride(true);
         item.setItemMeta(meta);
@@ -140,16 +133,9 @@ public final class WoodCutterEnchantment {
         ItemMeta meta = item == null ? null : item.getItemMeta();
         if (meta == null) return;
         meta.getPersistentDataContainer().remove(key());
-        List<Component> lore = withoutLore(meta);
-        meta.lore(lore.isEmpty() ? null : lore);
+        Platform.get().replaceLoreLines(meta, WoodCutterEnchantment::isLore, null);
         if (!meta.hasEnchants()) meta.setEnchantmentGlintOverride(null);
         item.setItemMeta(meta);
-    }
-
-    private static List<Component> withoutLore(ItemMeta meta) {
-        List<Component> lore = meta.lore() == null ? new ArrayList<>() : new ArrayList<>(meta.lore());
-        lore.removeIf(WoodCutterEnchantment::isLore);
-        return lore;
     }
 
 }

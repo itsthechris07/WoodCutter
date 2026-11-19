@@ -91,7 +91,7 @@ public class Updater implements Listener {
                 return;
             }
             // the check is repeated, the console hears of every release once
-            if (isNewer(latest, instance.getPluginMeta().getVersion()) && !latest.equals(announced)) {
+            if (isNewer(latest, instance.getDescription().getVersion()) && !latest.equals(announced)) {
                 this.available = true;
                 this.announced = latest;
                 Message.UPDATE_AVAILABLE.send(instance.getServer().getConsoleSender());
