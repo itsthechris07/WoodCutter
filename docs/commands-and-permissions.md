@@ -1,7 +1,3 @@
----
-title: Commands & permissions
----
-
 # Commands & permissions
 
 ## Commands

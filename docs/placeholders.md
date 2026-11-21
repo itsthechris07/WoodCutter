@@ -1,7 +1,3 @@
----
-title: Placeholders
----
-
 # Placeholders
 
 With [PlaceholderAPI](https://www.spigotmc.org/resources/6245/) installed, these placeholders can be used in

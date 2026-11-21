@@ -1,0 +1,95 @@
+site_name: WoodCutter
+site_description: An enchantment for axes that cuts the whole tree - for Paper and Folia
+site_url: https://itsthechris07.github.io/WoodCutter/
+repo_url: https://github.com/itsthechris07/WoodCutter
+repo_name: itsthechris07/WoodCutter
+edit_uri: edit/main/docs/
+copyright: WoodCutter - an enchantment for axes
+
+theme:
+  name: material
+  logo: assets/icon.png
+  favicon: assets/icon.png
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Barlow
+    code: JetBrains Mono
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Reference:
+      - Configuration: configuration.md
+      - Commands & permissions: commands-and-permissions.md
+      - Woodcutting skill: skill.md
+      - Messages & languages: messages.md
+      - Placeholders: placeholders.md
+  - Integrations: integrations.md
+  - FAQ: faq.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/itsthechris07/WoodCutter
+      name: GitHub
+    - icon: simple/modrinth
+      link: https://modrinth.com/plugin/woodcutter-christian34
+      name: Modrinth
+    - icon: material/download
+      link: https://github.com/itsthechris07/WoodCutter/releases/latest
+      name: Latest release

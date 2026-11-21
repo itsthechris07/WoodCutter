@@ -1,7 +1,3 @@
----
-title: Configuration
----
-
 # Configuration
 
 All settings are in `plugins/WoodCutter/config.yml`, under `config:`. After an update, new settings are added with
@@ -88,8 +84,9 @@ in `/woodcutter menu` - its page *Animation* changes the mode and the most impor
 | `effects.particles.impact` | `true` | Dust of the logs and the ground where the tree lands |
 | `effects.particles.leaves` | `true` | Particles of decaying leaves |
 
-Every sound is a list of `'sound volume pitch'`, e.g. `'minecraft:block.wood.break 1 0.7'` – sounds of resource packs
-work as well, and `[]` plays nothing.
+!!! note "Sounds"
+    Every sound is a list of `'sound volume pitch'`, e.g. `'minecraft:block.wood.break 1 0.7'` – sounds of resource
+    packs work as well, and `[]` plays nothing.
 
 ## Drops
 
@@ -111,7 +108,8 @@ work as well, and `[]` plays nothing.
 | `costs.money` | `0` | Money a tree costs, needs Vault and an economy plugin |
 | `economy.reward-per-log` | `0` | Money players get for every log of a tree, not in creative mode |
 
-Players in creative mode pay nothing. The skill perk `costs` makes all costs lower.
+!!! tip
+    Players in creative mode pay nothing. The skill perk `costs` makes all costs lower.
 
 ## Woodcutting skill
 

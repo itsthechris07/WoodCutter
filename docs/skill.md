@@ -1,8 +1,6 @@
----
-title: Woodcutting skill
----
-
 # Woodcutting skill
+
+![The woodcutting skill](assets/skill.png){ .wc-shot loading=lazy }
 
 Players gain experience for every log of a tree they cut and reach levels. The experience, the cut trees and the
 names of all players are kept in `plugins/WoodCutter/levels.yml`, so the ranking contains offline players as well.

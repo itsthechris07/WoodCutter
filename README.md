@@ -109,7 +109,7 @@ Aliases: `/wcutter`, `/woodc`
 
 ## Documentation
 
-Every setting, command, permission and placeholder: [the WoodCutter docs](docs/index.md).
+Every setting, command, permission and placeholder: [the WoodCutter docs](https://itsthechris07.github.io/WoodCutter/).
 
 ## Building
 

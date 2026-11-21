@@ -1,7 +1,3 @@
----
-title: Getting started
----
-
 # Getting started
 
 1. Put `WoodCutter-<version>.jar` into the `plugins` folder of the server and restart it.
@@ -11,6 +7,8 @@ title: Getting started
 4. Sneak and break the lowest log of a tree. The whole tree is cut.
 
 ## Getting the enchantment
+
+![WoodCutter at the enchanting table](assets/enchanting-table.png){ .wc-shot width="360" align=right loading=lazy }
 
 - **Enchanting table:** axes and books get WoodCutter I (60 %), II (30 %) or III (10 %).
 - **Anvil:** two items of the same level combine to the next level. A book puts the enchantment onto an axe.
@@ -35,3 +33,8 @@ title: Getting started
   hits the ground, and mobs in the way are pushed away. Settings: `animation.topple`.
 
 Without an animation (`animation.enabled: false`), the tree disappears at once.
+
+![The crown decays, saplings are planted](assets/leaves-and-saplings.gif){ .wc-shot loading=lazy }
+
+!!! tip
+    Admins can try the animations in `/woodcutter menu`, page *Animation*, without editing the `config.yml`.

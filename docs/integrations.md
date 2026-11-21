@@ -1,7 +1,3 @@
----
-title: Integrations
----
-
 # Integrations
 
 All of these plugins are optional. WoodCutter works without them.

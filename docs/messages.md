@@ -1,7 +1,3 @@
----
-title: Messages & languages
----
-
 # Messages & languages
 
 All texts players see are in `plugins/WoodCutter/messages.yml`, or `messages_<language>.yml` for another language.

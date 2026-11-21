@@ -16,3 +16,6 @@ build/
 
 # local tooling (Claude Code)
 /.claude/
+
+# MkDocs output (mkdocs build)
+/site/
