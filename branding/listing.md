@@ -38,7 +38,7 @@ For the top of the description, right below the banner:
 The documentation belongs on every plugin page, not only in the description:
 
 - **Modrinth:** Settings → Links → *Wiki page*: https://itsthechris07.github.io/WoodCutter/
-- **Hangar:** Settings → Links → *Wiki* (or a custom link "Documentation"): https://itsthechris07.github.io/WoodCutter/
+- **Hangar:** Settings → Links → header link "Documentation": https://itsthechris07.github.io/WoodCutter/
 - **SpigotMC:** Edit resource → *Additional Information URL* and the tab *Documentation*: https://itsthechris07.github.io/WoodCutter/ – and the line
   above in the description
 
