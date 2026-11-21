@@ -121,6 +121,12 @@ messages:
   menu_animation_float_lore: '&7Дерево плаває на воді, а не тоне (rigid і fall-apart)'
   menu_animation_timber: 'Підзаголовок під час падіння'
   menu_animation_timber_lore: '&7Показує підзаголовок гравцю, який зрубав дерево (повідомлення timber)'
+  menu_reset: '&cСкинути до типових'
+  menu_reset_lore: '&7Повертає налаштування цієї сторінки до типових значень:'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7Натисніть, щоб скинути'
+  menu_reset_confirm: '&cНатисніть ще раз, щоб скинути'
+  menu_reset_none: '&7Усі налаштування мають типові значення'
   menu_back: '&7Назад'
   # підзаголовок, коли дерево падає (анімація 'topple', з animation.topple.timber: true у конфігурації)
   timber: '&6&lБережись!'

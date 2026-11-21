@@ -121,6 +121,12 @@ messages:
   menu_animation_float_lore: '&7Der Baum schwimmt auf Wasser, statt zu sinken (rigid und fall-apart)'
   menu_animation_timber: 'Untertitel beim Fallen'
   menu_animation_timber_lore: '&7Zeigt dem Spieler, der den Baum gefällt hat, einen Untertitel (Nachricht timber)'
+  menu_reset: '&cAuf Standard zurücksetzen'
+  menu_reset_lore: '&7Setzt die Einstellungen dieser Seite auf ihre Standardwerte zurück:'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7Klicke zum Zurücksetzen'
+  menu_reset_confirm: '&cKlicke erneut zum Zurücksetzen'
+  menu_reset_none: '&7Alle Einstellungen haben ihre Standardwerte'
   menu_back: '&7Zurück'
   # als Untertitel, wenn ein Baum umkippt (Animation 'topple')
   timber: '&6&lBaum fällt!'

@@ -121,6 +121,12 @@ messages:
   menu_animation_float_lore: '&7L''arbre flotte sur l''eau au lieu de couler (rigid et fall-apart)'
   menu_animation_timber: 'Sous-titre à la chute'
   menu_animation_timber_lore: '&7Affiche un sous-titre au joueur qui a coupé l''arbre (message timber)'
+  menu_reset: '&cRéinitialiser'
+  menu_reset_lore: '&7Remet les paramètres de cette page à leurs valeurs par défaut :'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7Clique pour réinitialiser'
+  menu_reset_confirm: '&cClique encore pour réinitialiser'
+  menu_reset_none: '&7Tous les paramètres ont leur valeur par défaut'
   menu_back: '&7Retour'
   # affiché en sous-titre quand un arbre tombe (animation 'topple')
   timber: '&6&lÇa tombe !'

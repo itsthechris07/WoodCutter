@@ -121,6 +121,12 @@ messages:
   menu_animation_float_lore: '&7A árvore flutua na água em vez de afundar (rigid e fall-apart)'
   menu_animation_timber: 'Subtítulo ao cair'
   menu_animation_timber_lore: '&7Mostra um subtítulo ao jogador que cortou a árvore (mensagem timber)'
+  menu_reset: '&cRestaurar padrão'
+  menu_reset_lore: '&7Volta as configurações desta página para os valores padrão:'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7Clique para restaurar'
+  menu_reset_confirm: '&cClique de novo para restaurar'
+  menu_reset_none: '&7Todas as configurações têm os valores padrão'
   menu_back: '&7Voltar'
   # mostrado como subtítulo quando uma árvore tomba (animação 'topple', com animation.topple.timber: true na config)
   timber: '&6&lMadeira!'

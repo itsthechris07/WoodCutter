@@ -121,6 +121,12 @@ messages:
   menu_animation_float_lore: '&7Дерево плавает на воде, а не тонет (rigid и fall-apart)'
   menu_animation_timber: 'Подзаголовок при падении'
   menu_animation_timber_lore: '&7Показывает подзаголовок игроку, срубившему дерево (сообщение timber)'
+  menu_reset: '&cСбросить по умолчанию'
+  menu_reset_lore: '&7Возвращает настройки этой страницы к значениям по умолчанию:'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7Нажмите, чтобы сбросить'
+  menu_reset_confirm: '&cНажмите ещё раз, чтобы сбросить'
+  menu_reset_none: '&7Все настройки имеют значения по умолчанию'
   menu_back: '&7Назад'
   # подзаголовок, когда дерево падает (анимация 'topple', с animation.topple.timber: true в конфиге)
   timber: '&6&lБереги-и-ись!'

@@ -121,6 +121,12 @@ messages:
   menu_animation_float_lore: '&7El árbol flota en el agua en lugar de hundirse (rigid y fall-apart)'
   menu_animation_timber: 'Subtítulo al caer'
   menu_animation_timber_lore: '&7Muestra un subtítulo al jugador que taló el árbol (mensaje timber)'
+  menu_reset: '&cRestablecer valores'
+  menu_reset_lore: '&7Devuelve los ajustes de esta página a sus valores predeterminados:'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7Haz clic para restablecer'
+  menu_reset_confirm: '&cHaz clic otra vez para restablecer'
+  menu_reset_none: '&7Todos los ajustes tienen sus valores predeterminados'
   menu_back: '&7Atrás'
   # se muestra como subtítulo cuando un árbol cae (animación 'topple')
   timber: '&6&l¡Árbol va!'

@@ -121,6 +121,12 @@ messages:
   menu_animation_float_lore: '&7树木浮在水上而不是下沉（rigid 和 fall-apart）'
   menu_animation_timber: '倒下时的副标题'
   menu_animation_timber_lore: '&7向砍树的玩家显示副标题（消息 timber）'
+  menu_reset: '&c恢复默认'
+  menu_reset_lore: '&7将本页设置恢复为默认值：'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7点击恢复'
+  menu_reset_confirm: '&c再次点击以恢复'
+  menu_reset_none: '&7所有设置均为默认值'
   menu_back: '&7返回'
   # 树倒下时显示为副标题（动画 'topple'）
   timber: '&6&l树倒了！'

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -128,6 +129,38 @@ class AnimationMenuTest extends PluginTestBase {
         settings.click(slot, true);
         assertFalse(plugin.getConfigData().getBoolean(ConfigData.Keys.PROTECT_AXE));
         assertEquals("§cProtect axe", settings.getInventory().getItem(slot).getItemMeta().getDisplayName());
+    }
+
+    @Test
+    void theResetSetsThePageBackToItsDefaultsAfterAConfirmation() throws Exception {
+        // in the file, which every change in the menu loads again
+        plugin.getConfigData().set(Map.of(ConfigData.Keys.ANIMATION_MODE, "topple", ConfigData.Keys.TOPPLE_DAMAGE, 4,
+                ConfigData.Keys.PROTECT_AXE, false));
+        Menu menu = openAnimation(addPlayer("Admin", "woodcutter.admin"));
+        // the changed settings of the page, not the one of the other page
+        List<String> lore = menu.getInventory().getItem(Menu.SLOT_RESET).getItemMeta().getLore().stream()
+                .map(AnimationMenuTest::plain).toList();
+        assertTrue(lore.contains(" - Mode"));
+        assertTrue(lore.contains(" - Damage"));
+        assertFalse(lore.contains(" - Protect axe"));
+
+        // the first click only asks to click again, another click in between cancels it
+        menu.click(Menu.SLOT_RESET);
+        assertEquals("topple", plugin.getConfigData().getString(ConfigData.Keys.ANIMATION_MODE));
+        assertTrue(menu.getInventory().getItem(Menu.SLOT_RESET).getItemMeta().getLore().contains("§cClick again to reset"));
+        menu.click(slot(ConfigData.Keys.TOPPLE_KNOCKBACK));
+        menu.click(Menu.SLOT_RESET);
+        assertEquals("topple", plugin.getConfigData().getString(ConfigData.Keys.ANIMATION_MODE));
+
+        menu.click(Menu.SLOT_RESET);
+        assertEquals("layers", plugin.getConfigData().getString(ConfigData.Keys.ANIMATION_MODE));
+        assertEquals(0, plugin.getConfigData().getDouble(ConfigData.Keys.TOPPLE_DAMAGE));
+        assertTrue(plugin.getConfigData().getBoolean(ConfigData.Keys.TOPPLE_KNOCKBACK));
+        assertFalse(plugin.getConfigData().getBoolean(ConfigData.Keys.PROTECT_AXE));
+        assertEquals(List.of("§7All settings have their default values"),
+                menu.getInventory().getItem(Menu.SLOT_RESET).getItemMeta().getLore());
+        plugin.reload();
+        assertEquals("layers", plugin.getConfigData().getString(ConfigData.Keys.ANIMATION_MODE));
     }
 
     @Test

@@ -8,11 +8,13 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +78,14 @@ public class ConfigData {
      * changes a setting in the config.yml (its comments stay) and loads the file again
      */
     public void set(@NotNull String key, Object value) throws IOException {
+        // null removes the setting, which Map.of does not allow
+        set(Collections.singletonMap(key, value));
+    }
+
+    /**
+     * changes some settings in the config.yml at once (their comments stay) and loads the file again
+     */
+    public void set(@NotNull Map<String, Object> values) throws IOException {
         File file = new File(instance.getDataFolder(), FILE);
         String text = Files.readString(file.toPath());
         YamlConfiguration config = new YamlConfiguration();
@@ -84,9 +94,26 @@ public class ConfigData {
         } catch (InvalidConfigurationException ex) {
             throw new IOException(ex);
         }
-        config.set(DATA_PREFIX + key, value);
+        values.forEach((key, value) -> config.set(DATA_PREFIX + key, value));
         YamlUpdater.write(config, YamlUpdater.header(text), file);
         load();
+    }
+
+    /**
+     * @return the value of a setting in the default config of the jar, null if it has none
+     */
+    @Nullable
+    public Object getDefault(@NotNull String key) {
+        Configuration defaults = data.getDefaults();
+        return defaults == null ? null : defaults.get(DATA_PREFIX + key);
+    }
+
+    /**
+     * @return true if the setting has the value of the default config (or there is none)
+     */
+    public boolean isDefault(@NotNull String key) {
+        Object value = getDefault(key);
+        return value == null || same(value, data.get(DATA_PREFIX + key));
     }
 
     @NotNull

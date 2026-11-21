@@ -21,8 +21,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -51,6 +53,10 @@ public class Menu implements InventoryHolder {
      * opens the animation on the settings
      */
     public static final int SLOT_ANIMATION = 53;
+    /**
+     * sets the settings of the page (settings or animation) back to their default values
+     */
+    public static final int SLOT_RESET = 45;
     private static final Predicate<ConfigData> ALWAYS = config -> true;
     /**
      * the settings admins can switch on and off on the second page, in the order they are shown
@@ -115,6 +121,10 @@ public class Menu implements InventoryHolder {
     private final Player player;
     private final Page page;
     private final Inventory inventory;
+    /**
+     * true after the first click on the reset button, the second one resets the settings
+     */
+    private boolean confirmReset;
 
     public Menu(WoodCutter instance, Player player, Page page) {
         this.instance = instance;
@@ -310,12 +320,14 @@ public class Menu implements InventoryHolder {
 
     private void fillSettings() {
         fillOptions(SETTING_OPTIONS);
+        inventory.setItem(SLOT_RESET, resetItem());
         inventory.setItem(SLOT_BACK, item(Material.ARROW, Message.MENU_BACK.getText(), List.of()));
         inventory.setItem(SLOT_ANIMATION, item(Material.OAK_LOG, Message.MENU_ANIMATION.getText(), List.of(Message.MENU_ANIMATION_LORE.getText())));
     }
 
     private void fillAnimation() {
         fillOptions(ANIMATION);
+        inventory.setItem(SLOT_RESET, resetItem());
         inventory.setItem(SLOT_BACK, item(Material.ARROW, Message.MENU_BACK.getText(), List.of()));
     }
 
@@ -379,9 +391,13 @@ public class Menu implements InventoryHolder {
             BlockBreakListener.setEnabled(player, !BlockBreakListener.isEnabled(player));
             Statistics.recordMenu("toggled");
             fill();
+        } else if (page != Page.MAIN && slot == SLOT_RESET && isAdmin()) {
+            resetClicked();
         } else if (page != Page.MAIN && isAdmin()) {
-            Option option = optionAt(page == Page.SETTINGS ? SETTING_OPTIONS : ANIMATION, slot);
-            if (option != null) change(option.key(), option.next(instance.getConfigData(), right));
+            Option option = optionAt(options(), slot);
+            if (option == null) return;
+            confirmReset = false;
+            change(option.key(), option.next(instance.getConfigData(), right));
         }
     }
 
@@ -396,6 +412,61 @@ public class Menu implements InventoryHolder {
             Debug.warn("Couldn't save file 'config.yml': " + ex);
         }
         fill();
+    }
+
+    /**
+     * @return the settings of the page
+     */
+    private List<Option> options() {
+        return page == Page.ANIMATION ? ANIMATION : SETTING_OPTIONS;
+    }
+
+    /**
+     * @return the settings of the page that differ from the default config
+     */
+    private List<Option> changedOptions() {
+        ConfigData config = instance.getConfigData();
+        return options().stream().filter(option -> !config.isDefault(option.key())).toList();
+    }
+
+    /**
+     * the first click asks to click again, the second one sets the settings of the page back to their default values
+     */
+    private void resetClicked() {
+        List<Option> changed = changedOptions();
+        if (changed.isEmpty()) return;
+        if (!confirmReset) {
+            confirmReset = true;
+            fill();
+            return;
+        }
+        confirmReset = false;
+        ConfigData config = instance.getConfigData();
+        Map<String, Object> defaults = new LinkedHashMap<>();
+        for (Option option : changed) defaults.put(option.key(), config.getDefault(option.key()));
+        try {
+            config.set(defaults);
+            Statistics.recordMenu("settings reset");
+        } catch (IOException | RuntimeException ex) {
+            Debug.warn("Couldn't save file 'config.yml': " + ex);
+        }
+        fill();
+    }
+
+    /**
+     * a button that sets the settings of the page back to their default values, with the ones that differ
+     */
+    private ItemStack resetItem() {
+        List<Option> changed = changedOptions();
+        if (changed.isEmpty()) {
+            return item(Material.RECOVERY_COMPASS, Message.MENU_RESET.getText(), List.of(Message.MENU_RESET_NONE.getText()));
+        }
+        List<String> lore = new ArrayList<>(wrap(Message.MENU_RESET_LORE.getText()));
+        for (Option option : changed) lore.add(Message.MENU_RESET_ENTRY.getText("%setting%", option.title().getText()));
+        lore.add(" ");
+        lore.add((confirmReset ? Message.MENU_RESET_CONFIRM : Message.MENU_RESET_CLICK).getText());
+        ItemStack item = item(Material.RECOVERY_COMPASS, Message.MENU_RESET.getText(), lore);
+        return confirmReset ? glowing(item) : item;
     }
 
     public enum Page {

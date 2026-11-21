@@ -121,6 +121,12 @@ messages:
   menu_animation_float_lore: '&7Drzewo pływa po wodzie, zamiast tonąć (rigid i fall-apart)'
   menu_animation_timber: 'Podtytuł przy upadku'
   menu_animation_timber_lore: '&7Pokazuje podtytuł graczowi, który ściął drzewo (wiadomość timber)'
+  menu_reset: '&cPrzywróć domyślne'
+  menu_reset_lore: '&7Przywraca ustawienia tej strony do wartości domyślnych:'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7Kliknij, żeby przywrócić'
+  menu_reset_confirm: '&cKliknij ponownie, żeby przywrócić'
+  menu_reset_none: '&7Wszystkie ustawienia mają wartości domyślne'
   menu_back: '&7Wstecz'
   # pokazywane jako podtytuł, gdy drzewo się przewraca (animacja 'topple')
   timber: '&6&lDrzewo leci!'

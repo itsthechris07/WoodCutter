@@ -121,6 +121,12 @@ messages:
   menu_animation_float_lore: '&7Strom plave na vodě, místo aby se potopil (rigid a fall-apart)'
   menu_animation_timber: 'Podtitulek při pádu'
   menu_animation_timber_lore: '&7Ukáže hráči, který strom pokácel, podtitulek (zpráva timber)'
+  menu_reset: '&cObnovit výchozí'
+  menu_reset_lore: '&7Vrátí nastavení této stránky na výchozí hodnoty:'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7Klikni pro obnovení'
+  menu_reset_confirm: '&cKlikni znovu pro obnovení'
+  menu_reset_none: '&7Všechna nastavení mají výchozí hodnoty'
   menu_back: '&7Zpět'
   # podtitulek, když strom padá (animace 'topple', s animation.topple.timber: true v konfiguraci)
   timber: '&6&lPozor, padá!'

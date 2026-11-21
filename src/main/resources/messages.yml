@@ -123,6 +123,13 @@ messages:
   menu_animation_float_lore: '&7The tree floats on water instead of sinking (rigid and fall-apart)'
   menu_animation_timber: 'Timber subtitle'
   menu_animation_timber_lore: '&7Shows a subtitle to the player who cut the tree (message timber)'
+  # the button that sets the settings of a page of the menu back to their default values - it lists the changed ones
+  menu_reset: '&cReset to default'
+  menu_reset_lore: '&7Sets the settings of this page back to their default values:'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7Click to reset'
+  menu_reset_confirm: '&cClick again to reset'
+  menu_reset_none: '&7All settings have their default values'
   menu_back: '&7Back'
   # shown as a subtitle when a tree tips over (animation 'topple', with animation.topple.timber: true in the config)
   timber: '&6&lTimber!'
