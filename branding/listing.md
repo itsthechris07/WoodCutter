@@ -31,6 +31,14 @@ For the top of the description, right below the banner:
 > Works with WorldGuard (region flag), PlaceholderAPI, CoreProtect and every protection plugin – each log is broken
 > as the player.
 
+## Changelog 3.4.0
+
+> - New menu page *Animation*: mode, speed, physics, direction, knockback, damage and more – without editing the
+>   config.
+> - Every setting in the menu has a name and a description, in all 10 languages.
+> - Reset the settings of a page to their default values, with a confirmation.
+> - Fixed: an error in the console for chests of copied maps whose loot table Paper can't map.
+
 ## Changelog 3.3.0
 
 > - Physics for the animation 'topple': the tree bounces, comes to rest on slopes, walls and other trees, floats on

@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.christian34.woodcutter"
-version = "3.3.0"
+version = "3.4.0"
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
