@@ -14,6 +14,7 @@ import org.bukkit.event.entity.VillagerAcquireTradeEvent;
 import org.bukkit.event.world.LootGenerateEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.loot.LootTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,8 +73,10 @@ public class SourcesListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onLoot(LootGenerateEvent e) {
+        // Paper returns null (despite @NotNull) for loot tables it can't map to a Bukkit LootTable, e.g. in copied maps
+        LootTable table = e.getLootTable();
         // not the loot of fishing, mobs or archaeology
-        if (!e.getLootTable().getKey().getKey().startsWith("chests/")) return;
+        if (table == null || !table.getKey().getKey().startsWith("chests/")) return;
         if (!EnchantListener.roll(instance.getConfigData().getDouble(ConfigData.Keys.SOURCES_LOOT))) return;
         int level = WoodCutterEnchantment.rollLevel();
         List<ItemStack> loot = new ArrayList<>(e.getLoot());

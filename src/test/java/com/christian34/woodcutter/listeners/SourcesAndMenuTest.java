@@ -6,19 +6,30 @@ import com.christian34.woodcutter.files.ConfigData;
 import com.christian34.woodcutter.menu.Menu;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.VillagerAcquireTradeEvent;
+import org.bukkit.event.world.LootGenerateEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.loot.LootContext;
+import org.bukkit.loot.LootTable;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.entity.PlayerMock;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * WoodCutter 2026.
  * <p>
- * Tests the books of librarians and the menu.
+ * Tests the books of librarians and chests and the menu.
  *
  * @author Christian34
  */
@@ -60,6 +71,51 @@ class SourcesAndMenuTest extends PluginTestBase {
         // not more than a stack
         setConfig(ConfigData.Keys.SOURCES_PRICE, 30);
         assertEquals(64, listener.trade(3).getIngredients().get(0).getAmount());
+    }
+
+    private static LootTable lootTable(String key) {
+        return new LootTable() {
+            @Override
+            public @NotNull Collection<ItemStack> populateLoot(Random random, @NotNull LootContext context) {
+                return List.of();
+            }
+
+            @Override
+            public void fillInventory(@NotNull Inventory inventory, Random random, @NotNull LootContext context) {
+            }
+
+            @Override
+            public @NotNull NamespacedKey getKey() {
+                return NamespacedKey.minecraft(key);
+            }
+        };
+    }
+
+    private List<ItemStack> generate(LootTable table) {
+        Location location = new Location(world, 0, 70, 0);
+        List<ItemStack> loot = new ArrayList<>(List.of(new ItemStack(Material.BREAD)));
+        LootGenerateEvent event = new LootGenerateEvent(world, null, null, table,
+                new LootContext.Builder(location).build(), loot, false);
+        server.getPluginManager().callEvent(event);
+        return event.getLoot();
+    }
+
+    @Test
+    void chestsContainTheBook() {
+        setConfig(ConfigData.Keys.SOURCES_LOOT, 100);
+        List<ItemStack> loot = generate(lootTable("chests/simple_dungeon"));
+        assertEquals(2, loot.size());
+        assertTrue(WoodCutterEnchantment.has(loot.get(1)));
+        // not the loot of mobs
+        assertEquals(1, generate(lootTable("entities/zombie")).size());
+    }
+
+    @Test
+    void lootWithoutATableIsIgnored() {
+        // Paper returns no loot table for chests of copied maps whose table it can't map to a Bukkit one
+        setConfig(ConfigData.Keys.SOURCES_LOOT, 100);
+        List<ItemStack> loot = assertDoesNotThrow(() -> generate(null));
+        assertEquals(List.of(new ItemStack(Material.BREAD)), loot);
     }
 
     @Test
