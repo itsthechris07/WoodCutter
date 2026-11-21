@@ -6,7 +6,7 @@ title: Configuration
 
 All settings are in `plugins/WoodCutter/config.yml`, under `config:`. After an update, new settings are added with
 their comments and your values stay. `/woodcutter reload` loads the file again, and admins can switch many settings
-in `/woodcutter menu`.
+in `/woodcutter menu` - its page *Animation* changes the mode and the most important settings of the animation.
 
 ## General
 

@@ -56,7 +56,7 @@ public final class Statistics {
     }
 
     /**
-     * @param action what the player did in the menu: opened, settings opened, toggled or setting changed
+     * @param action what the player did in the menu: opened, settings opened, animation opened, toggled or setting changed
      */
     public static void recordMenu(@NotNull String action) {
         MENU.merge(action, 1, Integer::sum);

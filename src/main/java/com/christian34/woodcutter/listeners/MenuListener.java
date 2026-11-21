@@ -30,7 +30,8 @@ public class MenuListener implements Listener {
         if (e.getRawSlot() >= e.getInventory().getSize() || !menu.getPlayer().equals(e.getWhoClicked())) return;
         // the menu opens another one or changes the config, which is not allowed while the click is handled
         int slot = e.getRawSlot();
-        TaskManager.run(menu.getPlayer(), () -> menu.click(slot));
+        boolean right = e.isRightClick();
+        TaskManager.run(menu.getPlayer(), () -> menu.click(slot, right));
     }
 
     @EventHandler
