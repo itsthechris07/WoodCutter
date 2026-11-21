@@ -1,0 +1,94 @@
+[project]
+site_name = "WoodCutter"
+site_description = "An enchantment for axes that cuts the whole tree - for Paper and Folia"
+site_url = "https://itsthechris07.github.io/WoodCutter/"
+site_dir = "site"
+repo_url = "https://github.com/itsthechris07/WoodCutter"
+repo_name = "itsthechris07/WoodCutter"
+edit_uri = "edit/main/docs/"
+copyright = "WoodCutter - an enchantment for axes"
+extra_css = ["stylesheets/extra.css"]
+nav = [
+  { "Home" = "index.md" },
+  { "Getting started" = "getting-started.md" },
+  { "Reference" = [
+    { "Configuration" = "configuration.md" },
+    { "Commands & permissions" = "commands-and-permissions.md" },
+    { "Woodcutting skill" = "skill.md" },
+    { "Messages & languages" = "messages.md" },
+    { "Placeholders" = "placeholders.md" },
+  ] },
+  { "Integrations" = "integrations.md" },
+  { "FAQ" = "faq.md" },
+]
+
+[project.theme]
+logo = "assets/icon.png"
+favicon = "assets/icon.png"
+features = [
+  "navigation.instant",
+  "navigation.instant.progress",
+  "navigation.tracking",
+  "navigation.sections",
+  "navigation.top",
+  "navigation.footer",
+  "navigation.indexes",
+  "toc.follow",
+  "search.suggest",
+  "search.highlight",
+  "content.code.copy",
+  "content.action.edit",
+]
+
+[project.theme.font]
+text = "Barlow"
+code = "JetBrains Mono"
+
+[project.theme.icon]
+repo = "fontawesome/brands/github"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/sun"
+toggle.name = "Light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/moon"
+toggle.name = "Dark mode"
+
+[project.markdown_extensions]
+abbr = {}
+admonition = {}
+attr_list = {}
+md_in_html = {}
+tables = {}
+toc = { permalink = true }
+"pymdownx.details" = {}
+"pymdownx.superfences" = {}
+"pymdownx.highlight" = { anchor_linenums = true }
+"pymdownx.inlinehilite" = {}
+"pymdownx.keys" = {}
+"pymdownx.tabbed" = { alternate_style = true }
+"pymdownx.emoji" = { emoji_index = "zensical.extensions.emoji.twemoji", emoji_generator = "zensical.extensions.emoji.to_svg" }
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/itsthechris07/WoodCutter"
+name = "GitHub"
+
+[[project.extra.social]]
+icon = "simple/modrinth"
+link = "https://modrinth.com/plugin/woodcutter-christian34"
+name = "Modrinth"
+
+[[project.extra.social]]
+icon = "material/download"
+link = "https://github.com/itsthechris07/WoodCutter/releases/latest"
+name = "Latest release"

@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - docs/**
-      - mkdocs.yml
+      - zensical.toml
       - .github/workflows/docs.yml
   workflow_dispatch:
 
@@ -19,25 +19,33 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-      - run: pip install mkdocs-material==9.*
-      - run: mkdocs build --strict
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/configure-pages@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - run: pip install zensical
+      - run: zensical build --clean
+      # For AI tools: every page as plain Markdown and the whole docs in one file (see docs/llms.txt)
+      - name: Markdown for LLMs
+        run: |
+          pages="index getting-started configuration commands-and-permissions skill messages placeholders integrations faq"
+          for page in $pages; do
+            sed -E -e '/^---$/,/^---$/d' -e 's/\{ *[.#][^}]*\}//g' -e 's/:(material|fontawesome|simple)-[a-z0-9-]+: ?//g' \
+              "docs/$page.md" > "site/$page.md"
+          done
+          {
+            cat docs/llms.txt
+            for page in $pages; do printf '\n\n---\n\n'; cat "site/$page.md"; done
+          } > site/llms-full.txt
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

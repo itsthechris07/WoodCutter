@@ -1,0 +1,22 @@
+# WoodCutter
+
+> WoodCutter is a Minecraft server plugin for Paper and Folia 1.21+ (Java 21+, basic Spigot support). It adds an axe enchantment: a player who sneaks and breaks one log with it cuts the whole tree. It has enchantment levels, two animations (layers, topple with physics), a woodcutting skill with perks, replanting, economy costs and rewards, PlaceholderAPI placeholders and integrations with WorldGuard, Vault, CoreProtect, Jobs, mcMMO and AuraSkills.
+
+All settings live in `plugins/WoodCutter/config.yml` under `config:`. The main command is `/woodcutter` (aliases `/wcutter`, `/woodc`). Every page below is plain Markdown; the whole documentation in one file is at https://itsthechris07.github.io/WoodCutter/llms-full.txt
+
+## Docs
+
+- [Overview](https://itsthechris07.github.io/WoodCutter/index.md): what the plugin does, requirements, downloads
+- [Getting started](https://itsthechris07.github.io/WoodCutter/getting-started.md): installing, getting the enchantment, what is cut, animations
+- [Configuration](https://itsthechris07.github.io/WoodCutter/configuration.md): every setting of the config.yml with its default
+- [Commands & permissions](https://itsthechris07.github.io/WoodCutter/commands-and-permissions.md): all commands and permission nodes
+- [Woodcutting skill](https://itsthechris07.github.io/WoodCutter/skill.md): levels, perks, unlocks and level rewards
+- [Messages & languages](https://itsthechris07.github.io/WoodCutter/messages.md): translations, colors and MiniMessage
+- [Placeholders](https://itsthechris07.github.io/WoodCutter/placeholders.md): PlaceholderAPI placeholders and rankings
+- [Integrations](https://itsthechris07.github.io/WoodCutter/integrations.md): WorldGuard, custom items, Vault, the developer API
+- [FAQ](https://itsthechris07.github.io/WoodCutter/faq.md): common problems
+
+## Optional
+
+- [Source code and issues](https://github.com/itsthechris07/WoodCutter)
+- [Latest release](https://github.com/itsthechris07/WoodCutter/releases/latest)
