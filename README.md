@@ -13,6 +13,8 @@ with the same jar, with basic support – Paper is recommended.
 [SpigotMC](https://www.spigotmc.org/resources/58193/) ·
 [Hangar](https://hangar.papermc.io/Christian34/WoodCutterPlus)
 
+**Documentation:** every setting, command, permission and placeholder – **[https://itsthechris07.github.io/WoodCutter/](https://itsthechris07.github.io/WoodCutter/)**
+
 ![A whole tree with one log](branding/media/tree-falling.gif)
 
 ![How it works](branding/how-it-works.png)

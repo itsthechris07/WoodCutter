@@ -30,6 +30,17 @@ For the top of the description, right below the banner:
 >
 > Works with WorldGuard (region flag), PlaceholderAPI, CoreProtect and every protection plugin – each log is broken
 > as the player.
+>
+> **Documentation:** https://itsthechris07.github.io/WoodCutter/
+
+## Links
+
+The documentation belongs on every plugin page, not only in the description:
+
+- **Modrinth:** Settings → Links → *Wiki page*: https://itsthechris07.github.io/WoodCutter/
+- **Hangar:** Settings → Links → *Wiki* (or a custom link "Documentation"): https://itsthechris07.github.io/WoodCutter/
+- **SpigotMC:** Edit resource → *Additional information* / *Documentation*: https://itsthechris07.github.io/WoodCutter/ – and the line
+  above in the description
 
 ## Changelog 3.4.0
 

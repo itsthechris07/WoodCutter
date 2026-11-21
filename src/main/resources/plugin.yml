@@ -1,6 +1,7 @@
 name: WoodCutter
 version: ${version}
 author: Christian34
+website: https://itsthechris07.github.io/WoodCutter/
 main: com.christian34.woodcutter.WoodCutter
 api-version: "1.21"
 # the region schedulers of Paper are used where they exist, so the same jar runs on Paper, Folia and Spigot
