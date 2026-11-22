@@ -22,7 +22,7 @@ there):
 /rg flag <region> woodcutter deny
 ```
 
-Or list the regions in the `config.yml` – ids with `*` for any characters, `__global__` for everywhere outside of
+Or list the regions in the `config.yml`: ids with `*` for any characters, `__global__` for everywhere outside of
 regions:
 
 ```yaml
@@ -35,7 +35,7 @@ worldguard-regions:
 
 ## Custom items (ItemsAdder, Nexo, Oraxen, MMOItems)
 
-Items of these plugins become axes for WoodCutter with `custom-axes` – they cut trees and get the enchantment at
+Items of these plugins become axes for WoodCutter with `custom-axes`. They cut trees and get the enchantment at
 the enchanting table and the anvil:
 
 ```yaml

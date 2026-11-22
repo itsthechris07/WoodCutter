@@ -39,14 +39,14 @@ in `/woodcutter menu` - its page *Animation* changes the mode and the most impor
 | `extra-leaves` | `[]` | Blocks that are removed with the leaves of a cut tree, e.g. `nether_wart_block` |
 | `attached-blocks` | `[cocoa, vine, shelf_mushroom]` | Blocks on the logs that are removed with the tree, their items drop (and the vines below them) |
 | `saplings` | `{}` | Saplings of logs that have none (or another one), as `log: sapling` |
-| `custom-axes.items` | `[]` | Items of other plugins that are axes: `itemsadder:<namespace>:<id>`, `nexo:<id>`, `oraxen:<id>`, `mmoitems:<type>:<id>` – or items of Minecraft, e.g. `mace` |
+| `custom-axes.items` | `[]` | Items of other plugins that are axes: `itemsadder:<namespace>:<id>`, `nexo:<id>`, `oraxen:<id>`, `mmoitems:<type>:<id>`, or items of Minecraft, e.g. `mace` |
 | `custom-axes.only` | `false` | `true`: only these items are axes, not the axes of Minecraft |
 | `bees.angry` | `true` | The bees of a nest in the tree fly out and attack the player who cut it |
 | `bees.drop-nest` | `false` | The nest drops as an item (without its bees) |
 | `worldguard-regions.mode` | `blacklist` | `blacklist`: WoodCutter is disabled in the listed regions. `whitelist`: only enabled in them |
 | `worldguard-regions.list` | `[]` | Region ids, `*` stands for any characters, `__global__` is everywhere outside of regions |
 | `fast-leaf-decay` | `true` | The leaves of a cut tree decay within seconds |
-| `replant.enabled` | `true` | A new sapling is planted, four of them for trees with a 2x2 trunk – next to the stump if something is on it |
+| `replant.enabled` | `true` | A new sapling is planted, four of them for trees with a 2x2 trunk, next to the stump if something is on it |
 | `replant.free` | `false` | `false`: the sapling is taken from the inventory of the player |
 | `replant.protect` | `false` | Players can't break the planted saplings until they grow (except with `woodcutter.replant.break`) |
 | `protect-axe` | `true` | Cutting stops before the hit that would break the axe |
@@ -65,10 +65,10 @@ in `/woodcutter menu` - its page *Animation* changes the mode and the most impor
 | `animation.topple.knockback` | `true` | Mobs and players the tree falls on are pushed away |
 | `animation.topple.damage` | `0` | Damage the tree does to them (2 = a heart), as the player who cut it, so PvP and protection plugins can deny it |
 | `animation.topple.timber` | `false` | Shows "Timber!" (message `timber`) as a subtitle to the player who cut the tree |
-| `animation.topple.physics` | `rigid` | `rigid`: the tree falls in one piece, bounces and comes to rest on what is below it – walls and other trees stop it. `fall-apart`: it breaks into its blocks when it hits the ground. `simple`: the 90° fall of older versions |
+| `animation.topple.physics` | `rigid` | `rigid`: the tree falls in one piece, bounces and comes to rest on what is below it; walls and other trees stop it. `fall-apart`: it breaks into its blocks when it hits the ground. `simple`: the 90° fall of older versions |
 | `animation.topple.direction` | `away` | `away` from the player, where the player is `facing`, down the `slope` (away from the player on even ground) or `random` |
 | `animation.topple.float-on-water` | `true` | A tree that falls into water floats for a few seconds |
-| `animation.topple.update-interval` | `2` | Ticks between two positions sent to the players (1–10) – higher values save bandwidth, the players' clients smooth the movement |
+| `animation.topple.update-interval` | `2` | Ticks between two positions sent to the players (1 to 10); higher values save bandwidth, the players' clients smooth the movement |
 | `animation.topple.glow` | `''` | The falling tree glows in a color, e.g. `'#ff8800'` (`''` for none) |
 
 ### Effects
@@ -85,7 +85,7 @@ in `/woodcutter menu` - its page *Animation* changes the mode and the most impor
 | `effects.particles.leaves` | `true` | Particles of decaying leaves |
 
 !!! note "Sounds"
-    Every sound is a list of `'sound volume pitch'`, e.g. `'minecraft:block.wood.break 1 0.7'` – sounds of resource
+    Every sound is a list of `'sound volume pitch'`, e.g. `'minecraft:block.wood.break 1 0.7'`. Sounds of resource
     packs work as well, and `[]` plays nothing.
 
 ## Drops

@@ -2,18 +2,18 @@
 
 # WoodCutter
 
-**WoodCutter** adds an enchantment for axes that cuts the whole tree when you break one log – with levels, a falling
+**WoodCutter** adds an enchantment for axes that cuts the whole tree when you break one log. It comes with levels, a falling
 animation, a woodcutting skill and a lot of settings. No commands are needed to play: sneak, break a log, done.
 
 **Requirements:** Paper or Folia 1.21 or newer (tested with 1.21.11, 26.2 and 26.3), Java 21 or newer. Spigot runs
-with the same jar, with basic support – Paper is recommended.
+with the same jar, with basic support; Paper is recommended.
 
 **Download:** [GitHub](https://github.com/itsthechris07/WoodCutter/releases/latest) ·
 [Modrinth](https://modrinth.com/plugin/woodcutter-christian34) ·
 [SpigotMC](https://www.spigotmc.org/resources/58193/) ·
 [Hangar](https://hangar.papermc.io/Christian34/WoodCutterPlus)
 
-**Documentation:** every setting, command, permission and placeholder – **[https://itsthechris07.github.io/WoodCutter/](https://itsthechris07.github.io/WoodCutter/)**
+**Documentation:** every setting, command, permission and placeholder: **[https://itsthechris07.github.io/WoodCutter/](https://itsthechris07.github.io/WoodCutter/)**
 
 ![A whole tree with one log](branding/media/tree-falling.gif)
 
@@ -22,11 +22,11 @@ with the same jar, with basic support – Paper is recommended.
 ## The enchantment
 
 - **Enchanting table:** axes and books get WoodCutter with an offer of level 30 (40 % chance by default).
-- **Levels:** WoodCutter I, II and III – higher levels cut bigger trees (120 / 180 / 240 logs by default).
+- **Levels:** WoodCutter I, II and III; higher levels cut bigger trees (120 / 180 / 240 logs by default).
 - **Anvil:** two items of the same level are combined to the next level, a book puts the enchantment onto an axe.
 - **Grindstone:** removes the enchantment.
 - **More sources:** librarians and wandering traders sell books with WoodCutter, and chests with loot contain them.
-- **Goodie:** optionally players cut trees with every axe, without the enchantment – all of them or by permission.
+- **Goodie:** optionally players cut trees with every axe, without the enchantment, either all of them or by permission.
 
 ![Features](branding/features.png)
 
@@ -34,14 +34,14 @@ with the same jar, with basic support – Paper is recommended.
 
 - **Every tree:** all logs of the game, including cherry, mangrove and the huge fungi of the Nether. Huge mushrooms
   are cut as well.
-- **Animations:** the tree falls log by log from the bottom to the top, or tips over with its leaves – with physics:
+- **Animations:** the tree falls log by log from the bottom to the top, or tips over with its leaves, with physics:
   it bounces, comes to rest on slopes, walls and other trees, floats on water or breaks apart. It falls away from
   the player, where they look, down the hill or at random. The items drop where it hits the ground, and mobs in the
   way are pushed away. No resource pack or mod is needed.
 - **Sounds, particles and glow** can be changed or switched off, sounds of resource packs work as well.
 - **Chopping:** bigger trees can take longer to chop, with the progress in a boss bar or the action bar.
 - **Buildings are safe:** logs placed by players are never cut, and logs without leaves are no tree.
-- **Cocoa, vines and bee nests** fall with the tree – the bees attack the player who cut it.
+- **Cocoa, vines and bee nests** fall with the tree, and the bees attack the player who cut it.
 - **Fast leaf decay**, **replanting** (four saplings for big trees, next to the stump if something is on it, and
   protected until they grow if you like), **drops into the inventory**, **bonus drops** and **experience drops**.
 - **Custom blocks and axes:** logs, leaves and saplings of mods, and axes of ItemsAdder, Nexo, Oraxen and MMOItems.
@@ -66,10 +66,10 @@ be switched off.
 
 | Command | Description | Permission |
 |---|---|---|
-| `/woodcutter menu` | Menu: switch WoodCutter on and off, level, perks and the best players – admins change settings there | – |
+| `/woodcutter menu` | Menu: switch WoodCutter on and off, level, perks and the best players. Admins change settings there | none |
 | `/woodcutter toggle` | Switch WoodCutter on or off for yourself | `woodcutter.use` |
-| `/woodcutter level [player]` | Woodcutting level and perks | – |
-| `/woodcutter top` | The best woodcutters | – |
+| `/woodcutter level [player]` | Woodcutting level and perks | none |
+| `/woodcutter top` | The best woodcutters | none |
 | `/woodcutter give <player> [book\|axe] [level]` | Give an enchanted book or axe (also from the console) | `woodcutter.admin` |
 | `/woodcutter enchant [level]` | Enchant the axe in the main hand | `woodcutter.admin` |
 | `/woodcutter reload` | Reload the files | `woodcutter.admin` |
@@ -81,21 +81,21 @@ Aliases: `/wcutter`, `/woodc`
 | Permission | Description | Default |
 |---|---|---|
 | `woodcutter.use` | Get the enchantment at the enchanting table and cut trees with it | everyone |
-| `woodcutter.goodie` | Cut trees with every axe (with `goodie: permission`) | – |
-| `woodcutter.bypass.delay` | No delay between two trees | – |
-| `woodcutter.delay.<seconds>` | A shorter delay, e.g. for ranks | – |
-| `woodcutter.maxblocks.<amount>` | A higher limit of logs, e.g. for ranks | – |
+| `woodcutter.goodie` | Cut trees with every axe (with `goodie: permission`) | nobody |
+| `woodcutter.bypass.delay` | No delay between two trees | nobody |
+| `woodcutter.delay.<seconds>` | A shorter delay, e.g. for ranks | nobody |
+| `woodcutter.maxblocks.<amount>` | A higher limit of logs, e.g. for ranks | nobody |
 | `woodcutter.replant.break` | Break saplings WoodCutter has planted (with `replant.protect: true`) | operators |
 | `woodcutter.admin` | Reload, enchant, give and the settings in the menu | operators |
 
 ## Server
 
-- **Versions:** one jar for Paper 1.21 up to 26.3 – the tests run on 1.21.11, 26.2 and 26.3.
+- **Versions:** one jar for Paper 1.21 up to 26.3; the tests run on 1.21.11, 26.2 and 26.3.
 - **Spigot** gets basic support with the same jar. Paper is recommended, and bugs that only happen on Spigot have a
   low priority.
 - **Folia** is supported, with the same jar.
-- **WorldGuard** (optional): the region flag `woodcutter` – `/rg flag <region> woodcutter deny` disables WoodCutter
-  in a region – or a blacklist or whitelist of regions in the config.
+- **WorldGuard** (optional): the region flag `woodcutter` (`/rg flag <region> woodcutter deny` disables WoodCutter
+  in a region), or a blacklist or whitelist of regions in the config.
 - **ItemsAdder, Nexo, Oraxen, MMOItems** (optional): their items can be axes for WoodCutter.
 - **PlaceholderAPI** (optional): `%woodcutter_enabled%`, `%woodcutter_level%`, `%woodcutter_max_blocks%`,
   `%woodcutter_delay%`, `%woodcutter_skill_level%`, `%woodcutter_skill_xp%`, `%woodcutter_skill_xp_needed%` and

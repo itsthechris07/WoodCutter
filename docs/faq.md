@@ -15,7 +15,7 @@
 
 ??? question "Does it work on Spigot?"
     Yes, with basic support: Spigot 1.21 or newer runs with the same jar, but WoodCutter is made for Paper. Bugs that
-    only happen on Spigot have a low priority, and new features may need Paper – if you can, use Paper.
+    only happen on Spigot have a low priority, and new features may need Paper. If you can, use Paper.
 
 ??? question "Does it work with Folia?"
     Yes, with the same jar.
