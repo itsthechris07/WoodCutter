@@ -1,34 +1,34 @@
 # Listing texts
 
 Texts for the plugin pages on SpigotMC, Modrinth and Hangar. Most people search for "timber" or "treefeller", not for
-"WoodCutter" – these words belong into the summary and the tags.
+"WoodCutter", so these words belong into the summary and the tags.
 
 ## Summary
 
 Modrinth summary / Hangar description (max. 256 characters):
 
 > Timber / tree feller enchantment for Paper & Folia: sneak, break one log and the whole tree falls. Levels, falling
-> animation, replanting, a woodcutting skill with perks and an in-game menu. 1.21 – 26.3.
+> animation, replanting, a woodcutting skill with perks and an in-game menu. 1.21 to 26.3.
 
 SpigotMC tag line (max. 100 characters):
 
-> Timber enchantment: cut whole trees with one log – levels, animation, replanting, skill. 1.21+
+> Timber enchantment: cut whole trees with one log: levels, animation, replanting, skill. 1.21+
 
 ## Tags
 
-- **Modrinth categories:** Game Mechanics, Equipment, Utility – loaders: Paper, Folia
+- **Modrinth categories:** Game Mechanics, Equipment, Utility; loaders: Paper, Folia
 - **Modrinth / Hangar keywords:** timber, treefeller, tree feller, tree capitator, lumberjack, woodcutting, axe,
   enchantment, skill, replant
-- **Hangar category:** Gameplay – platform Paper 1.21 – 26.3
-- **SpigotMC category:** Mechanics – "Tested Minecraft Versions": 1.21, 26.x
+- **Hangar category:** Gameplay, platform Paper 1.21 to 26.3
+- **SpigotMC category:** Mechanics, "Tested Minecraft Versions": 1.21, 26.x
 
 ## Compatibility block
 
 For the top of the description, right below the banner:
 
-> **Paper & Folia 1.21 – 26.3** · Java 21+ · one jar for all versions · Spigot: basic support
+> **Paper & Folia 1.21 to 26.3** · Java 21+ · one jar for all versions · Spigot: basic support
 >
-> Works with WorldGuard (region flag), PlaceholderAPI, CoreProtect and every protection plugin – each log is broken
+> Works with WorldGuard (region flag), PlaceholderAPI, CoreProtect and every protection plugin, because each log is broken
 > as the player.
 >
 > **Documentation:** https://itsthechris07.github.io/WoodCutter/
@@ -39,7 +39,7 @@ The documentation belongs on every plugin page, not only in the description:
 
 - **Modrinth:** Settings → Links → *Wiki page*: https://itsthechris07.github.io/WoodCutter/
 - **Hangar:** Settings → Links → header link "Documentation": https://itsthechris07.github.io/WoodCutter/
-- **SpigotMC:** Edit resource → *Additional Information URL* and the tab *Documentation*: https://itsthechris07.github.io/WoodCutter/ – and the line
+- **SpigotMC:** Edit resource → *Additional Information URL* and the tab *Documentation*: https://itsthechris07.github.io/WoodCutter/, and the line
   above in the description
 
 ## Changelog 3.4.0
@@ -86,7 +86,7 @@ The documentation belongs on every plugin page, not only in the description:
 
 ## Images
 
-`banner.png` at the top, then `how-it-works.png`, `features.png` and `skill.png` – see [README.md](README.md).
+`banner.png` at the top, then `how-it-works.png`, `features.png` and `skill.png`, see [README.md](README.md).
 
 **Not on Modrinth:** these images were made with AI (Claude Design), which Modrinth's content rules (6.2a) forbid for
 the icon, the description and the gallery. The Modrinth description (`release-notes/description.md`, local only)
