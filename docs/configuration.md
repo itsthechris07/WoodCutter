@@ -8,7 +8,7 @@ in `/woodcutter menu` - its page *Animation* changes the mode and the most impor
 
 | Setting | Default | Description |
 |---|---|---|
-| `language` | `en` | Language of the texts: `en`, `de`, `fr`, `es`, `pl` or `zh` |
+| `language` | `en` | Language of the texts: `en`, `de`, `fr`, `es`, `pl`, `zh`, `ru`, `uk`, `cs`, `pt`, `bg`, `ro` or `ca` |
 | `disabled-worlds` | `Lobby`, … | Worlds without WoodCutter. `*` stands for any characters, so `sg_*` matches `sg_1` |
 | `require-sneaking` | `true` | Players have to sneak to cut a whole tree |
 | `goodie` | `none` | `none`: the enchantment is needed. `permission`: players with `woodcutter.goodie` cut with every axe. `everyone`: all players do |

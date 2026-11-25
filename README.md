@@ -101,7 +101,7 @@ Aliases: `/wcutter`, `/woodc`
   `%woodcutter_delay%`, `%woodcutter_skill_level%`, `%woodcutter_skill_xp%`, `%woodcutter_skill_xp_needed%` and
   `%woodcutter_trees%` and `%woodcutter_top_<rank>_name%`, `..._level%`, `..._xp%`, `..._trees%` for the ranking.
 - **Vault** (optional): money for cut trees and trees that cost money, with EssentialsX, CMI or another economy.
-- **Languages:** English, German, French, Spanish, Polish, Chinese, Russian, Ukrainian, Czech and Portuguese
+- **Languages:** English, German, French, Spanish, Polish, Chinese, Russian, Ukrainian, Czech, Portuguese, Bulgarian, Romanian and Catalan
   (`language: de`, …). All texts can be changed,
   with color codes, hex colors (`&#ff8800`) or MiniMessage.
 - **Disabled worlds** with patterns: `sg_*` matches `sg_1`, `sg_lobby`, …

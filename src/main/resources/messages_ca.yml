@@ -1,0 +1,141 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                    - Messages -                      | #
+# |               Plugin by Christian34                  | #
+# +------------------------------------------------------+ #
+############################################################
+# colors: &c, &l, colors hex com &#ff8800 - o MiniMessage: <gold>, <gradient:#5e9c3a:#c9a46b>...</gradient>
+# (un text amb etiquetes MiniMessage no ha de contenir codis &) - %prefix% se substitueix pel prefix
+# un text buit ('') no s'envia
+
+messages:
+  prefix: '&8[&9Wood&7Cutter&8] '
+  no_permission: '%prefix%&cHo sentim, no tens permís per fer això!'
+  players_only: '%prefix%&cAquesta ordre només la poden fer servir jugadors!'
+  reloaded: "%prefix%&aS'ha recarregat la configuració!"
+  enchant_success: "%prefix%&aS'ha encantat l'eina!"
+  enchant_failed: "%prefix%&cNo s'ha pogut encantar l'eina!"
+  invalid_level: "%prefix%&cEl nivell ha de ser un nombre de l'1 al %max%!"
+  player_not_online: "%prefix%&cEl jugador '%player%' no està connectat!"
+  no_axe: "%prefix%&c'%item%' no és una destral! Fes servir 'book' o una destral com 'diamond_axe'."
+  give_sent: "%prefix%&a%player% ha rebut l'objecte."
+  give_received_book: '%prefix%&aHas rebut un llibre amb WoodCutter!'
+  give_received_axe: '%prefix%&aHas rebut una destral amb WoodCutter!'
+  toggle_on: '%prefix%&aWoodCutter està activat, tornes a tallar arbres sencers!'
+  toggle_off: '%prefix%&7WoodCutter està desactivat, només trenques troncs solts.'
+  # es mostra a la barra d'acció
+  not_enough_food: '&cTens massa gana per tallar un arbre sencer.'
+  not_enough_experience: "&cNecessites %levels% nivells d'experiència per tallar un arbre sencer."
+  update_available: '%prefix%&7Hi ha una nova versió disponible: &9https://github.com/itsthechris07/WoodCutter/releases/latest'
+  help_toggle: '&7/&9WoodCutter toggle &f| &7activa o desactiva WoodCutter per a tu'
+  help_reload: '&7/&9WoodCutter reload &f| &7recarrega els fitxers de configuració'
+  help_enchant: '&7/&9WoodCutter enchant [level] &f| &7encanta la destral de la teva mà'
+  help_give: '&7/&9WoodCutter give <player> [book|axe] [level] &f| &7dona un llibre o una destral encantats'
+  axe_almost_broken: "&cLa teva destral està gairebé trencada, l'arbre no es talla més."
+  # es mostra un cop a la barra d'acció, quan un jugador trenca un tronc sense ajupir-se
+  sneak_hint: "&7Ajup-te mentre trenques un tronc per tallar tot l'arbre."
+  # l'habilitat de llenyataire - les dues primeres es mostren a la barra d'acció després d'un arbre
+  skill_xp: '&a+%xp% XP &8| &7Nivell &9%level% &8| &f%current%&7/&f%needed%'
+  skill_xp_max: '&a+%xp% XP &8| &7Nivell &9%level% &8(&7màx&8)'
+  skill_level_up: '%prefix%&aHas arribat al nivell de llenyataire &9%level%&a!'
+  skill_level_up_title: '&9Nivell %level%'
+  skill_level_up_subtitle: '&7Llenyataire'
+  skill_disabled: "%prefix%&cL'habilitat de llenyataire està desactivada!"
+  skill_no_data: "%prefix%&c'%player%' encara no ha tallat cap arbre!"
+  skill_info: '%prefix%&9%player% &8| &7Nivell &9%level% &8| &f%current%&7/&f%needed% XP'
+  skill_info_max: '%prefix%&9%player% &8| &7Nivell &9%level% &8(&7màx&8) | &f%xp% XP'
+  skill_perk_speed: ' &8- &7Tala més ràpida: &f+%value% troncs per tick'
+  skill_perk_delay: ' &8- &7Espera més curta: &f-%value% segons'
+  skill_perk_max_blocks: ' &8- &7Arbres més grans: &f+%value% troncs'
+  skill_perk_bonus_drops: ' &8- &7Botí extra: &f+%value% %'
+  skill_perk_axe_saver: " &8- &7Cura de la destral: &f%value% % dels troncs no la desgasten"
+  skill_perk_costs: ' &8- &7Costos més baixos: &f-%value% %'
+  skill_perk_forester_luck: ' &8- &7Sort del guardabosc: &f%value% % de les fulles deixen caure alguna cosa'
+  skill_unlock_replant: ' &8- &7Es planta un plançó nou gratis'
+  skill_unlock_drops_to_inventory: ' &8- &7Els troncs van al teu inventari'
+  skill_top_header: '%prefix%&7Els millors llenyataires:'
+  skill_top_entry: ' &7%rank%. &9%player% &8| &7Nivell &9%level% &8| &f%xp% XP'
+  help_level: '&7/&9WoodCutter level [player] &f| &7mostra el nivell de llenyataire i els avantatges'
+  help_top: '&7/&9WoodCutter top &f| &7mostra els millors llenyataires'
+  help_menu: '&7/&9WoodCutter menu &f| &7obre el menú'
+  # el menú (/woodcutter menu)
+  menu_title: '&8WoodCutter'
+  menu_toggle_on: '&aWoodCutter està activat'
+  menu_toggle_off: '&cWoodCutter està desactivat'
+  menu_toggle_lore: '&7Fes clic per activar-lo o desactivar-lo'
+  menu_skill: '&9Nivell de llenyataire %level%'
+  menu_skill_progress: '&f%current%&7/&f%needed% XP'
+  menu_skill_max: '&7Nivell màxim &8| &f%xp% XP'
+  menu_top: '&9Els millors llenyataires'
+  menu_settings: '&9Configuració'
+  menu_settings_lore: '&7Fes clic per canviar la configuració del plugin'
+  menu_settings_title: '&8Configuració de WoodCutter'
+  menu_setting_on: '&a%setting%'
+  menu_setting_off: '&c%setting%'
+  menu_setting_lore: '&7Fes clic per activar-lo o desactivar-lo'
+  menu_setting_fast_leaf_decay: 'Caiguda ràpida de fulles'
+  menu_setting_fast_leaf_decay_lore: '&7Les fulles d''un arbre tallat desapareixen en pocs segons'
+  menu_setting_replant: 'Replantar'
+  menu_setting_replant_lore: '&7Planta un plançó nou quan es trenca el tronc més baix d''un arbre'
+  menu_setting_replant_free: 'Plançons gratis'
+  menu_setting_replant_free_lore: '&7Per replantar, el jugador no necessita cap plançó a l''inventari'
+  menu_setting_drops_to_inventory: 'Objectes a l''inventari'
+  menu_setting_drops_to_inventory_lore: '&7Els troncs i els seus extres van a l''inventari del jugador en lloc de caure a terra'
+  menu_setting_protect_axe: 'Protegir la destral'
+  menu_setting_protect_axe_lore: '&7La tala s''atura abans del cop que trencaria la destral'
+  menu_setting_require_leaves: 'Calen fulles'
+  menu_setting_require_leaves_lore: '&7Els troncs sense fulles no són un arbre i no es tallen, això protegeix les construccions'
+  menu_setting_mushrooms: 'Bolets gegants'
+  menu_setting_mushrooms_lore: '&7Els bolets gegants es tallen com arbres quan se''n trenca la tija amb una destral'
+  menu_setting_destroy_fake_trees: 'Tallar troncs col·locats'
+  menu_setting_destroy_fake_trees_lore: '&7Talla també els troncs col·locats per jugadors (desactivat protegeix les construccions a prop d''arbres)'
+  menu_setting_require_sneaking: 'Cal ajupir-se'
+  menu_setting_require_sneaking_lore: '&7Els jugadors s''han d''ajupir per tallar un arbre sencer'
+  menu_setting_delay: 'Espera'
+  menu_setting_delay_lore: '&7Els jugadors esperen entre dos arbres (delay.time a config.yml)'
+  menu_setting_skill: 'Habilitat de llenyataire'
+  menu_setting_skill_lore: '&7Els jugadors guanyen experiència per cada tronc i arriben a nivells amb avantatges'
+  menu_setting_value: '&9%setting%&8: &f%value%'
+  menu_setting_choice_lore: '&7Clic esquerre: valor següent, clic dret: anterior'
+  menu_setting_number_lore: '&7Clic esquerre: +1, clic dret: -1'
+  menu_animation: '&9Animació'
+  menu_animation_lore: '&7Fes clic per canviar com es tallen i cauen els arbres'
+  menu_animation_title: '&8Animació de WoodCutter'
+  menu_animation_enabled: 'Animació'
+  menu_animation_enabled_lore: '&7Els arbres es tallen pas a pas en lloc de desaparèixer de cop'
+  menu_animation_mode: 'Mode'
+  menu_animation_mode_lore: '&7layers: tronc a tronc de baix a dalt; topple: tallat de cop, l''arbre bolca'
+  menu_animation_speed: 'Velocitat'
+  menu_animation_speed_lore: '&7Troncs per tick amb el mode layers (20 ticks són un segon)'
+  menu_animation_physics: 'Física'
+  menu_animation_physics_lore: '&7simple: bolca a velocitat constant; rigid: cau cada cop més ràpid i rebota en els obstacles; fall-apart: com rigid, però es desfà en troncs'
+  menu_animation_direction: 'Direcció'
+  menu_animation_direction_lore: '&7away: lluny del jugador; facing: cap on mira el jugador; slope: pendent avall; random: a qualsevol lloc'
+  menu_animation_drops: 'Objectes a l''impacte'
+  menu_animation_drops_lore: '&7Els objectes cauen on l''arbre toca terra en lloc d''on era'
+  menu_animation_knockback: 'Empenta'
+  menu_animation_knockback_lore: '&7Els monstres i jugadors sobre els quals cau l''arbre són empesos'
+  menu_animation_damage: 'Dany'
+  menu_animation_damage_lore: '&7Dany de l''arbre als monstres i jugadors sobre els quals cau (2 = un cor)'
+  menu_animation_float: 'Sura a l''aigua'
+  menu_animation_float_lore: '&7L''arbre sura a l''aigua en lloc d''enfonsar-se (rigid i fall-apart)'
+  menu_animation_timber: 'Subtítol en caure'
+  menu_animation_timber_lore: '&7Mostra un subtítol al jugador que ha tallat l''arbre (missatge timber)'
+  menu_reset: '&cRestablir'
+  menu_reset_lore: '&7Torna la configuració d''aquesta pàgina als valors per defecte:'
+  menu_reset_entry: ' &8- &f%setting%'
+  menu_reset_click: '&7Fes clic per restablir'
+  menu_reset_confirm: '&cFes clic de nou per restablir'
+  menu_reset_none: '&7Tota la configuració té els valors per defecte'
+  menu_back: '&7Enrere'
+  # es mostra com a subtítol quan cau un arbre (animació 'topple')
+  timber: '&6&lQue cau!'
+  # diners per un arbre tallat (economy.reward-per-log) - p. ex. '%prefix%&a+%money% &7per %logs% troncs'
+  economy_reward: ''
+  # es mostra a la barra d'acció
+  not_enough_money: '&cNecessites %money% per tallar un arbre sencer.'
+  skill_trees: ' &8- &7Arbres tallats: &f%trees%'
+  # la barra mentre es tala un arbre gran (opció 'chopping')
+  chopping: "&6Talant l'arbre &8(&f%logs% troncs&8)"
+  # es mostra a la barra d'acció
+  sapling_protected: "&cAquest plançó l'ha plantat WoodCutter i no es pot trencar fins que creixi."

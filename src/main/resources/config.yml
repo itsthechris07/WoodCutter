@@ -7,7 +7,7 @@
 # the texts of the plugin are in messages.yml (or messages_<language>.yml)
 
 config:
-  # the language of the texts: en (messages.yml), de, fr, es, pl, zh, ru, uk, cs or pt (messages_<language>.yml)
+  # the language of the texts: en (messages.yml), de, fr, es, pl, zh, ru, uk, cs, pt, bg, ro or ca (messages_<language>.yml)
   language: en
   # worlds without WoodCutter - * stands for any characters, so sg_* matches sg_1, sg_lobby, ...
   disabled-worlds:

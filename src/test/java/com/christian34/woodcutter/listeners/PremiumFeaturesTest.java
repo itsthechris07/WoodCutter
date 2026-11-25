@@ -376,7 +376,7 @@ class PremiumFeaturesTest extends PluginTestBase {
     @Test
     void everyLanguageHasEveryText() throws Exception {
         YamlConfiguration english = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "messages.yml"));
-        for (String language : List.of("de", "fr", "es", "pl", "zh", "ru", "uk", "cs", "pt")) {
+        for (String language : List.of("de", "fr", "es", "pl", "zh", "ru", "uk", "cs", "pt", "bg", "ro", "ca")) {
             plugin.getConfigData().set(ConfigData.Keys.LANGUAGE, language);
             plugin.reload();
             File file = new File(plugin.getDataFolder(), "messages_" + language + ".yml");
